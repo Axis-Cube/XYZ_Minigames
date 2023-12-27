@@ -121,7 +121,7 @@ function error(message, source){
 export function showWindow(source){
     if (_plugins.length == 0) {
         //Show error message when plugins not initializated
-        error("No plugins found!\nTry to execute /scriptevent as:m Init", source)
+        error("No plugins found!\nTry to Init", source)
     }else{
         //Show menu with all plugins
         Plugins.show(source).then(obj => {
