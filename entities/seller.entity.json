@@ -1,0 +1,62 @@
+{
+	"format_version": "1.19.60",
+	"minecraft:entity": {
+		"description": {
+			"identifier": "axiscube:bw_seller",
+			"is_spawnable": false,
+			"is_summonable": true,
+			"is_experimental": false
+		},
+		"component_groups": {},
+		"components": {
+			"minecraft:nameable": {
+				"always_show": true,
+                "allow_name_tag_renaming": true
+			},
+			"minecraft:physics": {
+				"has_gravity": true,
+				"has_collision": true
+			},
+			"minecraft:pushable": {
+				"is_pushable": false,
+				"is_pushable_by_piston": false
+			},
+			"minecraft:health": {
+				"value": 99999,
+				"max": 100
+			},
+            "minecraft:damage_sensor": {
+                "triggers": {
+                    "cause": "all",
+                    "deals_damage": false
+                }
+            },
+			"minecraft:interact": {
+				"interactions": [
+					{
+						"on_interact": {
+							"event": "mcxyz:shop",
+							"target": "self"
+						},
+						"interact_text": "%trade.trade"
+					}
+				]
+			},
+            "minecraft:behavior.look_at_player": {
+				"priority": 1,
+				"look_distance": 3,
+				"probability": 1
+			}
+		},
+		"events": {
+			"mcxyz:shop": {
+				"run_command": {
+					"command": [
+						"execute as @s at @s run scriptevent axiscube:eval formBWshop(player)"
+					],
+					"target": "other"
+				}
+			}
+		}
+	}
+}

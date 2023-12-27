@@ -1,0 +1,48 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "mcxyz:levitation_item",
+      "category": "Items"
+    },
+    "components": {
+      "minecraft:hand_equipped": false,
+      "minecraft:max_stack_size": 16,
+      "minecraft:foil": false,
+      "minecraft:icon": {
+        "texture": "feather"
+      },
+      "minecraft:cooldown": {
+        "category": "levitation_item",
+        "duration": 1
+      },
+      "minecraft:on_use": {
+        "on_use": {
+          "event": "on_use_event"
+        }
+      }
+    },
+    "events": {
+      "on_use_event": {
+        "swing": {},
+        "run_command": {
+          "command": [
+            "scoreboard players add \"item_use\" stats 1",
+            "playsound block.beehive.enter @a",
+            "effect @s levitation 1 10 true",
+            "particle minecraft:example_flipbook",
+            "effect @s slow_falling 3 0 true",
+            "clear @s[m=!c] mcxyz:levitation_item 0 1"
+          ]
+        }
+      },
+      "hurt": {
+        "damage": {
+          "type": "magic",
+          "amount": 1,
+          "target": "self"
+        }
+      }
+    }
+  }
+}

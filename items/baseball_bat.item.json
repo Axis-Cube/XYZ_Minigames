@@ -1,0 +1,38 @@
+{
+    "format_version": "1.16.100",
+    "minecraft:item": {
+      "description": {
+        "identifier": "axiscube:baseball_bat",
+        "category": "equipment"
+      },
+      "components": {
+        "minecraft:can_destroy_in_creative": false,
+        "minecraft:creative_category": {
+          "parent": "itemGroup.name.sword"
+        },
+        "minecraft:max_stack_size": 1,
+        "minecraft:hand_equipped": true,
+        "minecraft:durability": {
+          "max_durability": 200
+        },
+
+        "minecraft:damage": 1,
+        "minecraft:enchantable": {
+          "value": 10,
+          "slot": "sword"
+        },
+        "minecraft:icon": {
+          "texture": "baseball_bat"
+        }
+      },
+      "events": {
+        "hurt": {
+          "damage": {
+            "type": "magic",
+            "amount": 1,
+            "target": "self"
+          }
+        }
+      }
+    }
+  }
