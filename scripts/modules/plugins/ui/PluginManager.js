@@ -7,8 +7,8 @@ import { plugins_log } from "../../Logger/logger_env.js";
 
 
 let Plugins = new ActionFormData()
-    .title('BETA')
-    .body('Example')
+    .title('axiscube.settings.plugins')
+    .body('')
 
 // you can have initial casses
 var callbacks = {};
@@ -56,8 +56,8 @@ export function configure() {
                 add(el, function (source) {
                     //Plugins settings
 
-                    //If AUI in plugin settings, import ui file
-                    if (_config[el].dependencies.indexOf("AUI") != -1) {
+                    //If ui_features in plugin settings, import ui file
+                    if (_config[el].dependencies.indexOf("ui_features") != -1) {
                         try {
                             import(`../plugins/${_files[el]}/ui/index.js`).then(uif => {
 
@@ -88,10 +88,9 @@ export function events(name, event){
         import(`../plugins/${name}/index.js`).then(pl => {
             let _config = pl.config
 
-            plugins_log.put(`§6[PLUGINS - ${name}] - Trying to execute event -> ${event}§r\n`)
+            plugins_log.put(`§6[PLUGINS] [${name}] - Trying to execute event -> ${event}§r\n`)
 
-            if (_config.dependencies.indexOf("AEvents") != -1) {
-                console.warn('Aevents')
+            if (_config.dependencies.indexOf("event_listen") != -1) {
                 try {
                     import(`../plugins/${name}/events.js`).then(evf => {
     
@@ -99,13 +98,13 @@ export function events(name, event){
                         let EV_LIST = evf.EVENTS
                         try{
                             eval(`EV_LIST.${event}()`)
-                            plugins_log.put(`§a[PLUGINS - ${name}] - Successfuly executed event ${event}§r\n`)
+                            plugins_log.put(`§a[PLUGINS] [${name}] - Successfuly executed event ${event}§r\n`)
                         }catch(e){console.warn(`Event (${event}) not found!`)}
                     })
-                } catch (e) {console.warn(e)}
+                } catch (e) {console.error(e)}
             }
         })
-    } catch (e) {console.warn(e)}
+    } catch (e) {console.error(e)}
         
 }
 
@@ -114,8 +113,8 @@ function error(message, source){
     let ErrorMessage = new MessageFormData()
         .title("Oops...")
         .body(message)
-        .button1("Ok")
-        .button2("Close")
+        .button1("gui.ok")
+        .button2("gui.close")
     ErrorMessage.show(source).then()
 }
 export function showWindow(source){

@@ -4,11 +4,10 @@ export const config = {
   "file": "example",
   "name": "Example Plugin",
   "description": "Cool plugin",
-  "authors": ["Lndrs_"],
+  "authors": ["Lndrs_","Axisander"],
   "license": "MIT",
-  "AbstractId": 0,
   "dependencies": [
-      "AUI",
-      "AEvents"
+      "ui_features",
+      "event_listen"
   ]
 }

@@ -17,18 +17,18 @@ export function Process(action, param='Empty'){
                 import(`./plugins/${PLUGINS[element]}/index.js`).then( obj => {
                     //Getting config of plugin and misc informtion
                     let _config = obj.config
-                    let _version = _config.version
-                    let _authors = _config.authors
+                    let _version = _config.version.toString().replaceAll(',','.')
+                    let _authors = _config.authors.toString().replaceAll(',',', ')
                     let _name = _config.name
                     let _description = _config.description
                     let _file = _config.file
                     //Pushing values into list
-                    LPN.push(`Name: ${_name} | Authors: ${_authors} | Version: ${_version} | Description: ${_description}`)
+                    LPN.push(`${_name}\nv${_version} by ${_authors}`)
                     LoadedPlugins.push(_file)
                     LoadedConfig.push(_config)
 
                     //LOGS
-                    plugins_log.put(thing+`[Plugins] "${PLUGINS[element]}" plugin loaded\n`+`Name: ${_name} | Authors: ${_authors} | Version: ${_version} | Description: ${_description}`+thing)
+                    plugins_log.put(thing+`[Plugins] "${PLUGINS[element]}" plugin loaded\n`+`Name: ${_name}\nAuthors: ${_authors}\nVersion: v${_version}\nDescription: ${_description}`+thing)
                     //END-OF-LOGS
                     
                     //Console info

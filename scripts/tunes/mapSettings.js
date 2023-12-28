@@ -6,6 +6,7 @@ import { ICONS } from "../const"
 import { openJSON } from "../modules/easyform"
 import { getPlayerAvatar, getPlayerColor } from "./profile"
 import { getPlayerMoneyData } from "./bank"
+import { showWindow } from "../modules/plugins/ui/PluginManager"
 
 /**
  * @param {import("@minecraft/server").Player} player
@@ -20,9 +21,10 @@ export function formMapSettings(player) {
 
     const form = new ActionFormData()
     .title('%axiscube.settings.map')
-    .body('xd')
+    .body('')
     .button('%gui.back',ICONS.back)
     .button('%axiscube.settings.perms',ICONS.crown)
+    .button('%axiscube.settings.plugins',ICONS.import)
     .show(player).then( gg => {
         switch (gg.selection) {
             case 0:
@@ -30,6 +32,9 @@ export function formMapSettings(player) {
             break;
             case 1:
                 formPermSettings(player)
+            break;
+            case 2:
+                showWindow(player)
             break;
         }
     })
