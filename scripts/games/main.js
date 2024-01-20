@@ -40,6 +40,41 @@ for (let i in GAMEDATA) {
     };
 };
 
+export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
+    const thisGame = GAMEDATA[id]
+    if (thisGame.min_players > [...world.getPlayers()].length) {
+        tellraw(`{"rawtext":[{"translate":"axiscube.games.startgame.no_players","with":{"rawtext":[{"translate":"axiscube.${thisGame.namespace}.name"},{"text":"${thisGame.min_players}"}]}}]}`)
+        return
+    }
+    if (thisGame.reset_player_color != undefined && thisGame.reset_player_color[getGameType()] == true) {
+        for (const playerT of world.getPlayers()) {
+            playerT.nameTag = playerT.name;
+        };
+    }
+    await clearTags();
+    let commands = [
+        'clear @a',
+        `scoreboard players set mg data ${id}`,
+        `scoreboard players set diff data ${diff}`,
+        { type:'tp', value: thisGame.loc[arn].spawn },
+        { type:'tp', value: thisGame.loc[arn].spawnpoint, action: 'spawnpoint' },
+        'scoreboard objectives add data.gametemp dummy "data.gametemp"',
+        'scoreboard objectives remove lobby.display',
+        `scoreboard players set time data.gametemp ${thisGame.time.value}`,
+    ]
+    await runCMDs(commands)
+    if (thisGame.time.xp) {
+        await runCMD(`xp ${thisGame.time.value}l @a`)
+    }
+    for(let i in thisGame.boards) {
+        let thisBoard = thisGame.boards[i]
+        if (thisBoard[1] == undefined) { thisBoard[1] = thisBoard[0] }
+        await runCMD(`scoreboard objectives add ${thisBoard[0]} dummy "${thisBoard[1]}"`)
+        if (thisBoard[2] == true) { await runCMD(`scoreboard objectives setdisplay sidebar ${thisBoard[0]}`) }
+    }
+    await runCMDs(thisGame.start_commands)
+}
+
 export async function startGame( id, player, arn = getGameArena() ) {
     const thisGame = GAMEDATA[id]
     if (!checkPerm(player.name,'start')) { rawtext('axiscube.perm.denied.start',player.name,'translate','c'); return }

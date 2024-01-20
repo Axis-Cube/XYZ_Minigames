@@ -1,4 +1,4 @@
 //List of allowed plugins
 export const PLUGINS = [
-    "example"
+    "map_info"
 ]

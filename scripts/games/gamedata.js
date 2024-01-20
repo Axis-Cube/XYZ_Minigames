@@ -14,7 +14,7 @@ export const GAMEDATA = {
         id: 0,
         min_players: 0,
         tags: [ 'lobby' ],
-        loc: { 0: { spawn: '0 21 0' } },
+        loc: { 0: { spawn: '-9925 39 -9925' } },
         start_commands: async function() {
             let commands = [
                 'xp -1000000L @a',

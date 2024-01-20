@@ -141,7 +141,8 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             stopGame(Number(message))
         break;
         case 'axiscube:startgame':
-            startGame(Number(message),sourceEntity)
+            let args = message.split('-')
+            startGame(Number(args[0]),sourceEntity,Number(args[1]))
         break;
         case 'axiscube:begingame':
             beginGame(Number(message))

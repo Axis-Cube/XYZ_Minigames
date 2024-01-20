@@ -14,7 +14,7 @@ export const GAMEDATA_PVP = { // PVP
         1: true
     },
     namespace: 'pvp',
-    min_players: 2,
+    min_players: 1,
     tags: [
         'pvp',
         'pvp.member',

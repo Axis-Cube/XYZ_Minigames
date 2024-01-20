@@ -40,54 +40,54 @@ export const GAMEDATA_BW = { // BW
     loc: {
         0: {
             gameplay: { type: 'bytag', value: {
-                'team.red': { type: 'arr', value: [ '3165 25 3088', '3168 25 3089', '3162 27 3094', '3164 27 3083', '3160 25 3089'] },
-                'team.green': { type: 'arr', value: [ '3091 25 3165', '3090 25 3160', '3096 27 3164', '3085 27 3161', '3094 26 3167'] },
-                'team.yellow': { type: 'arr', value: [ '3090 25 3015', '3091 25 3019', '3085 27 3016', '3087 26 3013', '3096 27 3018'] },
-                'team.blue': { type: 'arr', value: [ '3015 25 3093', '3019 25 3091', '3019 27 3087', '3012 26 3096', '3016 27 3098'] },
+                'team.red': { type: 'arr', value: [ '13165 25 13088', '13168 25 13089', '13162 27 13094', '13164 27 13083', '13160 25 13089'] },
+                'team.green': { type: 'arr', value: [ '13091 25 13165', '13090 25 13160', '13096 27 13164', '13085 27 13161', '13094 26 13167'] },
+                'team.yellow': { type: 'arr', value: [ '13090 25 13015', '13091 25 13019', '13085 27 13016', '13087 26 13013', '13096 27 13018'] },
+                'team.blue': { type: 'arr', value: [ '13015 25 13093', '13019 25 13091', '13019 27 13087', '13012 26 13096', '13016 27 13098'] },
             } },
-            spawn: '3090 61 3090',
-            newplayer: '3090 46 3090',
-            spawnpoint: '3090 46 3090',
+            spawn: '13090 61 13090',
+            newplayer: '13090 46 13090',
+            spawnpoint: '13090 46 13090',
             level_low: 9,
             level_high: 59,
             cleardata: {
-                1: [ { x: 3090, y: 0, z:3091 }, { x: 3189, y: 0, z:3189 } ],
-                2: [ { x: 3089, y: 0, z:3091 }, { x: 2991, y: 0, z:3189 } ],
-                3: [ { x: 3089, y: 0, z:3090 }, { x: 2991, y: 0, z:2991 } ],
-                4: [ { x: 3090, y: 0, z:3090 }, { x: 3189, y: 0, z:2991 } ],
+                1: [ { x: 13090, y: 0, z:13091 }, { x: 13189, y: 0, z:13189 } ],
+                2: [ { x: 13089, y: 0, z:13091 }, { x: 12991, y: 0, z:13189 } ],
+                3: [ { x: 13089, y: 0, z:13090 }, { x: 12991, y: 0, z:12991 } ],
+                4: [ { x: 13090, y: 0, z:13090 }, { x: 13189, y: 0, z:12991 } ],
                 // 1: [3090, 0, 3091, 3189, 0, 3189],
                 // 2: [3089, 0, 3091, 2991, 0, 3189],
                 //3: [3089, 0, 3090, 2991, 0, 2991],
                 //4: [3090, 0, 3090, 3189, 0, 2991]
             },
             beds_c: {
-                '3166;25;3092': 'red',
-                '3165;25;3092': 'red',
-                '3087;25;3166': 'green',
-                '3087;25;3165': 'green',
-                '3094;25;3015': 'yellow',
-                '3094;25;3014': 'yellow',
-                '3014;25;3089': 'blue',
-                '3015;25;3089': 'blue',
+                '13166;25;13092': 'red',
+                '13165;25;13092': 'red',
+                '13087;25;13166': 'green',
+                '13087;25;13165': 'green',
+                '13094;25;13015': 'yellow',
+                '13094;25;13014': 'yellow',
+                '13014;25;13089': 'blue',
+                '13015;25;13089': 'blue',
             },
             beds: {
                 red: {
-                    pos: [3165, 25, 3092],
+                    pos: [13165, 25, 13092],
                     structure: 'bw_bed_red',
                     deg: 0
                 },
                 blue: {
-                    pos: [3014, 25, 3089],
+                    pos: [13014, 25, 13089],
                     structure: 'bw_bed_blue',
                     deg: 0
                 },
                 green: {
-                    pos: [3087, 25, 3165],
+                    pos: [13087, 25, 13165],
                     structure: 'bw_bed_green',
                     deg: 0
                 },
                 yellow: {
-                    pos: [3094, 25, 3014],
+                    pos: [13094, 25, 13014],
                     structure: 'bw_bed_yellow',
                     deg: 0
                 },
@@ -95,56 +95,56 @@ export const GAMEDATA_BW = { // BW
             gens: {
                 copper_ingot: [
                     // green
-                    [3088, 26, 3169],
-                    [3092, 27, 3178],
-                    [3103, 27, 3158],
+                    [13088, 26, 13169],
+                    [13092, 27, 13178],
+                    [13103, 27, 13158],
                     // blue
-                    [3011, 26, 3090],
-                    [3022, 27, 3105],
-                    [3002, 27, 3094],
+                    [13011, 26, 13090],
+                    [13022, 27, 13105],
+                    [13002, 27, 13094],
                     // yellow
-                    [3093, 26, 3011],
-                    [3083, 27, 3005],
-                    [3078, 27, 3022],
+                    [13093, 26, 13011],
+                    [13083, 27, 13005],
+                    [13078, 27, 13022],
                     // red
-                    [3169, 26, 3091],
-                    [3178, 27, 3087],
-                    [3157, 27, 3077],
+                    [13169, 26, 13091],
+                    [13178, 27, 13087],
+                    [13157, 27, 13077],
                 ],
                 iron_ingot: [
                     // green
-                    [3076, 27, 3167],
-                    [3089, 28, 3135],
+                    [13076, 27, 13167],
+                    [13089, 28, 13135],
                     // blue
-                    [3013, 27, 3078],
-                    [3045, 28, 3088],
+                    [13013, 27, 13078],
+                    [13045, 28, 13088],
                     // yellow
-                    [3105, 27, 3013],
-                    [3091, 28, 3045],
+                    [13105, 27, 13013],
+                    [13091, 28, 13045],
                     // red
-                    [3167, 27, 3103],
-                    [3135, 28, 3091],
+                    [13167, 27, 13103],
+                    [13135, 28, 13091],
                 ],
                 gold_ingot: [
-                    [3053, 26, 3126], // green - blue
-                    [3053, 26, 3054], // blue - yellow
-                    [3126, 26, 3053], // yellow - red
-                    [3127, 26, 3126], // red - green
+                    [13053, 26, 13126], // green - blue
+                    [13053, 26, 13054], // blue - yellow
+                    [13126, 26, 13053], // yellow - red
+                    [13127, 26, 13126], // red - green
                     // Center
-                    [3087, 41, 3095],
-                    [3093, 35, 3095],
-                    [3093, 29, 3094]
+                    [13087, 41, 13095],
+                    [13093, 35, 13095],
+                    [13093, 29, 13094]
                 ],
                 amethyst_shard: [
-                    [3087, 35, 3085],
-                    [3093, 41, 3085]
+                    [13087, 35, 13085],
+                    [13093, 41, 13085]
                 ],
                 echo_shard: [
-                    [3090, 29, 3090]
+                    [13090, 29, 13090]
                 ]
             },
-            arena_from: [3189, 59, 3189],
-            arena_to: [2991, 8, 2991]
+            arena_from: [13189, 59, 13189],
+            arena_to: [12991, 8, 12991]
         }
     },
     ends: {
@@ -686,11 +686,13 @@ export async function generateRes(resourceTypeId){
                     spawnHere = false
                 }
             } else if (ent.typeId == 'minecraft:player') {
-                let res_amounts = getItemAmounts(ent, ["copper_ingot", "amethyst_shard", "gold_ingot", "iron_ingot", "echo_shard"])
-                //let current_res = `§6${res_amounts.copper_ingot} \ue186 §8${res_amounts.iron_ingot} \ue166 §g${res_amounts.gold_ingot} \ue165 §5${res_amounts.amethyst_shard} \ue167 §t${res_amounts.echo_shard} \ue168`
-                //res_amounts[resourceTypeId] = res_amounts[resourceTypeId] + 1
-                res_amounts = `§6${res_amounts.copper_ingot} ${UNICODES['copper_ingot']} §r| §8${res_amounts.iron_ingot} ${UNICODES['iron_ingot']} §r| §g${res_amounts.gold_ingot} ${UNICODES['gold_ingot']} §r | §u${res_amounts.amethyst_shard} ${UNICODES['amethyst_shard']} §r | §t${res_amounts.echo_shard} ${UNICODES['echo_shard']}`
-                actionbar(res_amounts,ent)
+                system.runTimeout(()=>{
+                    let res_amounts = getItemAmounts(ent, ["copper_ingot", "amethyst_shard", "gold_ingot", "iron_ingot", "echo_shard"])
+                    //let current_res = `§6${res_amounts.copper_ingot} \ue186 §8${res_amounts.iron_ingot} \ue166 §g${res_amounts.gold_ingot} \ue165 §5${res_amounts.amethyst_shard} \ue167 §t${res_amounts.echo_shard} \ue168`
+                    //res_amounts[resourceTypeId] = res_amounts[resourceTypeId] + 1
+                    res_amounts = `§6${res_amounts.copper_ingot} ${UNICODES['copper_ingot']} §r| §8${res_amounts.iron_ingot} ${UNICODES['iron_ingot']} §r| §g${res_amounts.gold_ingot} ${UNICODES['gold_ingot']} §r | §u${res_amounts.amethyst_shard} ${UNICODES['amethyst_shard']} §r | §t${res_amounts.echo_shard} ${UNICODES['echo_shard']}`
+                    actionbar(res_amounts,ent)
+                },5)
             }
         }
         if (!spawnHere) continue

@@ -32,11 +32,11 @@ export const GAMEDATA_BLOCKP = { // BLOCK PARTY
     loc: {
         0: {
             gameplay: false,
-            spawn: { type: 'range', value: [ [ -997, -968 ], [ 1, 1 ], [ -997, -968 ] ] },
-            newplayer: { type: 'range', value: [ [ -997, -968 ], [ 1, 1 ], [ -997, -968 ] ] },
-            spawnpoint: '-1009 6 -984',
-            platform: '-1000 0 -1000',
-            platform1: '-966 0 -966'
+            spawn: { type: 'range', value: [ [ 2510, 2520 ], [ 52, 52 ], [ 2710, 2730 ] ] },
+            newplayer: { type: 'range', value: [ [ 2510, 2520 ], [ 52, 52 ], [ 2710, 2730 ] ] },
+            spawnpoint: '2517 56 2693',
+            platform: '2500 50 2700',
+            platform1: '2534 50 2734'
         }
     },
     ends: {
@@ -90,6 +90,7 @@ export const GAMEDATA_BLOCKP = { // BLOCK PARTY
         {type:'scoreset',value: 3, objective: 'blockp.display'},
         'scoreboard players set "§2" blockp.display 5',
         `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" blockp.display 4`,
+
     ],
     death_data: {
         death_commands: []
@@ -97,8 +98,9 @@ export const GAMEDATA_BLOCKP = { // BLOCK PARTY
     items: {
         'axiscube:blockp_totem': placePodushkaBezopasnosti
     },
-    stop_commands: function () {
-        placePlatform(1000)
+    stop_commands: async function () {
+        await runCMD(`structure load blockp_intro ${GAMEDATA_BLOCKP.loc[0].platform}`)
+        try{placePlatform(1000)}catch(e){console.warn(e)}
     },
     boards: [
         ['blockp.display', '\ue195§c %axiscube.blockp.name', true],
@@ -215,7 +217,7 @@ export async function blockpTick() {
     // STOP GAME SYSTEM
     let countMembers = 0
     for (const player of world.getPlayers()) {
-        if (Math.floor(player.location.y) == -5 && !hasTag(player,'spec')) {
+        if (Math.floor(player.location.y) == 45 && !hasTag(player,'spec')) {
             await runCMDs([
                 `tp @s ${GAMEDATA_BLOCKP.loc[getGameArena()].spawnpoint}`,
                 'tag @s remove blockp.member',
@@ -274,7 +276,7 @@ export async function blockp5ticks() {
         // Bonus
         let bonusChance = randomInt(1,100)
         if (bonusChance >= 70) {
-            let pos = await powerTP({ type: 'range', value: [ [ -997, -968 ], [ 1, 1 ], [ -997, -968 ] ] },undefined,undefined,'pos')
+            let pos = await powerTP({ type: 'range', value: [ [ 2510, 2520 ], [ 51, 51 ], [ 2710, 2730 ] ] },undefined,undefined,'pos')
             await runCMD(`structure load blockp_bonus0 ${pos}`)
         }
 
