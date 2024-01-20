@@ -5,8 +5,8 @@ import { getGameType, stopGame } from "./main"
 import { world } from "@minecraft/server"
 import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "./category_team"
 import { checkPerm } from "../modules/perm"
-import { magicIt } from "../modules/playerNameTag"
 import { dbGetRecord, dbRemoveRecord, dbSetRecord } from "../modules/cheesebase"
+//import { magicIt } from "../modules/playerNameTag"
 
 export const GAMEDATA_PVP = { // PVP
     id: 3,

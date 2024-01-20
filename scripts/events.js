@@ -260,6 +260,13 @@ for (let gg in GAMEDATA) {
     }
 }
 
+world.beforeEvents.itemUseOn.subscribe(ev=>{
+    if(ev.itemStack.typeId == 'minecraft:stick' && ev.itemStack.nameTag == 'debug_cords'){
+        console.warn(ev.block.x,ev.block.y,ev.block.z)
+    }
+    
+})
+
 world.beforeEvents.itemUse.subscribe((itemData) => {
     const player = itemData.source
     const itemStack = itemData.itemStack

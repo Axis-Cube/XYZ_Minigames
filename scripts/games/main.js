@@ -2,7 +2,7 @@ import { system, world } from '@minecraft/server';
 import { edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '../modules/axisTools'
 import { GAMEDATA } from './gamedata';
 import { killMessage } from '../tunes/killMessage';
-import { formTeamsel } from './category_team';
+//import { formTeamsel } from './category_team';
 import { getPlayerColor } from '../tunes/profile';
 import { checkPerm, isManager, isTempManager } from '../modules/perm';
 
