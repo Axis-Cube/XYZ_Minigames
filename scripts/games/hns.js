@@ -77,10 +77,10 @@ export const GAMEDATA_HNS =  {
     ],
     loc: {
         0: {
-            gameplay: '1058 19 1073',
-            spawn: '1060 34 1060',
-            spawnpoint: '1057 28 1101',
-            seeker: '1057 28 1101'
+            gameplay: '4058 19 4074',
+            spawn: '4060 34 4061',
+            spawnpoint: '4057 28 4102',
+            seeker: '4057 28 4102'
         }
     },
     confirm_begin: {

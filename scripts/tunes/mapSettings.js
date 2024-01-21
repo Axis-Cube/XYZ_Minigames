@@ -5,7 +5,6 @@ import { nameToPlayer, rawtext } from "../modules/axisTools"
 import { ICONS } from "../const"
 import { openJSON } from "../modules/easyform"
 import { getPlayerAvatar, getPlayerColor } from "./profile"
-import { getPlayerMoneyData } from "./bank"
 import { showWindow } from "../modules/plugins/ui/PluginManager"
 
 /**

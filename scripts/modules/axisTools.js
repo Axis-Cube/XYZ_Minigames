@@ -3,7 +3,6 @@ import { axisEval } from "./evalSandbox";
 import { scoreboardTeamcolor } from "../games/category_team";
 import { GAMEDATA } from "../games/gamedata";
 import { getGame } from "../games/main";
-import { addMoney } from "../tunes/bank";
 import { DIM } from "../const";
 import { command_log } from "./Logger/logger_env";
 

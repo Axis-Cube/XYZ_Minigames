@@ -1,5 +1,5 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { actionbar, edScore, getTargetByScore, nerdMessage, playsound, rawtext, runCMD, setTickTimeout, tellraw } from "../modules/axisTools"
+import { nerdMessage, playsound, rawtext, runCMD } from "../modules/axisTools"
 import { magicIt } from "../modules/playerNameTag"
 import { KILL_MESSAGES_SAMPLE_PREYNAME, playerKillmsgList } from "./killMessage"
 import { SYM, CHAT_CODES, ICONS, SCOLOR } from "../const"

@@ -1,8 +1,6 @@
-import { world, system, EntityDamageCause } from "@minecraft/server";
-import { PlayerLeaveEventSignal } from "./modules/playerLeft";
-import { edScore, getScore, hasTag, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, tellraw } from "./modules/axisTools";
+import { world, system, ItemStack } from "@minecraft/server";
+import { edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, tellraw } from "./modules/axisTools";
 import { axisHealthBar } from "./modules/axisHB";
-import { SYM } from "./const";
 import { openJSON } from "./modules/easyform";
 import { stopGame, beginGame, getGame, onDeathInGame, startGame, knockToGame, clearTags, killerCommands } from "./games/main";
 import { pvpImportForm2 } from "./games/pvp";
@@ -15,10 +13,8 @@ import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "./games/mnf";
 
 import * as log_env from "./modules/Logger/logger_env";
 import { load_log } from "./modules/Logger/logger";
-import { magicIt } from "./modules/playerNameTag";
 import { isMainManager } from "./modules/perm";
-import { bwBegin, bwBlockBreak, bwBlockPlace, bwEquipmentCheck, bwHit, onItemUse } from "./games/bw";
-import { ActionFormData } from "@minecraft/server-ui";
+import { bwBlockBreak, bwBlockPlace, bwClear, bwHit, onItemUse } from "./games/bw";
 import { formTeamsel } from "./games/category_team";
 import { LPN } from "./modules/plugins/index";
 import { events } from "./modules/plugins/ui/PluginManager";
@@ -125,6 +121,14 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     } = event;
     const player = sourceEntity
     switch (id) {
+        case 'tools:cords':
+            let item_stack = new ItemStack('minecraft:stick')
+            item_stack.nameTag = 'debug_cords'
+            player.getComponent('inventory').container.addItem(item_stack)
+            //console.warn(inventory)
+            //inventory.setItem(player.selectedSlot, item_stack)
+            //player
+            break;
         case 'axiscube:rename':
             player.nameTag = `${player.name}\n§r${message}`;
         break;

@@ -4,8 +4,7 @@ Description: Hp showing lib
 ©️ AbstractScripts 2022
 https://github.com/AbstractScripts/
 */
-import { world } from '@minecraft/server';
-import { runCMD, playsound, setTickTimeout, axlog, hasTag } from './axisTools';
+import { runCMD, playsound, setTickTimeout, hasTag } from './axisTools';
 import { GAMEDATA } from '../games/gamedata';
 import { getGame } from '../games/main';
 import { addMoney } from '../tunes/bank';

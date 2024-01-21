@@ -1,6 +1,4 @@
 import {
-    ActionFormData,
-    MessageFormData,
     ModalFormData
 } from "@minecraft/server-ui"; // Непосредственно создание форм
 import { runCMD } from "../../../../axisTools";

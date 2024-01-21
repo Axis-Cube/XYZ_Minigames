@@ -1,6 +1,7 @@
 // 100%
 //import { placePlatform, placePodushkaBezopasnosti } from "../games/blockp";
 import { formGameChooser } from "../games/chooser";
+import { formTestRun } from "../tunes/testrun";
 import { formProfile } from "../tunes/profile";
 import { getGameArena, startTimer } from "../games/main";
 import { pvpSetkit } from "../games/pvp";

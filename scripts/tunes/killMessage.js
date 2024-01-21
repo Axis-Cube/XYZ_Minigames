@@ -1,6 +1,6 @@
 import { ActionFormData } from "@minecraft/server-ui"
 import { randomInt, shuffle, tellraw } from "../modules/axisTools"
-import { STORE_COLOR, formShowOffersByCategory, getItemsByCategory, getPurchasedItemsByCategory } from "./store"
+import { STORE_COLOR, formShowOffersByCategory, getPurchasedItemsByCategory } from "./store"
 import { editPlayerSettings, formCustomize, getPlayerSettings } from "./profile"
 import { ICONS } from "../const"
 
