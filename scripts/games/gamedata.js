@@ -6,7 +6,9 @@ import { GAMEDATA_HNS } from './hns';
 import { GAMEDATA_MNF } from './mnf';
 import { GAMEDATA_PVP } from './pvp';
 import { GAMEDATA_GLS } from './sq_glass';
+import { GAMEDATA_DRP } from './dropper';
 import { GAMEDATA_BLOCKP } from './blockp';
+import { GAMEDATA_TNT } from './tntrun';
 
 // GLOBAL
 
@@ -44,8 +46,10 @@ export const GAMEDATA = {
     2: GAMEDATA_BLOCKP, // BLOCKPARTY
     3: GAMEDATA_PVP, // PVP
     4: GAMEDATA_MNF, // Minefield
-    5: GAMEDATA_BW,
-    6: GAMEDATA_GLS
+    5: GAMEDATA_BW, //Bedwars
+    6: GAMEDATA_GLS, //Glass
+    7: GAMEDATA_DRP, //Dropper
+    8: GAMEDATA_TNT //Tnt_Run
 }
 //GAMEDATA[1].start_commands.push(`execute as @a run scoreboard players random @s hns.block 0 ${HNS_BLOCKS.length-1}`)
     // GAMEDATA[2].time.events = {

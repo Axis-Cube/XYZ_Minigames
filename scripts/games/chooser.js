@@ -34,6 +34,12 @@ const GM_FORM = {
                     "images": [ "textures/ui/icons/games/diff/easy", "textures/ui/icons/games/diff/normal", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hardcore" ]
                 }
             ]
+        },
+        {
+            "name": "[Translate] Dropper",
+            "body": "Translate",
+            "ui_type": "default",
+            "for_start": 7
         }
     ],
     2: [

@@ -15,7 +15,7 @@ export const GAMEDATA_GLS = { // Glass
         'gls.member'
     ],
     loc: {
-        0: {
+        0: { //Ready for 1.5
             gameplay: false,
             spawn: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },
             newplayer: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },

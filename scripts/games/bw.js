@@ -6,7 +6,6 @@ import { Block, BlockPermutation, Dimension, Player, system, world, EquipmentSlo
 import { GAMEDATA } from "./gamedata"
 import { getGameArena, stopGame } from "./main"
 import { DataBase } from "../modules/database"
-import { default_log } from "../modules/Logger/logger_env"
 import { haveVoidMessage, knockVoidMessage } from "../tunes/killMessage"
 import { editPlayerGamedata, eliminatePlayerMessage, getPlayerGamedata } from "../tunes/profile"
 import { dbGetRecord, dbSetRecord } from "../modules/cheesebase"
@@ -38,7 +37,7 @@ export const GAMEDATA_BW = { // BW
         }
     },
     loc: {
-        0: {
+        0: { //Ready for 1.5
             gameplay: { type: 'bytag', value: {
                 'team.red': { type: 'arr', value: [ '13165 25 13088', '13168 25 13089', '13162 27 13094', '13164 27 13083', '13160 25 13089'] },
                 'team.green': { type: 'arr', value: [ '13091 25 13165', '13090 25 13160', '13096 27 13164', '13085 27 13161', '13094 26 13167'] },

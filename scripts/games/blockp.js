@@ -30,7 +30,7 @@ export const GAMEDATA_BLOCKP = { // BLOCK PARTY
         'blockp.member'
     ],
     loc: {
-        0: {
+        0: { //Ready for 1.5
             gameplay: false,
             spawn: { type: 'range', value: [ [ 2510, 2520 ], [ 52, 52 ], [ 2710, 2730 ] ] },
             newplayer: { type: 'range', value: [ [ 2510, 2520 ], [ 52, 52 ], [ 2710, 2730 ] ] },

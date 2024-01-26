@@ -76,7 +76,7 @@ export const GAMEDATA_HNS =  {
         'hns.pvptime'
     ],
     loc: {
-        0: {
+        0: { //Ready for 1.5
             gameplay: '4058 19 4074',
             spawn: '4060 34 4061',
             spawnpoint: '4057 28 4102',

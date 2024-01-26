@@ -55,5 +55,6 @@ export const ICONS = {
     pl2: 'textures/ui/icons/plr2',
     pl1: 'textures/ui/icons/plr1',
     plsel: 'textures/ui/icons/plrsel',
-    store: 'textures/ui/icons/store/logo'
+    store: 'textures/ui/icons/store/logo',
+    console: 'textures/ui/icons/console'
 }

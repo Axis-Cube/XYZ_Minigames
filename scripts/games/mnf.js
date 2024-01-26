@@ -19,7 +19,7 @@ export const GAMEDATA_MNF = { // Minefield
         'mnf.member'
     ],
     loc: {
-        0: {
+        0: { //Ready for 1.5
             gameplay: false,
             spawn: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
             newplayer: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
@@ -38,8 +38,7 @@ export const GAMEDATA_MNF = { // Minefield
             winpos_from: [2541, 80, 2601],
             winpos_to: [2502, 72, 2597]
         },
-        1: {
-            //2460 56 2509 2456 56 2502
+        1: { //Ready for 1.5
             gameplay: false,
             spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
             newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },

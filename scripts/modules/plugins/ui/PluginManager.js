@@ -4,6 +4,7 @@ import {
     ModalFormData
 } from "@minecraft/server-ui"; // Непосредственно создание форм
 import { plugins_log } from "../../Logger/logger_env.js";
+import { getScore } from "../../axisTools.js";
 
 
 let Plugins = new ActionFormData()
@@ -60,10 +61,8 @@ export function configure() {
                     if (_config[el].dependencies.indexOf("ui_features") != -1) {
                         try {
                             import(`../plugins/${_files[el]}/ui/index.js`).then(uif => {
-
                                 //Getting ui form
                                 let ui = uif.FORM
-
                                 //Getting main function
                                 let func = uif.main
                                 ui.show(source).then(uicall => {

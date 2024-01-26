@@ -1,7 +1,14 @@
-MNF =>{
-    loc1 160 2 -412 {cm:2024-01-18}
-    loc2 287 8 -447 {cm:2024-01-18}
-    loc3 24 13 -380
-}
-
-prk -38 2 -2090
+prk             -38 2 -2090
+angry_chicken 
+dropper
+tnt-run
+green_light
+frontline_flagwars
+microgames
+bridges_flagwars
+skywars
+floorislava
+hungrygames
+flagwars
+spleef
+deathrun

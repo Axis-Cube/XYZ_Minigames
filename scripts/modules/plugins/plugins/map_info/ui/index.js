@@ -1,23 +1,22 @@
 import {
     ModalFormData
 } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { runCMD } from "../../../../axisTools";
+import { edScore, getScore, runCMD } from "../../../../axisTools";
+import {Process} from '../../../../plugins/index.js'
 
-let forms = ['ud0', 'ud1']
+let enabled = false
 
 export let FORM = new ModalFormData()
     .title('Map_info')
-    .dropdown('Label to update', forms,0)
-    .textField('Info','...','v0.1')
-    .toggle('Enable', true)
+    .toggle('Enabled')
 
 export function main(response){
-    let [drop, text, toggle] = response.formValues;
-    let upd = forms[drop]
+    let [toggle] = response.formValues;
     if(toggle){
-        runCMD(`title @a title ${upd}"${text}"`)
+        edScore('map_info','data.plugins',1)
     }else{
-        runCMD(`title @a title ${upd}""`)
+        edScore('map_info','data.plugins',0)
+        runCMD('title @a title ud0""')
     }
     
 }

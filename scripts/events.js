@@ -180,15 +180,12 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
         // case 'axiscube:remember':
         //     remember.start(player)
         // break;
-        case 'l:put':
-            try{
-                let args = message.split('>')
-                log_env[args[0]].put(args[1])
-            }catch(e){console.warn(e)}
-            
-        break;
         case 'l:get_page':
-            load_log(message, player)
+            if(message != undefined){
+                load_log(message, player)
+            }else{
+                load_log('games_log', player)
+            }
             
         break;
         //PLUGINS

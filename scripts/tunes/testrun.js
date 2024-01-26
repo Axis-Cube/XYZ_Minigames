@@ -3,6 +3,7 @@ import {
     ActionFormData,
     ModalFormData,
   } from "@minecraft/server-ui";
+import { load_log } from "../modules/Logger/logger";
 
 export const TESTERS = {
     "alexthecools260": 1,
@@ -47,13 +48,15 @@ export function formTestRun(target) {
     form.title("%axiscube.testrun.button")
     form.body(bodyText)
     //form.button(`Unlimited emeralds ${ue_status[getScore('settings','tsrun_unlimit_em',true)]}`,'textures/items/emerald')
+    form.button('%axiscube.testrun.logs','textures/items/spyglass')
     form.button('%gui.close','textures/blocks/barrier')
     form.show(target).then(gg => {
         if(gg.canceled) return
         switch (gg.selection){
             case 0:
+                load_log('games_log', target)
+                break;
                 //scoreboard('tsrun_unlimit_em', ue_next(getScore('settings','tsrun_unlimit_em',true)), 'settings')
-                //break
             default:
                 break;
         }

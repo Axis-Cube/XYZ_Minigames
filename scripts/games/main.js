@@ -54,6 +54,7 @@ export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
     await clearTags();
     let commands = [
         'clear @a',
+        `title @a title ud0""`,
         `scoreboard players set mg data ${id}`,
         `scoreboard players set diff data ${diff}`,
         { type:'tp', value: thisGame.loc[arn].spawn },
@@ -91,6 +92,7 @@ export async function startGame( id, player, arn = getGameArena() ) {
     await clearTags();
     let commands = [
         'clear @a',
+        `title @a title ud0""`,
         `scoreboard players set mg data ${id}`,
         `scoreboard players set arn data ${arn}`,
         { type:'tp', value: thisGame.loc[arn].spawn },

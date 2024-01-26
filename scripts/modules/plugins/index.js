@@ -1,4 +1,4 @@
-import { runCMD } from "../axisTools";
+import { getScore, runCMD } from "../axisTools";
 import {PLUGINS} from "./allowed";
 import {configure} from "./ui/PluginManager";
 import { plugins_log } from "../Logger/logger_env";
@@ -14,6 +14,7 @@ export function Process(action, param='Empty'){
         case 'Init':
             //Scan all plugins and import them
             for(let element = 0; element != PLUGINS.length; element++) {
+                if(getScore(PLUGINS[element],'data.plugins') == 0){continue}
                 import(`./plugins/${PLUGINS[element]}/index.js`).then( obj => {
                     //Getting config of plugin and misc informtion
                     let _config = obj.config
