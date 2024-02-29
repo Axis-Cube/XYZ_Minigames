@@ -17,7 +17,7 @@ import { isMainManager } from "./modules/perm";
 import { bwBlockBreak, bwBlockPlace, bwClear, bwHit, onItemUse } from "./games/bw";
 import { formTeamsel } from "./games/category_team";
 import { LPN } from "./modules/Core_Plugins/index";
-import { events } from "./modules/Core_Plugins/ui/PluginManager";
+//import { events } from "./modules/Core_Plugins/ui/PluginManager";
 import { boardMoney } from "./tunes/bank";
 import { dbGetPlayerRecord, dbSetPlayerRecord } from "./modules/cheesebase";
 import { getTargetByScore } from "./modules/database";

@@ -2,15 +2,12 @@ import {
     ModalFormData
 } from "@minecraft/server-ui"; // Непосредственно создание форм
 import { edScore, getScore, runCMD } from "../../../../axisTools.js";
-import {Process} from '../../../index.js'
 
-let enabled = false
-
-export let FORM = new ModalFormData()
+let FORM = new ModalFormData()
     .title('Map_info')
     .toggle('Enabled')
 
-export function main(response){
+function main(response){
     let [toggle] = response.formValues;
     if(toggle){
         edScore('map_info','data.plugins',1)
@@ -20,3 +17,5 @@ export function main(response){
     }
     
 }
+
+export let packui_map_info = [FORM, main]

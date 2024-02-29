@@ -5,7 +5,7 @@ import { nameToPlayer, rawtext } from "../modules/axisTools"
 import { ICONS } from "../const"
 import { openJSON } from "../modules/easyform"
 import { getPlayerAvatar, getPlayerColor } from "./profile"
-import { showWindow } from "../modules/Core_Plugins/ui/PluginManager"
+import { showWindow } from "../modules/Core_Plugins/index.js"
 
 /**
  * @param {import("@minecraft/server").Player} player

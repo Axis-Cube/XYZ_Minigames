@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server"
 import { getGame } from "../../../../games/main"
 import { getScore, runCMD } from "../../../axisTools"
-export const config = {
+export const config_map_info = {
   "version": [ 0, 1, 0 ],
   "engine_version": [ 1, 3, 0 ],
   "file": "map_info",
