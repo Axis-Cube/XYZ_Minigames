@@ -1,8 +1,8 @@
 import {
     ModalFormData
 } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { edScore, getScore, runCMD } from "../../../../axisTools";
-import {Process} from '../../../../plugins/index.js'
+import { edScore, getScore, runCMD } from "../../../../axisTools.js";
+import {Process} from '../../../index.js'
 
 let enabled = false
 

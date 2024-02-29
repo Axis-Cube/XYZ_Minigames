@@ -247,7 +247,22 @@ export const STORE_ITEMS = {
         price: -1,
         linked: 2,
         localData: 3
-    }
+    },
+    35: {
+        type: 'setpack',
+        namespace: 'glasspack',
+        author: 'Lndrs_',
+        include: [36],
+        price: -3,
+        chalId: 1
+    },
+    36: {
+        type: 'soundmsg',
+        localData: 'random.orb',
+        price: -1,
+        linked: 35,
+        uid: '-6faf497c'
+    },
 }
 
 export function isOwned(id,name) {

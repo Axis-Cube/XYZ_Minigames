@@ -29,7 +29,8 @@ export const SOUNDMSG = {
     'mob.player.oof' : ['OOOF!',[0.5,1.5],[0.5,1]],
     'mob.evocation_illager.ambient' : ['Illager',[0.5,1.5],[0.5,1]],
     'mob.villager.no' : ['Angry Villager',[0.5,1.5],[0.5,1]],
-    'mob.villager.yes' : ['Good Villager',[0.5,1.5],[0.5,1]]
+    'mob.villager.yes' : ['Good Villager',[0.5,1.5],[0.5,1]],
+    'random.orb' : ['Orb',[0.5,1.5],[0.5,1]]
 }
 
 export function getPlayerSettings(name) {

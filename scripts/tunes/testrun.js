@@ -14,7 +14,8 @@ export const TESTERS = {
     "axisander": 4,
     "olecssandr yt": 4,
     "miaumiez": 4,
-    "lndrs2224": 4
+    "lndrs2224": 4,
+    "drak5945": 1
 }
 
 export const TESTER_LEVELS = [
@@ -24,7 +25,7 @@ export const TESTER_LEVELS = [
     'axiscube.testrun.level.pro',
     'axiscube.testrun.level.dev'
 ]
-export function formTestRun(target) {
+export async function formTestRun(target) {
     let name = target.name
     let level = TESTERS[name.toLowerCase()]
     if (level == undefined) {
@@ -44,18 +45,43 @@ export function formTestRun(target) {
         if(num==1)return 0
         else return 1
     }
+
+
+    //Permissions
+    let scopes = {
+        'logs': 3,
+    }
+
+    let availability = {
+        'available': '',
+        'logs': ` §9[Need level ${scopes['logs']}]§r`,
+    }
+
+    function check_perms(scope){
+
+        if(level>=scopes[scope]){
+            return [true,availability['available']]
+        }else{
+            return [false,availability[scope]]
+        }
+    }
+
+    ///
+
     const form = new ActionFormData()
     form.title("%axiscube.testrun.button")
     form.body(bodyText)
     //form.button(`Unlimited emeralds ${ue_status[getScore('settings','tsrun_unlimit_em',true)]}`,'textures/items/emerald')
-    form.button('%axiscube.testrun.logs','textures/items/spyglass')
+    form.button('%axiscube.testrun.logs'+check_perms('logs')[1] ,'textures/items/spyglass')
     form.button('%gui.close','textures/blocks/barrier')
     form.show(target).then(gg => {
         if(gg.canceled) return
         switch (gg.selection){
             case 0:
-                load_log('games_log', target)
-                break;
+                if(check_perms('logs')[0]){
+                    load_log('games_log', target)
+                    break;
+                }
                 //scoreboard('tsrun_unlimit_em', ue_next(getScore('settings','tsrun_unlimit_em',true)), 'settings')
             default:
                 break;

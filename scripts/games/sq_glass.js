@@ -1,8 +1,9 @@
 import { COPYRIGHT, DIM, SYM } from "../const";
-import { system, world } from "@minecraft/server";
+import { PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
 import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt} from "../modules/axisTools";
 import { GAMEDATA } from "./gamedata";
 import { forceGameRestart, getGameArena, startTimer, stopGame } from "./main";
+import { completeChallenge } from "./chooser";
 
 export const GAMEDATA_GLS = { // Glass
     id: 6,
@@ -51,14 +52,17 @@ export const GAMEDATA_GLS = { // Glass
             startpos: -552,
             startpos_type: 'z',
 
-            prestart_barrier_from: '2541 72 2507',
-            prestart_barrier_to: '2502 82 2507',
+            prestart_barrier_from: '-508 41 -552',
+            prestart_barrier_to: '-499 37 -552',
 
             clear_floor_from: "-497 1 -553",
             clear_floor_to:   "-507 1 -459",
 
             winpos_from: [-497, 36, -461],
-            winpos_to: [-508, 39, -455]
+            winpos_to: [-508, 39, -455],
+
+            loose_from: [-477, 2, -455],
+            loose_to: [-522, 0, -557]
         },
     },
     ends: {
@@ -97,11 +101,12 @@ export const GAMEDATA_GLS = { // Glass
     begin_commands: [
         'tag @a add gls',
         'tag @a add gls.member',
+        `effect @a slowness 99999 1 true`,
         `scoreboard players set "${COPYRIGHT}" gls.display -9`,
         'scoreboard players set "§1" gls.display -8',
         {type:'scoreset',value: 1, objective: 'gls.display'},
         'scoreboard players set "§2" gls.display 999',
-        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" gls.display 998`,
+        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players_lives" gls.display 998`,
     ],
     death_data: {
         death_commands: (player) => {
@@ -122,7 +127,7 @@ export const GAMEDATA_GLS = { // Glass
     ]
 }
 
-let loose_area = []
+
 
 async function gls_generate(){
     const f_block = GAMEDATA[6].loc[getGameArena()].field_block
@@ -136,19 +141,49 @@ async function gls_generate(){
 }
 
 async function gls_main(){
+    let game_lives = 3
+    switch(getScore('diff','data')){
+        case 0:
+            game_lives = 5
+        break;
+        case 1:
+            game_lives = 3
+        break;
+        case 2:
+            game_lives = 2
+        break;
+        case 3:
+            game_lives = 1
+        break;
+        default:
+        break;
+    }
+    
+    runCMD(`fill ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_to} barrier`)
     loose_area = []
+
     //Push Loose cords
     for(let i=1; i<GAMEDATA[6].loc[getGameArena()].stage_count+1;i++){
         loose_area.push(GAMEDATA[6].loc[getGameArena()].stages[i][randomInt(0,1)])
     }
-    await gls_generate()
+
+    for (const player of [...world.getPlayers()]) {
+        player.clearDynamicProperties()
+        player.setDynamicProperty('gls_lives', game_lives)
+    }
+
+    system.runTimeout(()=>{
+        gls_generate()
+    },20)
     startTimer(6)
 }
 
 function glsTime(){
-    console.warn('Time event')
+    runCMD(`fill ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_to} air replace barrier`)
     //Add Barriers
 }
+
+let loose_area = []
 
 function glsTick(){
     let countNoWins = 0
@@ -157,10 +192,26 @@ function glsTick(){
     let countMembers = 0
     for (const player of [...world.getPlayers()]) {
         if (!player.hasTag('spec')) {
+            const lives = player.getDynamicProperty('gls_lives')
             const isInWinnerArea = isPlayerinArea(GAMEDATA[6].loc[getGameArena()].winpos_from,GAMEDATA[6].loc[getGameArena()].winpos_to,player)
+            const isInLooseArea = isPlayerinArea(GAMEDATA[6].loc[getGameArena()].loose_from,GAMEDATA[6].loc[getGameArena()].loose_to,player)
             const platform_y = GAMEDATA[6].loc[getGameArena()].platforms_y
             const player_y = platform_y+1
+            if(isInLooseArea){
+                if(lives != 1){
+                    player.setDynamicProperty('gls_lives', lives-1)
+                    player.teleport({x:-500,y:37,z:-554})
+                }else{
+                    runCMDs([
+                        'tag @s remove gls.member',
+                        'tag @s add spec',
+                        'gamemode spectator',
+                    ],player)
+                }
+
+            }
             if (isInWinnerArea) {
+                if(diff == 3){completeChallenge(player,1)}
                 runCMDs([
                     'tag @s add gls.winner',
                     'tag @s remove gls.member',
@@ -171,6 +222,7 @@ function glsTick(){
                 ],player)
             }
 
+            
             for(let el in loose_area){
                 const area_x_1 = loose_area[el][0][0]
                 const area_z_1 = loose_area[el][0][1]
@@ -184,9 +236,14 @@ function glsTick(){
         if (!player.hasTag('spec')) {
             countNoWins = countNoWins + 1
             runCMDs([
-                {type:'scoreset',value: `${Math.floor(player.location[GAMEDATA[4].loc[getGameArena()].startpos_type])-GAMEDATA[6].loc[getGameArena()].startpos}`, objective: 'gls.display',action: 'set',target: player.name}
+                {type:'scoreset',value: `${player.getDynamicProperty('gls_lives')}`, objective: 'gls.display',action: 'set',target: player.name}
+            ])
+        }else{
+            runCMDs([
+                {type:'scoreset',value: `0`, objective: 'gls.display',action: 'set',target: player.name}
             ])
         }
+
         if (player.hasTag('gls.member')) {
             countMembers = countMembers + 1
         } else if (player.hasTag('gls.winner')) {

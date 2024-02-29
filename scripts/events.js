@@ -16,8 +16,12 @@ import { load_log } from "./modules/Logger/logger";
 import { isMainManager } from "./modules/perm";
 import { bwBlockBreak, bwBlockPlace, bwClear, bwHit, onItemUse } from "./games/bw";
 import { formTeamsel } from "./games/category_team";
-import { LPN } from "./modules/plugins/index";
-import { events } from "./modules/plugins/ui/PluginManager";
+import { LPN } from "./modules/Core_Plugins/index";
+import { events } from "./modules/Core_Plugins/ui/PluginManager";
+import { boardMoney } from "./tunes/bank";
+import { dbGetPlayerRecord, dbSetPlayerRecord } from "./modules/cheesebase";
+import { getTargetByScore } from "./modules/database";
+import { MT_GAMES } from "./modules/MultiTasking/instances";
 
 async function sleep(n){
     system.runTimeout(()=>{Promise.resolve(0)},n)
@@ -125,6 +129,7 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             let item_stack = new ItemStack('minecraft:stick')
             item_stack.nameTag = 'debug_cords'
             player.getComponent('inventory').container.addItem(item_stack)
+            player.getComponent('inventory')
             //console.warn(inventory)
             //inventory.setItem(player.selectedSlot, item_stack)
             //player
@@ -142,6 +147,7 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             openJSON(message,player)
         break;
         case 'axiscube:stopgame':
+            MT_GAMES.kill()
             stopGame(Number(message))
         break;
         case 'axiscube:startgame':
@@ -189,6 +195,18 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             
         break;
         //PLUGINS
+
+        case 'bank:reload':
+            boardMoney()
+        break;
+        case 'database:reset':
+            try{
+                runCMDs([
+                    "scoreboard objectives remove data.userapi",
+                    "scoreboard objectives add data.userapi dummy data.userapi"
+                ])
+            }catch(e){console.warn(e)}
+        break;
         case 'plugins:get':
             console.warn(LPN)
         break;

@@ -4,7 +4,6 @@ import {
     ModalFormData
 } from "@minecraft/server-ui"; // Непосредственно создание форм
 import { plugins_log } from "../../Logger/logger_env.js";
-import { getScore } from "../../axisTools.js";
 
 
 let Plugins = new ActionFormData()
@@ -42,7 +41,6 @@ let _config = []
 
 export function configure() {
     try {
-
         import('../index.js').then(obj => {
             //Getting information about plugins
             _plugins = obj.LPN
@@ -79,7 +77,7 @@ export function configure() {
 
             }
         })
-    }catch (e){console.warn(e, e.stack)} // Trace errors
+    }catch (e){plugins_log.put(`[PL ERR] `+e+'\n'+e.stack)} // Trace errors
 }
 
 export function events(name, event){
@@ -103,7 +101,7 @@ export function events(name, event){
                 } catch (e) {console.error(e)}
             }
         })
-    } catch (e) {console.error(e)}
+    } catch (e) {plugins_log.put(`[PL ERR] `+e+'\n'+e.stack)}
         
 }
 

@@ -1,3 +1,4 @@
+//Ready for Release
 import { COPYRIGHT, DIM, SYM } from "../const";
 import { system, world } from "@minecraft/server";
 import {randomPlayerIcon, runCMD, runCMDs, shuffle, vector3ToArray3} from "../modules/axisTools";
@@ -126,9 +127,12 @@ function drp_main(max_stages = 3){
     startTimer(7)
 }
 
+let players_count = 0
 async function drpTick(){
+    let temp_players = 0
     for (const player of [...world.getPlayers()]) {
         if (!player.hasTag('spec')) {
+            temp_players += 1
             let stage = Number(player.getDynamicProperty('drp_stage'))
             if(GAMEDATA[7].loc[getGameArena()].stages[stage]==undefined){player.setDynamicProperty('drp_stage',random_stages[0])}
             if(player.isInWater && player.location.y <= GAMEDATA[7].loc[getGameArena()].stages[stage].win_y){await nextRound(player)}
@@ -137,6 +141,11 @@ async function drpTick(){
             }
 
         }
+    }
+    players_count = temp_players
+
+    if(players_count == 0){
+        stopGame(7,'no_players')
     }
 
 }
@@ -164,7 +173,6 @@ async function nextRound(player){
         ],player)
         winner_list.push(player.nameTag)
         games_log.put(winner_list)
-        stopGame(7,'no_players')
     }
     player.setDynamicProperty('drp_stage',stage_num)
     runCMD(`scoreboard players set ${player.nameTag} drp.display ${random_stages.indexOf(stage_num)+1}`)

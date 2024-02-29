@@ -1,4 +1,4 @@
-import { world } from "@minecraft/server";
+import {system, world} from "@minecraft/server";
 import { actionbar, colorPercent, edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "../modules/axisTools";
 import { getGameArena, startTimer, stopGame } from "./main";
 import { COPYRIGHT, SYM } from "../const";

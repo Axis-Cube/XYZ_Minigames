@@ -1,5 +1,5 @@
-import { runCMD, sleep } from "../axisTools"
-import { ActionFormData } from "@minecraft/server-ui"
+import { getScore, runCMD, sleep } from "../axisTools"
+import { ActionFormData, MessageFormData } from "@minecraft/server-ui"
 
 import * as log_env from './logger_env'
 
@@ -19,8 +19,11 @@ export class Logger{
     }
 
     put(content){
-        this.log.push(content)
+        let currentdate = new Date()
+        let correction = getScore('time_correction', 'settings')
+        this.log.push(`[${currentdate.getHours() + correction + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds()}] `+content)
     }
+
 
     load(t, next=''){
         try{
@@ -31,7 +34,7 @@ export class Logger{
             sleep(40)
 
             let form = new ActionFormData()
-            form.title(`[LOG Viewer v1.0] Channel: `+this.name)
+            form.title(`[LOG Viewer v1.2] Channel: `+this.name)
             if(next == ''){form.button(`Go To "${first_page}"`); next_page = first_page}else{form.button(`Go To "${next_page}"`)}
             let content = reverseArr(this.log)
             if(content != ''){form.body(content.join('\n'))}else{form.body('Empty Log...')}

@@ -4,7 +4,7 @@ import { beginGame, getGame, getGameType, startGame, stopGame } from "./main"
 import { world } from "@minecraft/server"
 import { GAMEDATA } from "./gamedata"
 import { teamCheck } from "./category_team"
-import { edScore, rawtext, tellraw } from "../modules/axisTools"
+import { edScore, rawtext, runCMDs, tellraw } from "../modules/axisTools"
 import { checkPerm } from "../modules/perm"
 import { STORE_ITEMS, addItem } from "../tunes/store"
 import { ICONS, SCOLOR, SYM } from "../const"
@@ -36,10 +36,35 @@ const GM_FORM = {
             ]
         },
         {
-            "name": "[Translate] Dropper",
-            "body": "Translate",
+            "name": "%axiscube.gls.name",
+            "body": "%axiscube.gls.d",
+            "icon": "textures/blocks/glass",
+            "ui_type": "stack",
+            "for_start": 6,
+            "forms": [
+                {
+                    "type": "other",
+                    "value": ["diff","data"],
+                    "body": "%axiscube.form.games.diff",
+                    "keys": ["%options.difficulty.easy", "%options.difficulty.normal", "%options.difficulty.hard", {"rawtext":[{"translate":"axiscube.challenge","with":{"rawtext":[{"translate":"options.difficulty.hardcore"}]}},{"text":"\n"},{"translate":"axiscube.challenge.unical_trophy"}]}],
+                    "images": [ "textures/ui/icons/games/diff/easy", "textures/ui/icons/games/diff/normal", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hardcore" ]
+                }
+            ]
+        },
+        {
+            "name": "%axiscube.drp.name",
+            "body": "%axiscube.drp.d",
             "ui_type": "default",
             "for_start": 7
+        },
+        {
+            "name": "%axiscube.tnt.name",
+            "body": "%axiscube.tnt.d",
+            "ui_type": "default",
+            "for_start": 8,
+            "cmd": [
+                `scoreboard players set diff data 0`
+            ]
         }
     ],
     2: [
@@ -78,6 +103,12 @@ const GM_FORM = {
             "ui_type": "default",
             "for_start": 5
         },
+        {
+            "name": "%axiscube.flagw_bridges.name",
+            "body": "%axiscube.flagw_bridges.d",
+            "ui_type": "default",
+            "for_start": 9
+        },
     ]
 }
 
@@ -94,6 +125,21 @@ export const GM_CHALLANGES = {
         },
         reward: [
             { type: 'uniset', value: 31},
+            { type: 'money', value: 650}
+        ]
+
+    },
+    1:{
+        game: 6,
+        name: 'test_glass_chlng',
+        body: 'test_glass_chlng_body',
+        icon: "textures/ui/icons/games/diff/hardcore",
+        acceptAction: async (player) => {
+            await edScore('diff','data',3)
+            startGame(6,player)
+        },
+        reward: [
+            { type: 'uniset', value: 35},
             { type: 'money', value: 650}
         ]
 
@@ -208,6 +254,7 @@ export async function formGameChooser(player,type=1,disableCheck=false) {
                     await edScore('arn','data');
                     await edScore('type','data');
                     if (thisGame.ui_type == 'default') {
+                        await runCMDs(thisGame.cmd)
                         startGame(thisGame.for_start,player,0);
                     } else if (thisGame.ui_type == 'stack') {
                         let isCanceled = false
@@ -249,6 +296,7 @@ export async function formGameChooser(player,type=1,disableCheck=false) {
                             //     "images": [ "textures/ui/icons/plr3","textures/ui/icons/teams/pvp" ]
                             // }
                         }
+                        if (!isCanceled && thisGame.cmd) await runCMDs(thisGame.cmd);
                         if (!isCanceled) await startGame(thisGame.for_start,player);
                     }
                 } else if (gg.selection == 1+challs.length) {
