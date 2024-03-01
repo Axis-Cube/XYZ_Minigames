@@ -9,6 +9,7 @@ export class MultiTasking{
 
     async register(pid){
         this.query.push(pid)
+        console.warn(this.query)
     }
 
     async kill(pid = null){
@@ -20,9 +21,9 @@ export class MultiTasking{
         }else{
             for(let i in this.query){
                 system.clearRun(this.query[i])
-                this.query.splice(i,1)
-                multitask_log.put(`[MT] Stopped pid <${i}>`)
+                multitask_log.put(`[MT] Stopped pid <${this.query[i]}>`)
             }
+            this.query=[]
         }
     }
 }

@@ -225,6 +225,7 @@ async function bridgeBegin(){
     information()
     bridgeOtherIterations()
     bridgeEquipment()
+    runCMD(`gamemode s @a[tag=!spec]`)
     system.runTimeout(()=>{
         runCMD(`title @a actionbar \ue198 PVP Enabled`)
         runCMD(`gamerule pvp true`)

@@ -1,5 +1,5 @@
 import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension } from "@minecraft/server"
-import { COPYRIGHT, SYM } from "../../const"
+import { COPYRIGHT, DIM, SYM } from "../../const"
 import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, sleep, tellraw } from "../../modules/axisTools"
 import { GAMEDATA } from "../gamedata"
 import { getGameArena, startGame, startTimer, stopGame } from "../main"
@@ -142,9 +142,6 @@ export async function bridgeClear(){
                 if (clearData.hasOwnProperty(d)){
                     for(const block of BRIDGE_BLOCKS){
                         await sleep(800)
-                        // clearData[d][0].y=y
-                        // clearData[d][1].y=y+2
-                        // DIM.fillBlocks(clearData[d][0],clearData[d][1],MinecraftBlockTypes.air,{matchingBlock:BlockPermutation.resolve(`minecraft:${block}`,{})})
                         runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`, undefined,true)
                     }
                 }
@@ -156,7 +153,8 @@ export async function bridgeClear(){
 
 let points //start territory - end territory x
 async function bridgePrepair(){
-    points = 0
+    //Отсчет от синих
+    points = 32
     let arn = getGameArena()
     const teams = teamArray()
     edScore(COPYRIGHT,'fw_frontline.display',0)
@@ -228,7 +226,7 @@ async function bridgeOtherIterations(){
             }}
     }catch(e){console.warn(e)}
 }
-
+let arrow_give =0;
 async function bridgeBegin(){
     let arn = getGameArena()
     const red_team = teams_info[arn].red
@@ -242,22 +240,33 @@ async function bridgeBegin(){
     information()
     bridgeOtherIterations()
     bridgeEquipment()
+    runCMD(`gamemode s @a[tag=!spec]`)
     system.runTimeout(()=>{
         runCMD(`title @a actionbar \ue198 PVP Enabled`)
         runCMD(`gamerule pvp true`)
     },100)
+
+    arrow_give = system.runInterval(()=>{
+        runCMD(`give @a arrow`)
+    },40)
+    MT_GAMES.register(arrow_give)
 }
 
 async function bridgeTick(){
     for (const player of [...world.getPlayers()]) {
-
         if (!player.hasTag('spec')) {
-            //const blue_team = getScore('fw_fl_blue','data.gametemp')
-            //const red_team = getScore('fw_fl_red','data.gametemp')
-//
-            ////если захватили поле то выигрыщ
-            //if(points < -32){await WinHandle('blue')}
-            //else if(red_team > && blue_team != 0){await WinHandle('red')}
+            if(getPlayerTeam(player)=='red'){
+                if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z}).typeId=='minecraft:blue_concrete_powder'){
+                    player.teleport({x:teams_info[getGameArena()].blue.base-points-1, y:player.location.y, z:player.location.z})
+                }
+            }else{
+                if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z}).typeId=='minecraft:red_concrete_powder'){
+                    player.teleport({x:teams_info[getGameArena()].blue.base-points+1, y:player.location.y, z:player.location.z})
+                }
+                
+            }
+            if(points <= 0){await WinHandle('red')}
+            else if(points>64){await WinHandle('blue')}
         }
     }
 }
@@ -266,7 +275,6 @@ let info = 0
 async function information(){
     info = system.runInterval(()=>{
         runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${"temp"+"\n"+points}\'"}]}`)
-        //runCMD(`titleraw @a[tag=red] title {"rawtext":[{"text":"ud0\'${"\ue127".repeat(getScore('fw_br_red','data.gametemp'))}\'"}]}`)
     },10)
     MT_GAMES.register(info)
 }
@@ -274,13 +282,14 @@ async function information(){
 async function expansionHandler(player){
     let arn = getGameArena()
     let command = getPlayerTeam(player)
+    let pre_points = points
     if(command == 'red'){
-        points -= 4
-        //console.warn(`fill ${teams_info[arn].blue.start_blue_x+points+4} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.start_blue_x-points} ${teams_info[arn].floor_y} 2069 blue_concrete_powder`)
-        //runCMD(`fill ${teams_info[arn].blue.start_blue_x+points+4} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.start_blue_x-points} ${teams_info[arn].floor_y} 2069 blue_concrete_powder`,undefined,true)
+        points += 4
+        runCMD(`fill ${teams_info[arn].blue.base-points} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.base-pre_points} ${teams_info[arn].floor_y} 2069 blue_concrete_powder replace red_concrete_powder`,undefined,true)
     }
     else{
-        points += 4
+        points -= 4
+        runCMD(`fill ${teams_info[arn].blue.base-points} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.base-pre_points} ${teams_info[arn].floor_y} 2069 red_concrete_powder replace blue_concrete_powder`,undefined,true)
         //runCMD(`fill ${teams_info[arn].red.start_red_x+points-4} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].red.start_red_x+points} ${teams_info[arn].floor_y} 2069 red_concrete_powder`,undefined,true)
     }
 }

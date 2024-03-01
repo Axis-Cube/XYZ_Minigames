@@ -22,45 +22,38 @@ export class Core_Plugins {
     }
 
     async register(config, packed_ui = false) {
-        if (getScore(this.name, 'data.plugins') == 0) { console.warn(`${this.name} - Blocked`); return }
-        let _config = config
-        let _version = _config.version.toString().replaceAll(',', '.')
-        let _authors = _config.authors.toString().replaceAll(',', ', ')
-        let _name = _config.name
-        let _description = _config.description
-        let _file = _config.file
+        if (getScore(this.name, 'data.plugins') != 0) {
+            let _config = config
+            let _version = _config.version.toString().replaceAll(',', '.')
+            let _authors = _config.authors.toString().replaceAll(',', ', ')
+            let _name = _config.name
+            let _description = _config.description
+            let _file = _config.file
 
-        //Pushing values into list
-        LPN.push(`${_name}\nv${_version} by ${_authors}`)
-        LoadedPlugins.push(_file)
-        LoadedConfig.push(_config)
+            //Pushing values into list
+            LPN.push(`${_name}\nv${_version} by ${_authors}`)
+            LoadedPlugins.push(_file)
+            LoadedConfig.push(_config)
 
-        //LOGS
-        plugins_log.put(thing + `[Plugins] "${_name}" plugin loaded\n` + `Name: ${_name}\nAuthors: ${_authors}\nVersion: v${_version}\nDescription: ${_description}` + thing)
+            //LOGS
+            plugins_log.put(thing + `[Plugins] "${_name}" plugin loaded\n` + `Name: ${_name}\nAuthors: ${_authors}\nVersion: v${_version}\nDescription: ${_description}` + thing)
 
-        if (packed_ui != false) {
-            console.warn('Ui create')
-            let ui = packed_ui[0]
-            let func = packed_ui[1]
-            //Ui Creation
-            for (let el = 0; el != LPN.length; el++) {
-                Plugins.button(LPN[el])
-                add(el, function (source) {
-                    //Plugins settings
-
-                    //If ui_features in plugin settings, import ui file
-                    if (LoadedConfig[el].dependencies.indexOf("ui_features") != -1) {
-                        try {
-                            ui.show(source).then(uicall => {
-                                //Send ui callback to main function in plugin
-                                func(uicall)
-                            })
-                        } catch (e) {
-                            //Trace errors
-                            console.warn(e)
+            if (packed_ui != false) {
+                let ui = packed_ui[0]
+                let func = packed_ui[1]
+                //Ui Creation
+                for (let el = 0; el != LPN.length; el++) {
+                    Plugins.button(LPN[el])
+                    add(el, function (source) {
+                        //Plugins setting
+                        //If ui_features in plugin settings, import ui file
+                        if (LoadedConfig[el].dependencies.indexOf("ui_features") != -1) {
+                            try {
+                                ui.show(source).then(uicall => { /*Send ui callback to main function in plugin*/ func(uicall) })
+                            } catch (e) { /*Trace errors*/ console.warn(e) }
                         }
-                    }
-                })
+                    })
+                }
             }
         }
     }

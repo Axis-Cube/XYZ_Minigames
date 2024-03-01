@@ -109,6 +109,12 @@ const GM_FORM = {
             "ui_type": "default",
             "for_start": 9
         },
+        {
+            "name": "%axiscube.flagw_frontl.name",
+            "body": "%axiscube.flagw_frontl.d",
+            "ui_type": "default",
+            "for_start": 10
+        },
     ]
 }
 
