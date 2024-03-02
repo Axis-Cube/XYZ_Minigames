@@ -7,6 +7,9 @@ import { completeChallenge } from "./chooser";
 import { ModalFormData } from "@minecraft/server-ui";
 import { COPYRIGHT, DIM, SYM } from "../const";
 import { eliminatePlayerMessage } from "../tunes/profile";
+import { MT_GAMES } from "../modules/MultiTasking/instances";
+
+let sleep_modifier = 5
 
 export const GAMEDATA_MNF = { // Minefield
     id: 4,
@@ -136,7 +139,7 @@ export const GAMEDATA_MNF = { // Minefield
             }
         }
     },
-    stop_commands: [ ],
+    stop_commands: [],
     boards: [
         ['mnf.display', '\ue195§6 %axiscube.mnf.name', true],
     ]
@@ -232,10 +235,10 @@ export class Field {
                     if (DIM.getBlock({x:t_x,y:((this.from[1])-1),z:t_z}).typeId != 'minecraft:air') {
                         if (DIM.getBlock({x:t_x,y:((this.from[1])),z:t_z}).typeId == 'minecraft:air') {
                             runCMD(`fill ${t_x} ${this.from[1]} ${t_z} ${t_x} ${this.to[1]} ${t_z} heavy_weighted_pressure_plate replace air`)
-                            await sleep(5)
+                            await sleep(sleep_modifier)
                         } else if (DIM.getBlock({x:t_x,y:((this.from[1])+1),z:t_z}).typeId == 'minecraft:air') {
                             runCMD(`fill ${t_x} ${this.from[1]+1} ${t_z} ${t_x} ${this.to[1]+1} ${t_z} heavy_weighted_pressure_plate replace air`)
-                            await sleep(5)
+                            await sleep(sleep_modifier)
                         }
                         
                     } else {
@@ -243,8 +246,8 @@ export class Field {
                         while(world.getDimension('overworld').getBlock({x:t_x,y:((this.from[1])-testC),z:t_z}).typeId == 'minecraft:air') {
                             testC = testC + 1
                         }
-                        runCMD(`fill ${t_x} ${this.from[1]-testC+1} ${t_z} ${t_x} ${this.to[1]-testC+1} ${t_z} heavy_weighted_pressure_plate replace air`)
-                        await sleep(5)
+                        await runCMD(`fill ${t_x} ${this.from[1]-testC+1} ${t_z} ${t_x} ${this.to[1]-testC+1} ${t_z} heavy_weighted_pressure_plate replace air`)
+                        await sleep(sleep_modifier)
                     }
                 }
 
@@ -307,35 +310,40 @@ export class Field {
     }
 }
 let field = 0
-export function fieldPlace() {
+export async function fieldPlace() {
     field = new Field(GAMEDATA[4].loc[getGameArena()].field_from,GAMEDATA[4].loc[getGameArena()].field_to)
-    field.destroy()
+    await field.destroy()
     const diff = getScore('diff','data')
-    if (diff == 0) {
-        field.generate(45)
-    } else if (diff == 1) {
-        field.generate(50)
-    } else if (diff == 2) {
-        field.generate(55)
-    } else if (diff == 3) {
-        field.generate(60)
-    }
-    //field.generate(20+10*getScore('diff','data'))
-    runCMD(`fill ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_to} barrier`)
-    let status = system.runInterval(() => {
-        let fieldStatus = field.getStatus()
-        if (fieldStatus[0] == fieldStatus[1] || fieldStatus[0] == fieldStatus[1]-1 || fieldStatus[0] == fieldStatus[1]+1) {
-            startTimer(4)
-            runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[0]}","${fieldStatus[0]}","§q100"]}]}`)
-            if (diff == 3) {
-                rawtext('axiscube.mnf.hardcore','@a','tr','c\ue121 §l')
-            }
-            system.clearRun(status)
-        } else {
-            runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[1]}","${fieldStatus[0]}","§${colorPercent(fieldStatus[1]/fieldStatus[0])}${(100*(fieldStatus[1]/fieldStatus[0])).toFixed(2)}"]}]}`)
+    runCMD(`title @a actionbar \ue134 Preparing Engine... It's take a while`)
+    system.runTimeout(()=>{
+        if (diff == 0) {
+            field.generate(45)
+        } else if (diff == 1) {
+            field.generate(50)
+        } else if (diff == 2) {
+            field.generate(55)
+        } else if (diff == 3) {
+            field.generate(60)
         }
-    },5
-    )
+        //field.generate(20+10*getScore('diff','data'))
+        runCMD(`fill ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_to} barrier`)
+        let status = system.runInterval(() => {
+            let fieldStatus = field.getStatus()
+            console.warn(fieldStatus)
+            if (fieldStatus[0] == fieldStatus[1] || fieldStatus[0] == fieldStatus[1]-1 || fieldStatus[0] == fieldStatus[1]+1) {
+                startTimer(4)
+                runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[0]}","${fieldStatus[0]}","§q100"]}]}`)
+                if (diff == 3) {
+                    rawtext('axiscube.mnf.hardcore','@a','tr','c\ue121 §l')
+                }
+                system.clearRun(status)
+            } else {
+                runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[1]}","${fieldStatus[0]}","§${colorPercent(fieldStatus[1]/fieldStatus[0])}${(100*(fieldStatus[1]/fieldStatus[0])).toFixed(2)}"]}]}`)
+            }
+        },5
+        )
+        MT_GAMES.register(status)
+    },50)
 }
 
 export function mnfRemoveBarrier() {
@@ -503,3 +511,7 @@ export function mnDefuseForm(player,block) {
 //         }catch(e){console.warn(e);}
 //     }
 // })
+
+async function mnfStop(){
+    MT_GAMES.kill()
+}

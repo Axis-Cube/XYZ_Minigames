@@ -22,6 +22,7 @@ import { boardMoney } from "./tunes/bank";
 import { dbGetPlayerRecord, dbSetPlayerRecord } from "./modules/cheesebase";
 import { getTargetByScore } from "./modules/database";
 import { MT_GAMES } from "./modules/MultiTasking/instances";
+import { prkCheckpointTp } from "./games/prk";
 
 async function sleep(n){
     system.runTimeout(()=>{Promise.resolve(0)},n)
@@ -133,7 +134,16 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             //console.warn(inventory)
             //inventory.setItem(player.selectedSlot, item_stack)
             //player
-            break;
+        break;
+        case 'tools:check_back':
+            let item_stack_checkpoint = new ItemStack('minecraft:stick')
+            item_stack_checkpoint.nameTag = 'debug_checkpoints_back'
+            player.getComponent('inventory').container.addItem(item_stack_checkpoint)
+            player.getComponent('inventory')
+            //console.warn(inventory)
+            //inventory.setItem(player.selectedSlot, item_stack)
+            //player
+        break;
         case 'axiscube:rename':
             player.nameTag = `${player.name}\n§r${message}`;
         break;
@@ -292,6 +302,12 @@ world.beforeEvents.itemUse.subscribe((itemData) => {
     const itemAct = ITEMS[itemStack.typeId]
     // let isMenu = true
     // let clearItem = false
+    switch(itemStack.nameTag){
+        case 'debug_checkpoints_back':
+            prkCheckpointTp(player)
+        break;
+    }
+
     system.run( () => {
         if (itemAct != undefined) {
             if (itemAct.forgame == undefined || (itemAct.forgame === '*' && getGame() > 0) || (typeof itemAct.forgame == 'number' && itemAct.forgame == getGame()) || itemAct.forgame.includes(`${getGame()}`)) {

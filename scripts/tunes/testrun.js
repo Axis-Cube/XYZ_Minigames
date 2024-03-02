@@ -4,6 +4,7 @@ import {
     ModalFormData,
   } from "@minecraft/server-ui";
 import { load_log } from "../modules/Logger/logger";
+import { EvalForm, axisEval } from "../modules/evalSandbox";
 
 export const TESTERS = {
     "alexthecools260": 1,
@@ -15,7 +16,8 @@ export const TESTERS = {
     "olecssandr yt": 4,
     "miaumiez": 4,
     "lndrs2224": 4,
-    "drak5945": 1
+    "drak5945": 1,
+    "tvminerpe": 3
 }
 
 export const TESTER_LEVELS = [
@@ -50,11 +52,13 @@ export async function formTestRun(target) {
     //Permissions
     let scopes = {
         'logs': 3,
+        'eval': 4,
     }
 
     let availability = {
         'available': '',
         'logs': ` §9[Need level ${scopes['logs']}]§r`,
+        'eval': ` §9[Need level ${scopes['eval']}]§r`
     }
 
     function check_perms(scope){
@@ -73,6 +77,7 @@ export async function formTestRun(target) {
     form.body(bodyText)
     //form.button(`Unlimited emeralds ${ue_status[getScore('settings','tsrun_unlimit_em',true)]}`,'textures/items/emerald')
     form.button('%axiscube.testrun.logs'+check_perms('logs')[1] ,'textures/items/spyglass')
+    form.button('%axiscube.testrun.eval'+check_perms('eval')[1] ,'textures/items/spyglass')
     form.button('%gui.close','textures/blocks/barrier')
     form.show(target).then(gg => {
         if(gg.canceled) return
@@ -80,9 +85,17 @@ export async function formTestRun(target) {
             case 0:
                 if(check_perms('logs')[0]){
                     load_log('games_log', target)
-                    break;
                 }
+                break;
                 //scoreboard('tsrun_unlimit_em', ue_next(getScore('settings','tsrun_unlimit_em',true)), 'settings')
+            case 1:
+                if(check_perms('eval')[0]){
+                    EvalForm.show(target).then(ef=>{
+                        let [command] = ef.formValues
+                        axisEval(command,target)
+                    })
+                }
+                break;
             default:
                 break;
         }

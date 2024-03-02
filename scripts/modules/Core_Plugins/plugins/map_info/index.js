@@ -12,7 +12,8 @@ export const config_map_info = {
   "dependencies": [
       "ui_features",
       "event_listen"
-  ]
+  ],
+  "protection_code": undefined
 }
 
 if (getScore(config_map_info.file, 'data.plugins') != 0) {

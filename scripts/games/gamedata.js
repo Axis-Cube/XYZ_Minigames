@@ -11,6 +11,7 @@ import { GAMEDATA_BLOCKP } from './blockp';
 import { GAMEDATA_TNT } from './tntrun';
 import { GAMEDATA_FW_BRIDGES } from './flagw/bridges';
 import { GAMEDATA_FW_FRONTLINE } from './flagw/frontline';
+import { GAMEDATA_PRK } from './prk';
 
 // GLOBAL
 
@@ -53,7 +54,8 @@ export const GAMEDATA = {
     7: GAMEDATA_DRP, //Dropper
     8: GAMEDATA_TNT, //Tnt_Run
     9: GAMEDATA_FW_BRIDGES, //Flagwars Bridges
-    10: GAMEDATA_FW_FRONTLINE 
+    10: GAMEDATA_FW_FRONTLINE, //Flagwars Frontline
+    11: GAMEDATA_PRK, //Parcour
 }
 //GAMEDATA[1].start_commands.push(`execute as @a run scoreboard players random @s hns.block 0 ${HNS_BLOCKS.length-1}`)
     // GAMEDATA[2].time.events = {

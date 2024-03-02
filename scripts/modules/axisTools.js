@@ -391,3 +391,7 @@ export function array3ToVector3(array3) {
 export function vector3ToArray3(vector3) {
     return [vector3.x,vector3.y,vector3.z]
 }
+
+export function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}

@@ -60,27 +60,26 @@ export class Core_Plugins {
 }
 
 //Отложено на дальнюю полку
+//Пройтись по LoadedConfigs 
 //export function events(name, event){
 //    try {
-//        import(`../plugins/${name}/index.js`).then(pl => {
-//            let _config = pl.config
+//        let _config = pl.config
 //
-//            plugins_log.put(`§6[PLUGINS] [${name}] - Trying to execute event -> ${event}§r\n`)
+//        plugins_log.put(`§6[PLUGINS] [${name}] - Trying to execute event -> ${event}§r\n`)
 //
-//            if (_config.dependencies.indexOf("event_listen") != -1) {
-//                try {
-//                    import(`../plugins/${name}/events.js`).then(evf => {
-//    
-//                        //Getting ui form
-//                        let EV_LIST = evf.EVENTS
-//                        try{
-//                            eval(`EV_LIST.${event}()`)
-//                            plugins_log.put(`§a[PLUGINS] [${name}] - Successfuly executed event ${event}§r\n`)
-//                        }catch(e){console.warn(`Event (${event}) not found!`)}
-//                    })
-//                } catch (e) {console.error(e)}
-//            }
-//        })
+//        if (_config.dependencies.indexOf("event_listen") != -1) {
+//            try {
+//                import(`../plugins/${name}/events.js`).then(evf => {
+//
+//                    //Getting ui form
+//                    let EV_LIST = evf.EVENTS
+//                    try{
+//                        eval(`EV_LIST.${event}()`)
+//                        plugins_log.put(`§a[PLUGINS] [${name}] - Successfuly executed event ${event}§r\n`)
+//                    }catch(e){console.warn(`Event (${event}) not found!`)}
+//                })
+//            } catch (e) {console.error(e)}
+//        }
 //    } catch (e) {plugins_log.put(`[PL ERR] `+e+'\n'+e.stack)}
 //        
 //}
@@ -91,6 +90,7 @@ export function Process(action, param='Empty'){
         //Initialize function
         case 'Init':
             let map_info = new Core_Plugins('map_info').register(config_map_info, packui_map_info)
+        break;
         case 'getNames':
             //Getting names of loaded plugins
             runCMD(`say ${LPN}`);
