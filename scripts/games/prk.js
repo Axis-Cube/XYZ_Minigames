@@ -1,12 +1,13 @@
 import { system, world } from "@minecraft/server";
 import { COPYRIGHT, DIM, SYM } from "../const";
 import { actionbar, getScore, playsound, randomPlayerIcon, runCMD } from "../modules/axisTools";
-import { startTimer, stopGame } from "./main";
+import { getGameArena, startTimer, stopGame } from "./main";
 import { MT_GAMES } from "../modules/MultiTasking/instances";
+import { GAMEDATA } from "./gamedata";
 
 let timer = 300
 
-export const GAMEDATA_PRK = { // Dropper
+export const GAMEDATA_PRK = { // Parkour
     id: 11,
     namespace: 'prk',
     min_players: 1,
@@ -21,13 +22,43 @@ export const GAMEDATA_PRK = { // Dropper
             gameplay: false,//-37 1 -2092   -41 1 -2089
             spawn: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
-            spawnpoint: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] }
+            spawnpoint: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] },
+            barrier: ["-37 2 -2088", "-41 4 -2088"]
         },
         1: {
             gameplay: false,//-3 -9 -2083 -3 - 9 -2078
             spawn: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
-            spawnpoint: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] }
+            spawnpoint: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] },
+            barrier: ["2 -9 -2070", "-2 -7 -2070"]
+        },
+        2: {
+            gameplay: false,// 39 -9 -2088 41 -9 -2083
+            spawn: { type: 'range', value: [ [ 39 , 41 ], [ -8, -8 ], [ -2088, -2083 ] ] },
+            //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 39 , 41 ], [ -8, -8 ], [ -2088, -2083 ] ] },
+            barrier: ["41 -5 -2081","35 -8 -2081"]
+        },
+        3: {
+            gameplay: false,// 86 -8 -2083 77 -8 -2088
+            spawn: { type: 'range', value: [ [ 86 , 77 ], [ -8, -8 ], [ -2083, -2088 ] ] },
+            //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 86 , 77 ], [ -8, -8 ], [ -2083, -2088 ] ] },
+            barrier: ["89 -8 -2080", "75 -5 -2080"]
+        },
+        4: {
+            gameplay: false,// 130 -5 -2090 126 -5 -2084
+            spawn: { type: 'range', value: [ [ 130 , 126 ], [ -5, -5 ], [ -2090, -2084 ] ] },
+            //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 130 , 126 ], [ -5, -5 ], [ -2090, -2084 ] ] },
+            barrier: ["131 -5 -2081", "125 -1 -2081"]
+        },
+        5: {
+            gameplay: false,// 179 0 -2086 174  0 -2081
+            spawn: { type: 'range', value: [ [ 179 , 174 ], [ 0, 0 ], [ -2086, -2081 ] ] },
+            //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 179 , 174 ], [ 0, 0 ], [ -2086, -2081 ] ] },
+            barrier: ["131 -5 -2081", "125 -1 -2081"]
         }
     },
     ends: {
@@ -84,6 +115,7 @@ async function setCheckpoint(player){
         if(DIM.getBlock(block_loc).typeId == 'minecraft:gold_block'){
             if(player.getDynamicProperty('prk_checkpoint') == undefined || player.getDynamicProperty('prk_checkpoint') != `${checkpoint_loc.x} ${(checkpoint_loc.y)+1} ${checkpoint_loc.z}`){
                 player.setDynamicProperty('prk_checkpoint',`${checkpoint_loc.x} ${(checkpoint_loc.y)+1} ${checkpoint_loc.z}`)
+                runCMD(`spawnpoint ${player.name} ${checkpoint_loc.x} ${(checkpoint_loc.y)+1} ${checkpoint_loc.z}`)
                 actionbar('\ue115 Checkpoint created!', player.name)
                 playsound('random.orb', player.name)
             }else{
@@ -115,6 +147,8 @@ export async function prkCheckpointTp(player){
 }
 
 async function prk_main(){
+    console.warn(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} barrier`)
+    runCMD(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} barrier`)
     winners = []
     for (const player of [...world.getPlayers()]) {
         player.clearDynamicProperties()
@@ -144,7 +178,7 @@ async function prkTick(){
 }
 
 async function prkTime(){
-
+    runCMD(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} air`)
 }
 
 async function prkStop(reason){

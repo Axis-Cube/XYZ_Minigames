@@ -7,7 +7,7 @@ export const config_map_info = {
   "file": "map_info",
   "name": "Example Plugin",
   "description": "Cool plugin",
-  "authors": ["Lndrs_","Axisander"],
+  "authors": ["Lndrs_"],
   "license": "MIT",
   "dependencies": [
       "ui_features",

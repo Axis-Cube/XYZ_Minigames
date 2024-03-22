@@ -163,6 +163,7 @@ async function bridgePrepair(){
 }
 
 async function bridgeEquipment(){
+    let all_blocks = []
     try{
         for (const player of [...world.getPlayers()]) {
             if (!player.hasTag('spec')) {
@@ -187,7 +188,7 @@ async function bridgeEquipment(){
                         `give @s iron_sword`,
                         `give @s bow`,
                         `give @s iron_pickaxe`,
-                        `give @s red_concrete 128`,
+                        `give @s red_concrete 128`
                         `give @s arrow 64`,
                     ],player)
                 }

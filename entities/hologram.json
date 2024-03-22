@@ -1,0 +1,32 @@
+{
+    "format_version": "1.18.20",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "axiscube:hologram",
+            "is_spawnable": false,
+            "is_summonable": true,
+            "is_experimental": false
+        },
+        "component_groups": {
+        },
+        "components": {
+            "minecraft:type_family": {
+                "family": [ "player" ]
+            },
+            "minecraft:nameable": {
+                "always_show": true,
+                "allow_name_tag_renaming": true
+            },
+            "minecraft:physics": {
+                "has_gravity": false,
+                "has_collision": false
+            },
+            "minecraft:damage_sensor": {
+                "triggers": {
+                    "cause": "all",
+                    "deals_damage": false
+                }
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import { world, system, ItemStack } from "@minecraft/server";
+import { world, system, ItemStack, EntityInventoryComponent, Block, BlockComponent } from "@minecraft/server";
 import { edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, tellraw } from "./modules/axisTools";
 import { axisHealthBar } from "./modules/axisHB";
 import { openJSON } from "./modules/easyform";
@@ -10,19 +10,18 @@ import { GAMEDATA } from "./games/gamedata";
 import { sendChatMessage } from "./modules/chat";
 import { getPlayerColor } from "./tunes/profile";
 import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "./games/mnf";
-
-import * as log_env from "./modules/Logger/logger_env";
 import { load_log } from "./modules/Logger/logger";
 import { isMainManager } from "./modules/perm";
-import { bwBlockBreak, bwBlockPlace, bwClear, bwHit, onItemUse } from "./games/bw";
+import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "./games/bw";
 import { formTeamsel } from "./games/category_team";
 import { LPN } from "./modules/Core_Plugins/index";
-//import { events } from "./modules/Core_Plugins/ui/PluginManager";
 import { boardMoney } from "./tunes/bank";
-import { dbGetPlayerRecord, dbSetPlayerRecord } from "./modules/cheesebase";
-import { getTargetByScore } from "./modules/database";
+import "./tunes/hologram"
 import { MT_GAMES } from "./modules/MultiTasking/instances";
 import { prkCheckpointTp } from "./games/prk";
+import { holoEditor } from "./tunes/hologram";
+import { loadChests, upgradeItem } from "./games/hg";
+import { chests } from "./games/hg_chests"
 
 async function sleep(n){
     system.runTimeout(()=>{Promise.resolve(0)},n)
@@ -131,19 +130,23 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             item_stack.nameTag = 'debug_cords'
             player.getComponent('inventory').container.addItem(item_stack)
             player.getComponent('inventory')
-            //console.warn(inventory)
-            //inventory.setItem(player.selectedSlot, item_stack)
-            //player
         break;
         case 'tools:check_back':
             let item_stack_checkpoint = new ItemStack('minecraft:stick')
             item_stack_checkpoint.nameTag = 'debug_checkpoints_back'
             player.getComponent('inventory').container.addItem(item_stack_checkpoint)
             player.getComponent('inventory')
-            //console.warn(inventory)
-            //inventory.setItem(player.selectedSlot, item_stack)
-            //player
         break;
+        case 'tools:holo_editor':
+            let item_stack_edit_holo = new ItemStack('minecraft:stick')
+            item_stack_edit_holo.nameTag = 'debug_holo_editor'
+            player.getComponent('inventory').container.addItem(item_stack_edit_holo)
+            player.getComponent('inventory')
+        break;
+        case 'tools:load':
+            loadChests(chests)
+        break;
+        //////////
         case 'axiscube:rename':
             player.nameTag = `${player.name}\n§r${message}`;
         break;
@@ -193,9 +196,6 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             await runCMD('tag @s remove perm.op.main',mainOp)
             await runCMD('tag @s add perm.op.main',player)
         break;
-        // case 'axiscube:remember':
-        //     remember.start(player)
-        // break;
         case 'l:get_page':
             if(message != undefined){
                 load_log(message, player)
@@ -290,9 +290,11 @@ for (let gg in GAMEDATA) {
 }
 
 world.beforeEvents.itemUseOn.subscribe(ev=>{
+
     if(ev.itemStack.typeId == 'minecraft:stick' && ev.itemStack.nameTag == 'debug_cords'){
         console.warn(ev.block.x,ev.block.y,ev.block.z)
     }
+    //console.warn(ev.block)
     
 })
 
@@ -370,7 +372,36 @@ world.afterEvents.entityHitBlock.subscribe((data) => {
     }
 })
 
+world.afterEvents.entityHitEntity.subscribe((data) => {
+    if (data.hitEntity.typeId == 'axiscube:hologram') {
+        let inv = data.damagingEntity.getComponent(EntityInventoryComponent.componentId).container
+        if (inv.getItem(data.damagingEntity.selectedSlot)) {
+            if(inv.getItem(data.damagingEntity.selectedSlot).nameTag == 'debug_holo_editor')
+            holoEditor(data.hitEntity, data.damagingEntity) //Edit entity
+        }
+    }
+})
+
 world.beforeEvents.chatSend.subscribe((messageData) => {
     messageData.cancel = true
     sendChatMessage(messageData)
 })
+
+world.afterEvents.playerInteractWithBlock.subscribe(e => {
+    let block = e.block.typeId
+
+    let player = e.player
+    let inv = player.getComponent(EntityInventoryComponent.componentId)
+    let hand = player.selectedSlot
+    try{
+        let item = e.itemStack.typeId
+    }catch{}
+
+    switch(block){
+        case 'axiscube:hg_upgrade':
+            upgradeItem(player)
+        break;
+    }
+
+})
+

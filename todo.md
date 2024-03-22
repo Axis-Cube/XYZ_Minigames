@@ -5,7 +5,7 @@ Fix Minefield (Locations) {cm:2024-03-01}
 Add icons to games
 Add translation
 Add categories to game menu
-Parcour
+Parkour {cm:2024-03-03}
 Evil Chicken
 MicroGames
 Skywars
@@ -15,5 +15,5 @@ Spleef
 Deathrun
 About Menu
 Flagwars
-BW Clean system (Переполнение буфера)
-Пофиксить размещение блоков на чужой стороне в flagw_frontline
+BW Clean system (Переполнение буфера) {cm:2024-03-03}
+Пофиксить размещение блоков на чужой стороне в flagw_frontline {cm:2024-03-03}

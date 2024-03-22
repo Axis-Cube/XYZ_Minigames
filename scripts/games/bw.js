@@ -415,15 +415,12 @@ export async function bwClear(){
     runCMD('kill @e[type=item]')
     // SUPERCLEAN Systems v1 by Axiscube Inc. 
     for(let y = levelLow-1; y<=levelHigh;y+=2){
+        await sleep(1)
         for(let d = 1; d<=Object.keys(clearData).length; d++){
             if (clearData.hasOwnProperty(d)){
                 for(const block of BW_BLOCKS){
-                    await sleep(800)
-                    // clearData[d][0].y=y
-                    // clearData[d][1].y=y+2
-                    // DIM.fillBlocks(clearData[d][0],clearData[d][1],MinecraftBlockTypes.air,{matchingBlock:BlockPermutation.resolve(`minecraft:${block}`,{})})
+                    console.warn(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`)
                     runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`, undefined,true)
-
                 }
             }
         }

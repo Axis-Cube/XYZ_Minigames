@@ -65,7 +65,23 @@ const GM_FORM = {
             "cmd": [
                 `scoreboard players set diff data 0`
             ]
-        }
+        },
+        {
+            "name": "%axiscube.prk.name",
+            "body": "%axiscube.prk.d",
+            "icon": "textures/items/stick",
+            "ui_type": "stack",
+            "for_start": 11,
+            "forms": [
+                {
+                    "type": "other",
+                    "value": ["arn","data"],
+                    "body": "%axiscube.form.games.diff",
+                    "keys": ["1", "2", "3", "4", "5"],
+                    "images": [ "textures/ui/icons/games/diff/easy", "textures/ui/icons/games/diff/normal", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hard"]
+                }
+            ]
+        },
     ],
     2: [
         {

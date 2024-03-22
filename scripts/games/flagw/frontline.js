@@ -191,7 +191,7 @@ async function bridgeEquipment(){
                         `give @s iron_sword`,
                         `give @s bow`,
                         `give @s iron_pickaxe`,
-                        `give @s blue_concrete 32`,
+                        `give @s blue_concrete 32 0 {"minecraft:can_place_on":{"blocks":["blue_concrete_powder", "blue_concrete"]}}`
                     ],player)
                 }
                 else if(hasTag(player, 'team.red')){
@@ -202,7 +202,7 @@ async function bridgeEquipment(){
                         `give @s iron_sword`,
                         `give @s bow`,
                         `give @s iron_pickaxe`,
-                        `give @s red_concrete 32`,
+                        `give @s red_concrete 32 0 {"minecraft:can_place_on":{"blocks":["red_concrete_powder", "red_concrete"]}}`
                     ],player)
                 }
             }}
@@ -234,13 +234,15 @@ async function bridgeBegin(){
 
     const blue_spawn = blue_team.spawn
     const red_spawn = red_team.spawn
+    runCMD(`gamemode a @a[tag=!spec]`)
     runCMD(`tp @a[tag=team.blue] ${blue_spawn.x} ${blue_spawn.y} ${blue_spawn.z} facing ${blue_team.focus}`)
     runCMD(`tp @a[tag=team.red] ${red_spawn.x} ${red_spawn.y} ${red_spawn.z} facing ${red_team.focus}`)
+
 
     information()
     bridgeOtherIterations()
     bridgeEquipment()
-    runCMD(`gamemode s @a[tag=!spec]`)
+
     system.runTimeout(()=>{
         runCMD(`title @a actionbar \ue198 PVP Enabled`)
         runCMD(`gamerule pvp true`)

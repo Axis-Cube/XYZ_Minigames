@@ -8,6 +8,7 @@ import { addMoney } from "../tunes/bank";
 import { ActionFormData } from "@minecraft/server-ui";
 import { COPYRIGHT, SCOLOR, SYM } from "../const";
 import { axisEval } from "../modules/evalSandbox";
+import { GAMEDATA } from "./gamedata";
 
 // Hide And Seek
 
@@ -37,7 +38,7 @@ export const HNS_BLOCKS = [
         icon: 'textures/blocks/crafting_table_front',
         name: 'tile.crafting_table.name',
     }
-        // {
+    // {
     //     id: 'barrel',
     //     name: 'tile.barrel.name',
     //     icon: 'textures/blocks/barrel_side',
@@ -134,15 +135,6 @@ export const GAMEDATA_HNS =  {
         ]
     },
     begin_commands: [
-        async () => {
-            for (const playerT of world.getPlayers()) {
-                if (hasTag(playerT,'hns.hider')) {
-                    await tellraw(`{"rawtext":[{"rawtext":[{"translate":"axiscube.hns.your_role","with":{"rawtext":[{"translate":"${HNS_BLOCKS[getScore(playerT,'hns.block')].name}"}]}}]}]}`,playerT)
-                } else if (playerT.hasTag('seeker')) {
-                    axisEval('runCMD(`tp @a[tag=hns.seeker] ${GAMEDATA[1].loc[getGameArena()].seeker}`)')
-                }
-            }
-        },
         'scoreboard players set "§1" hns.display 9',
         'scoreboard players set "\ue193 §a%axiscube.hns.hiders:" hns.display 8',
         'scoreboard players set "§2" hns.display 6',
@@ -154,6 +146,7 @@ export const GAMEDATA_HNS =  {
         'tag @a[tag=hns.seeker.main] add hns.seeker',
         'scoreboard players set @a[tag=hns.seeker] data.gametemp 405',
         'event entity @a[tag=hns.hider] axiscube:hide_nametag',
+        async () => {onBegin()},
         'gamerule pvp true',
         'tellraw @a { "rawtext": [ { "translate": "axiscube.hns.seeker_became","with": { "rawtext": [ { "selector": "@a[tag=hns.seeker.main]" } ] } } ] }',
         {type:'scoreset',value: 4, objective: 'hns.display',target: '@a[tag=hns.seeker]'},
@@ -505,3 +498,14 @@ export async function hnsTick() {
         return
     }
 };
+
+async function onBegin(){
+    console.warn('onBegin')
+    for (const playerT of world.getPlayers()) {
+        if (hasTag(playerT,'hns.hider')) {
+            await tellraw(`{"rawtext":[{"rawtext":[{"translate":"axiscube.hns.your_role","with":{"rawtext":[{"translate":"${HNS_BLOCKS[getScore(playerT,'hns.block')].name}"}]}}]}]}`,playerT)
+        } else {
+            axisEval('runCMD(`tp @a[tag=hns.seeker] ${GAMEDATA[1].loc[getGameArena()].seeker}`)')
+        }
+    }
+}

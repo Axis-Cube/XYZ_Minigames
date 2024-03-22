@@ -58,3 +58,16 @@ export const ICONS = {
     store: 'textures/ui/icons/store/logo',
     console: 'textures/ui/icons/console'
 }
+
+export const upgradeItems = {
+    material: [
+        "minecraft:air",
+        "minecraft:wooden",
+        "minecraft:stone",
+        "minecraft:golden",
+        "minecraft:iron",
+        "minecraft:diamond",
+        "minecraft:netherite"
+    ]
+}
+export const upgradesBlocked = [] // Example: "axe", "shovel"
