@@ -144,13 +144,13 @@ async function gls_main(){
     let game_lives = 3
     switch(getScore('diff','data')){
         case 0:
-            game_lives = 5
+            game_lives = 10
         break;
         case 1:
-            game_lives = 3
+            game_lives = 7
         break;
         case 2:
-            game_lives = 2
+            game_lives = 5
         break;
         case 3:
             game_lives = 1

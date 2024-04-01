@@ -1,4 +1,9 @@
 import { world } from "@minecraft/server"
+import { getScore } from "./modules/axisTools"
+
+export const DB_A = '%'
+export const map_id = getScore('map_id','settings')
+
 
 export const SYM = '\ue131'
 export const SCOLOR = '§u'
@@ -56,7 +61,8 @@ export const ICONS = {
     pl1: 'textures/ui/icons/plr1',
     plsel: 'textures/ui/icons/plrsel',
     store: 'textures/ui/icons/store/logo',
-    console: 'textures/ui/icons/console'
+    console: 'textures/ui/icons/console',
+    default_plugin: 'textures/ui/icons/plugin'
 }
 
 export const upgradeItems = {
@@ -70,4 +76,16 @@ export const upgradeItems = {
         "minecraft:netherite"
     ]
 }
+
+export const upgradeArmor = {
+    material: [
+        "minecraft:leather",
+        "minecraft:golden",
+        "minecraft:chainmail",
+        "minecraft:iron",
+        "minecraft:diamond",
+        "minecraft:netherite"
+    ]
+}
+
 export const upgradesBlocked = [] // Example: "axe", "shovel"

@@ -196,7 +196,7 @@ export function randomPlayerIcon() {
     return icons[randomInt(0,icons.length-1)]
 }
 
-export async function powerTP(pos='0 10 0',player='@a',target='@s',action='tp') {
+export async function powerTP(pos='0 10 0',player='@a',target='@s', action='tp') {
     if (typeof pos === 'string') {
         if (action == 'pos') return pos
         await runCMD(`${action} ${target} ${pos}`,player)
@@ -226,9 +226,16 @@ export async function powerTP(pos='0 10 0',player='@a',target='@s',action='tp') 
                     }
 
                     let xPos = shuffle(poss)
-                    for (const i in plrs2) {
-                        const playerT = plrs2[i]
-                        await runCMD(`${action} @s ${xPos[i]}`,playerT)
+                    if(pos.facing != undefined){
+                        for (const i in plrs2) {
+                            const playerT = plrs2[i]
+                            await runCMD(`${action} @s ${xPos[i]} facing ${pos.facing}`,playerT)
+                        }
+                    }else{
+                        for (const i in plrs2) {
+                            const playerT = plrs2[i]
+                            await runCMD(`${action} @s ${xPos[i]}`,playerT)
+                        }
                     }
                     return
                 }
@@ -463,4 +470,39 @@ export function safeZoneDamage(loc3, radius) {
             }
         }
     }
+}
+
+export const cryptWithSalt = (salt, text) => {
+    const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+    const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
+    const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+  
+    return text
+      .split("")
+      .map(textToChars)
+      .map(applySaltToChar)
+      .map(byteHex)
+      .join("");
+  };
+  
+export const decryptWithSalt = (salt, encoded) => {
+    const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+    const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+    return encoded
+        .match(/.{1,2}/g)
+        .map((hex) => parseInt(hex, 16))
+        .map(applySaltToChar)
+        .map((charCode) => String.fromCharCode(charCode))
+        .join("");
+};
+
+export const updateMapID = ()=>{edScore('map_id','settings',randomInt(10000,99999))}
+
+export const shortNick = async (nick) => { let short_nick = []
+
+    for(let i=0;i<nick.length;i++){
+        if(i%2==0&&nick[i]!=' '){short_nick.push(nick[i])}
+    }
+
+    return short_nick.join('')
 }

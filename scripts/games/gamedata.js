@@ -13,6 +13,7 @@ import { GAMEDATA_FW_BRIDGES } from './flagw/bridges';
 import { GAMEDATA_FW_FRONTLINE } from './flagw/frontline';
 import { GAMEDATA_PRK } from './prk';
 import { GAMEDATA_HG } from './hg';
+import { MT_GAMES } from '../modules/MultiTasking/instances';
 
 // GLOBAL
 
@@ -44,7 +45,7 @@ export const GAMEDATA = {
         },
         death_data: {
             death_commands: []
-        }
+        },
     },
     1: GAMEDATA_HNS, // HIDE N SEEK
     2: GAMEDATA_BLOCKP, // BLOCKPARTY

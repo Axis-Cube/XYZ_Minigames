@@ -98,12 +98,13 @@ export async function startGame( id, player, arn = getGameArena() ) {
         };
     }
     await clearTags();
+    try{await runCMDs(thisGame.pre_commands)}catch{}
     let commands = [
         'clear @a',
         `title @a title ud0""`,
         `scoreboard players set mg data ${id}`,
         `scoreboard players set arn data ${arn}`,
-        { type:'tp', value: thisGame.loc[arn].spawn },
+        { type:'tp', value: thisGame.loc[arn].spawn},
         { type:'tp', value: thisGame.loc[arn].spawnpoint, action: 'spawnpoint' },
         'scoreboard objectives add data.gametemp dummy "data.gametemp"',
         'scoreboard objectives remove lobby.display',

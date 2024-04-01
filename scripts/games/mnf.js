@@ -312,10 +312,10 @@ export class Field {
 let field = 0
 export async function fieldPlace() {
     field = new Field(GAMEDATA[4].loc[getGameArena()].field_from,GAMEDATA[4].loc[getGameArena()].field_to)
-    await field.destroy()
     runCMD(`fill ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_to} barrier`)
     const diff = getScore('diff','data')
     runCMD(`title @a actionbar \ue134 Preparing Engine... It's take a while`)
+    await field.destroy()
     system.runTimeout(()=>{
         if (diff == 0) {
             field.generate(45)

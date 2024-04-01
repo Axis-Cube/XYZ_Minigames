@@ -5,6 +5,9 @@ import { plugins_log } from "../Logger/logger_env";
 import { config_map_info } from "./plugins/map_info/index.js";
 //Packed_Ui
 import { packui_map_info } from "./plugins/map_info/ui/index.js";
+import { config_admin_panel } from "./plugins/admin_panel/index.js";
+import { packui_admin_panel } from "./plugins/admin_panel/ui/index.js";
+import { ICONS } from "../../const.js";
 /*==============================================================*/
 let thing = '\n----------------------------\n';
 let Plugins = new ActionFormData().title('axiscube.settings.plugins').body('');
@@ -21,18 +24,17 @@ export class Core_Plugins {
         this.name = name
     }
 
-    async register(config, packed_ui = false) {
+    async register(id, config, packed_ui = false) {
         if (getScore(this.name, 'data.plugins') != 0) {
             let _config = config
             let _version = _config.version.toString().replaceAll(',', '.')
             let _authors = _config.authors.toString().replaceAll(',', ', ')
             let _name = _config.name
             let _description = _config.description
-            let _file = _config.file
 
             //Pushing values into list
             LPN.push(`${_name}\nv${_version} by ${_authors}`)
-            LoadedPlugins.push(_file)
+            //LoadedPlugins.push(_file)
             LoadedConfig.push(_config)
 
             //LOGS
@@ -42,18 +44,16 @@ export class Core_Plugins {
                 let ui = packed_ui[0]
                 let func = packed_ui[1]
                 //Ui Creation
-                for (let el = 0; el != LPN.length; el++) {
-                    Plugins.button(LPN[el])
-                    add(el, function (source) {
+                    Plugins.button(LPN[id], (LoadedConfig[id].icon)?LoadedConfig[id].icon:ICONS.default_plugin)
+                    add(id, function (source) {
                         //Plugins setting
                         //If ui_features in plugin settings, import ui file
-                        if (LoadedConfig[el].dependencies.indexOf("ui_features") != -1) {
+                        if (LoadedConfig[id].dependencies.indexOf("ui_features") != -1) {
                             try {
-                                ui.show(source).then(uicall => { /*Send ui callback to main function in plugin*/ func(uicall) })
+                                ui.show(source).then(async uicall => { /*Send ui callback to main function in plugin*/ await func(uicall, source) })
                             } catch (e) { /*Trace errors*/ console.warn(e) }
                         }
                     })
-                }
             }
         }
     }
@@ -89,7 +89,8 @@ export function Process(action, param='Empty'){
     switch (action){
         //Initialize function
         case 'Init':
-            let map_info = new Core_Plugins('map_info').register(config_map_info, packui_map_info)
+            let admin_panel = new Core_Plugins('admin_panel').register(0, config_admin_panel, packui_admin_panel)
+            let map_info = new Core_Plugins('map_info').register(1, config_map_info, packui_map_info)
         break;
         case 'getNames':
             //Getting names of loaded plugins

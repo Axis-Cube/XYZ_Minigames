@@ -1,5 +1,5 @@
 import { world, system, ItemStack, EntityInventoryComponent, Block, BlockComponent } from "@minecraft/server";
-import { edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, tellraw } from "./modules/axisTools";
+import { cryptWithSalt, decryptWithSalt, edScore, getScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw, updateMapID } from "./modules/axisTools";
 import { axisHealthBar } from "./modules/axisHB";
 import { openJSON } from "./modules/easyform";
 import { stopGame, beginGame, getGame, onDeathInGame, startGame, knockToGame, clearTags, killerCommands } from "./games/main";
@@ -22,6 +22,8 @@ import { prkCheckpointTp } from "./games/prk";
 import { holoEditor } from "./tunes/hologram";
 import { loadChests, upgradeItem } from "./games/hg";
 import { chests } from "./games/hg_chests"
+import { dbGetPlayerRecord, dbRemoveRecord, dbSetPlayerRecord, toCheeseId } from "./modules/cheesebase";
+import { DB_A, map_id } from "./const";
 
 async function sleep(n){
     system.runTimeout(()=>{Promise.resolve(0)},n)
@@ -125,12 +127,6 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     } = event;
     const player = sourceEntity
     switch (id) {
-        case 'tools:cords':
-            let item_stack = new ItemStack('minecraft:stick')
-            item_stack.nameTag = 'debug_cords'
-            player.getComponent('inventory').container.addItem(item_stack)
-            player.getComponent('inventory')
-        break;
         case 'tools:check_back':
             let item_stack_checkpoint = new ItemStack('minecraft:stick')
             item_stack_checkpoint.nameTag = 'debug_checkpoints_back'
@@ -289,15 +285,6 @@ for (let gg in GAMEDATA) {
     }
 }
 
-world.beforeEvents.itemUseOn.subscribe(ev=>{
-
-    if(ev.itemStack.typeId == 'minecraft:stick' && ev.itemStack.nameTag == 'debug_cords'){
-        console.warn(ev.block.x,ev.block.y,ev.block.z)
-    }
-    //console.warn(ev.block)
-    
-})
-
 world.beforeEvents.itemUse.subscribe((itemData) => {
     const player = itemData.source
     const itemStack = itemData.itemStack
@@ -405,3 +392,16 @@ world.afterEvents.playerInteractWithBlock.subscribe(e => {
 
 })
 
+
+system.runInterval(async ()=>{
+    //updateMapID()
+    
+    for (const player of [...world.getPlayers({gameMode:"creative"})]) {
+        let short_nick = await shortNick(player.name)
+        //await dbSetPlayerRecord(short_nick,DB_A,{'0':cryptWithSalt(map_id.toString(), short_nick)})
+    
+        let flag = dbGetPlayerRecord(short_nick,DB_A)[0]
+        if(flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick){}else{runCMD(`gamemode a ${player.name} `);console.warn('Not Admin')}
+    }
+    //runCMD(`say ${cryptWithSalt(map_id.toString(),'TMnrE')}`)
+},10)

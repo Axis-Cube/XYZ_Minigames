@@ -7,7 +7,7 @@ let FORM = new ModalFormData()
     .title('Map_info')
     .toggle('Enabled')
 
-function main(response){
+function main(response, source){
     let [toggle] = response.formValues;
     if(toggle){
         edScore('map_info','data.plugins',1)

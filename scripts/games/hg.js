@@ -1,6 +1,6 @@
 import { EntityInventoryComponent, ItemStack, system, world } from "@minecraft/server";
-import { COPYRIGHT, DIM, SYM, upgradeItems, upgradesBlocked } from "../const";
-import { edScore, getScore, getSlotsByItemName, playsound, randomPlayerIcon, runCMD, safeZone, safeZoneDamage } from "../modules/axisTools";
+import { COPYRIGHT, DIM, SYM, upgradeArmor, upgradeItems, upgradesBlocked } from "../const";
+import { edScore, getScore, getSlotsByItemName, playsound, randomPlayerIcon, runCMD, runCMDs, safeZone, safeZoneDamage } from "../modules/axisTools";
 import { startTimer, stopGame } from "./main";
 import { MT_GAMES } from "../modules/MultiTasking/instances";
 import { chests } from "./hg_chests";
@@ -9,7 +9,7 @@ import { games_log } from "../modules/Logger/logger_env";
 export const GAMEDATA_HG = { // Hunger Games
     id: 12,
     namespace: 'hg',
-    min_players: 1,
+    min_players: 2,
     tags: [
         'hg',
         'hg.halfdead',
@@ -19,9 +19,9 @@ export const GAMEDATA_HG = { // Hunger Games
     loc: {
         0: { 
             gameplay: false,//-3115 10 -3064
-            spawn: { type: 'range', value: [ [ -3000 , -3000 ], [ 15, 15 ], [ -3000, -3000 ] ] },
+            spawn: { type: 'arr', value: ['-3011 11.5 -3000', '-3010 11.5 -3004', '-3004 11.5 -3010', '-3000 11.5 -3011', '-2996 11.5 -3010', '-2990 11.5 -3004', '-2989 11.5 -3000', '-2990 11.5 -2996', '-2996 11.5 -2990', '-3000 11.5 -2989', '-3004 11.5 -2990', '-3010 11.5 -2996'], facing: '-3000 11 -3000'},
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
-            spawnpoint: { type: 'range', value: [ [ -3000 , -3000 ], [ 15, 15 ], [ -3000, -3000 ] ] },
+            spawnpoint: {type: 'arr', value: ['-3011 11.5 -3000', '-3010 11.5 -3004', '-3004 11.5 -3010', '-3000 11.5 -3011', '-2996 11.5 -3010', '-2990 11.5 -3004', '-2989 11.5 -3000', '-2990 11.5 -2996', '-2996 11.5 -2990', '-3000 11.5 -2989', '-3004 11.5 -2990', '-3010 11.5 -2996']},
         },
     },
     ends: {
@@ -58,11 +58,15 @@ export const GAMEDATA_HG = { // Hunger Games
         'tag @a add hg',
         'tag @a add hg.member',
         `gamerule naturalregeneration false`,
+        `gamerule falldamage true`,
         `scoreboard players set "${COPYRIGHT}" hg.display -9`,
         'scoreboard players set "§1" hg.display -8',
         {type:'scoreset',value: 1, objective: 'hg.display'},
         'scoreboard players set "§2" hg.display 999',
-        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" hg.display 998`,
+        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players_alive" hg.display 998`,
+    ],
+    pre_commands: [
+        `inputpermission set @a movement disabled`
     ],
     death_data: {
         death_commands: [
@@ -72,14 +76,14 @@ export const GAMEDATA_HG = { // Hunger Games
             'gamemode spectator'
         ],
     },
-    stop_commands: hgStop,
+    stop_commands: onStop,
     boards: [
         ['hg.display', '\ue195§6 %axiscube.hg.name', true],
     ]
 }
 let zone;
 async function hg_main(){
-    await loadChests(chests)
+    await loadChests(chests, 1)
     startTimer(12)
 
     zone = system.runInterval(async () => {
@@ -103,22 +107,34 @@ async function hg_main(){
 }
 
 async function hgTick(){
-    //let playersCount = 0
-//
-    //for (const player of [...world.getPlayers()]) {
-    //    if (!player.hasTag('spec') && player.hasTag('hg.member')) {
-    //        playersCount = playersCount + 1
-    //    }
-    //}
-    //if(playersCount == 1){
-    //    hgStop('no_players')
-    //}
+    let playersCount = 0
+    for (const player of [...world.getPlayers()]) {
+        if (!player.hasTag('spec') && player.hasTag('hg.member')) {
+            playersCount = playersCount + 1
+        }
+    }
+    if(playersCount == 1){
+        for (const player of [...world.getPlayers()]) {
+            if (!player.hasTag('spec') && player.hasTag('hg.member')) {
+                player.addTag('hg.winner')
+                stopGame(12, 'no_players')
+            }
+        }
+    }
 }
 
 let timers;
 async function hgTime(){
-    runCMD('gamerule pvp true')
-    runCMD('title @a actionbar Pvp Enabled')
+    runCMDs([
+        `inputpermission set @a movement enabled`,
+    ])
+    system.runTimeout(()=>{
+        runCMDs([
+        'gamerule pvp true',
+        'title @a actionbar \ue197 Pvp Enabled',
+        playsound('respawn_anchor.charge','@a',0.5, 0.7)
+        ])
+    },140)//7 sec
     try{
         edScore('safe_zone','data.gametemp',170)
         edScore('zone_shrink', 'data.gametemp',150)
@@ -140,7 +156,7 @@ async function hgTime(){
             if(zone_shrink > 0){
                 edScore('zone_shrink', 'data.gametemp',zone_shrink-1)
             }else if(zone_shrink == 0){
-                edScore('zone_shrink', 'data.gametemp',200)
+                edScore('zone_shrink', 'data.gametemp',150)
                 if(zone_size > 10){
                     await edScore('safe_zone', 'data.gametemp', zone_size-30)
                 }else{
@@ -154,27 +170,44 @@ async function hgTime(){
 }
 
 async function hgStop(msg){
-    games_log.put(`[HG] onStop commands executed §2sucessfully§r`)
-    await MT_GAMES.kill()
-    runCMD('gamerule naturalregeneration true')
     stopGame(12, msg)
 }
 
-export async function loadChests(chests) {
+async function onStop(){
+    games_log.put(`[HG] onStop commands executed §2sucessfully§r`)
+    await MT_GAMES.kill()
+    runCMDs([
+        `inputpermission set @a movement enabled`,
+        'gamerule naturalregeneration true',
+        'gamerule falldamage false',
+        'fog @a remove zone_fog'
+    ])
+}
+
+export async function loadChests(chests, info=0) {
     try{
         let j = 0
+        let chests_length = Object.keys(chests).length
         for(let i in chests){
             j++
             await DIM.runCommandAsync(`setblock ${i} chest ["minecraft:cardinal_direction":"${chests[i]}"] replace`)
             DIM.runCommandAsync(`loot insert ${i} loot "chest/hg"`)
+            if(j%5==0 && info == 1){
+                runCMD(`title @a actionbar \ue134 Preparing Game... ${j}/${chests_length} chests loaded`)
+            }
+        }
+        if(info == 1){
+            runCMD(`title @a actionbar \ue115 Game Loaded!`)
         }
         console.warn('Chests loaded!')
     }catch(e){console.warn(e)}
 }
 
 async function getNextUpgrade(material, type){
-    if(upgradeItems.material[upgradeItems.material.indexOf(material)+1]){
+    if(upgradeItems.material.indexOf(material) != -1 && upgradeItems.material[upgradeItems.material.indexOf(material)+1]){
         return upgradeItems.material[upgradeItems.material.indexOf(material)+1]+'_'+type
+    }else if( upgradeArmor.material.indexOf(material) != -1 && upgradeArmor.material[upgradeArmor.material.indexOf(material)+1] != 0){
+        return upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]+'_'+type
     }
 }
 
@@ -229,6 +262,7 @@ export async function upgradeItem(player){
             break;
             default:
                 console.warn('Undefined error')
+                console.log(e.stack, e.message)
             break;
         }
     }

@@ -1,10 +1,11 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension } from "@minecraft/server"
+import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes } from "@minecraft/server"
 import { COPYRIGHT, DIM, SYM } from "../../const"
-import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, sleep, tellraw } from "../../modules/axisTools"
+import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, setblock, sleep, tellraw } from "../../modules/axisTools"
 import { GAMEDATA } from "../gamedata"
 import { getGameArena, startGame, startTimer, stopGame } from "../main"
 import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
 import { MT_GAMES } from "../../modules/MultiTasking/instances"
+import { MinecraftEnchantmentTypes } from "../../bundles/vanilla_data"
 
 export const GAMEDATA_FW_FRONTLINE = { // fw_frontline    
     id: 10,
@@ -114,8 +115,8 @@ const teams_info = {
     }
 }
 const BRIDGE_BLOCKS = [
-    'blue_concrete',
-    'red_concrete'
+    'minecraft:blue_concrete',
+    'minecraft:red_concrete'
 ]
 
 const BRIDGE_TEAMSCORES = {
@@ -141,7 +142,7 @@ export async function bridgeClear(){
             for(let d = 1; d<=Object.keys(clearData).length; d++){
                 if (clearData.hasOwnProperty(d)){
                     for(const block of BRIDGE_BLOCKS){
-                        await sleep(800)
+                        await sleep(2)
                         runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`, undefined,true)
                     }
                 }
@@ -152,7 +153,25 @@ export async function bridgeClear(){
 }
 
 let points //start territory - end territory x
+let projHitBlock
 async function bridgePrepair(){
+    projHitBlock = world.afterEvents.projectileHitBlock.subscribe(ev => {
+        try{
+            let x = Math.trunc(ev.location.x)
+            let y = Math.trunc(ev.location.y)
+            let z = Math.trunc(ev.location.z)
+            ev.projectile.remove()
+            console.warn(BRIDGE_BLOCKS.indexOf(ev.getBlockHit().block.typeId))
+            switch(BRIDGE_BLOCKS.indexOf(ev.getBlockHit().block.typeId)){
+                case -1:
+                break;
+                default:
+                    setblock(x,y,z,'air')
+                    runCMD(`say ${x},${y},${z},'air'`)
+                break;
+            }
+        }catch{}
+    })
     //Отсчет от синих
     points = 32
     let arn = getGameArena()
@@ -170,7 +189,7 @@ async function bridgePrepair(){
             runCMD(`fill ${teams_info[arn].red.base} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].red.start_red_x} ${teams_info[arn].floor_y} 2069 red_concrete_powder replace blue_concrete_powder`,undefined,true) //red team
             runCMD(`fill ${teams_info[arn].blue.base} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.start_blue_x} ${teams_info[arn].floor_y} 2069 blue_concrete_powder replace red_concrete_powder`,undefined,true)
             bridgeClear()
-        },50)
+        },70)
     }catch(e){console.warn(e)}
 
     edScore('fw_fl_points','data.gametemp',points)
@@ -180,32 +199,44 @@ async function bridgePrepair(){
 async function bridgeEquipment(){
     try{
         let arn = getGameArena()
+
+        //Enchantments
+        //@minecraft/vanilla-data (Not released) [/bundles/vanilla_data]
+        let bow = new ItemStack('minecraft:bow', 1)
+        let ench = bow.getComponent(ItemComponentTypes.Enchantable)
+        ench.addEnchantment({ type: MinecraftEnchantmentTypes.Power, level: 5 });
+
+
+
         for (const player of [...world.getPlayers()]) {
             if (!player.hasTag('spec')) {
                 const equipment = player.getComponent('equippable')
+                let inventory = player.getComponent(EntityInventoryComponent.componentId)
+                if (inventory && inventory.container) {
+                    inventory.container.addItem(bow)
+                }
                 if(hasTag(player, 'team.blue')){
                     equipment.setEquipment(EquipmentSlot.Head, teams_info[arn].blue.armor.head);
-                    equipment.setEquipment(EquipmentSlot.Chest, teams_info[arn].blue.armor.chest)
-
+                    equipment.setEquipment(EquipmentSlot.Chest, teams_info[arn].blue.armor.chest);
+                    
                     runCMDs([
-                        `give @s iron_sword`,
-                        `give @s bow`,
-                        `give @s iron_pickaxe`,
+                        `give @s iron_pickaxe 1 0 {"minecraft:can_destroy":{"blocks":["blue_concrete"]}}`,
                         `give @s blue_concrete 32 0 {"minecraft:can_place_on":{"blocks":["blue_concrete_powder", "blue_concrete"]}}`
                     ],player)
+
                 }
                 else if(hasTag(player, 'team.red')){
                     equipment.setEquipment(EquipmentSlot.Head, teams_info[arn].red.armor.head);
                     equipment.setEquipment(EquipmentSlot.Chest, teams_info[arn].red.armor.chest)
 
                     runCMDs([
-                        `give @s iron_sword`,
-                        `give @s bow`,
-                        `give @s iron_pickaxe`,
+                        `give @s iron_pickaxe 1 0{"minecraft:can_destroy":{"blocks":["red_concrete"]}}`,
                         `give @s red_concrete 32 0 {"minecraft:can_place_on":{"blocks":["red_concrete_powder", "red_concrete"]}}`
                     ],player)
                 }
-            }}
+            }
+        }
+            
     }catch(e){console.warn(e)}
 }
 
@@ -268,7 +299,7 @@ async function bridgeTick(){
                 
             }
             if(points <= 0){await WinHandle('red')}
-            else if(points>64){await WinHandle('blue')}
+            else if(points>=64){await WinHandle('blue')}
         }
     }
 }
@@ -276,7 +307,7 @@ let info = 0
 
 async function information(){
     info = system.runInterval(()=>{
-        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${"temp"+"\n"+points}\'"}]}`)
+        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${points}]}`)
     },10)
     MT_GAMES.register(info)
 }
@@ -306,10 +337,13 @@ async function bridgeDeath(player){
     
 }
 
-async function bridgeStop(){
-    runCMD(`say stopped`)
-    try{
+async function bridgeStop() {
+    try {
+        world.afterEvents.projectileHitBlock.unsubscribe(projHitBlock)
+    } catch { }
+    try {
         MT_GAMES.kill()
-    }catch(e){console.warn(e,info)}
+    } catch (e) { console.warn(e, info) }
     runCMD(`title @a title ud0""`)
+
 }

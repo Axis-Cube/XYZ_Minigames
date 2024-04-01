@@ -29,7 +29,7 @@ export const GAMEDATA_DRP = { // Dropper
                     win_y: 40
                 },
                 2: {
-                    spawnpoint: "1475.58 110.00 511.49",
+                    spawnpoint: "1475.58 110.00 511.49", //7
                     safe_y: 110,
                     win_y: 40
                 },
@@ -74,12 +74,12 @@ export const GAMEDATA_DRP = { // Dropper
     },
     ends: {
         no_time: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_time","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"},{"text":`+150${SYM}`}]}}]},
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_time","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"},{"text":`+80${SYM}`}]}}]},
             cmd: [{'type':'money','sum': 80, 'target': '@a[tag=drp.winner]'}]
         },
         no_players: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_players","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"},{"text":`+150${SYM}`}]}}]},
-            cmd: [{'type':'money','sum': 80, 'target': '@a[tag=drp.winner]'}]
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_players","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"}]}}]},
+            cmd: giveAwards
         },
     },
     joinable: {
@@ -108,7 +108,7 @@ export const GAMEDATA_DRP = { // Dropper
         'scoreboard players set "§1" drp.display -8',
         {type:'scoreset',value: 1, objective: 'drp.display'},
         'scoreboard players set "§2" drp.display 999',
-        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" drp.display 998`,
+        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.stages" drp.display 998`,
     ],
     death_data: {},
     stop_commands: [ ],
@@ -123,7 +123,12 @@ function drp_main(max_stages = 3){
     random_stages = Object.keys(GAMEDATA[7].loc[getGameArena()].stages).sort().map(Number)
     random_stages = shuffle(random_stages)
     random_stages = random_stages.slice(0,max_stages)
-    games_log.put(random_stages)
+    games_log.put('[DRP] Arenas: '+random_stages)
+    runCMDs([
+        `structure load drop_${random_stages[0]} 1547 120 485`,
+        `structure load drop_${random_stages[1]} 1547 120 490`,
+        `structure load drop_${random_stages[2]} 1547 120 495`
+    ])
     startTimer(7)
 }
 
@@ -145,6 +150,7 @@ async function drpTick(){
     players_count = temp_players
 
     if(players_count == 0){
+        games_log.put('[DRP] Winners: '+JSON.stringify(winner_list.reverse()))
         stopGame(7,'no_players')
     }
 
@@ -171,11 +177,28 @@ async function nextRound(player){
             'gamemode spectator',
             `tellraw @a {"rawtext":[{"translate":"axiscube.games.player_arrived","with":["${player.nameTag}"]}]}`,
         ],player)
-        winner_list.push(player.nameTag)
+        winner_list.push({name: player.name, target:player})
         games_log.put(winner_list)
     }
     player.setDynamicProperty('drp_stage',stage_num)
     runCMD(`scoreboard players set ${player.nameTag} drp.display ${random_stages.indexOf(stage_num)+1}`)
     runCMD(`spawnpoint ${player.name} ${GAMEDATA[7].loc[getGameArena()].stages[stage_num].spawnpoint}`)
     runCMD(`tp ${player.name} ${GAMEDATA[7].loc[getGameArena()].stages[stage_num].spawnpoint}`)
+}
+
+async function giveAwards(){
+    let winners = winner_list.reverse()
+    for(let el in winners){
+        switch (Number(el)){
+            case 0:
+                runCMDs([{'type':'money','sum': 100, 'target': '@s'}],winners[el].target)
+            break;
+            case 1:
+                runCMDs([{'type':'money','sum': 50, 'target': '@s]'}],winners[el].target)
+            break;
+            default:
+                runCMDs([{'type':'money','sum': 10, 'target': '@s'}],winners[el].target)
+            break;
+        }
+    }
 }

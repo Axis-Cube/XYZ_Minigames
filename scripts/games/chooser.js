@@ -131,6 +131,12 @@ const GM_FORM = {
             "ui_type": "default",
             "for_start": 10
         },
+        {
+            "name": "%axiscube.hg.name",
+            "body": "%axiscube.hg.d",
+            "ui_type": "default",
+            "for_start": 12 
+        }
     ]
 }
 
