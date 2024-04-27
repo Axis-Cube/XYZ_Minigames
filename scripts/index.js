@@ -15,3 +15,6 @@ try{
 }catch{}
 //TikTakToe()
 
+world.afterEvents.playerJoin.subscribe(ev => {
+    world.getEntity(ev.playerId)
+})

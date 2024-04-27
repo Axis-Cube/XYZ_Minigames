@@ -1,4 +1,4 @@
-import { world, system, ItemStack, EntityInventoryComponent, Block, BlockComponent } from "@minecraft/server";
+import { world, system, ItemStack, EntityInventoryComponent, Block, BlockComponent, Player } from "@minecraft/server";
 import { cryptWithSalt, decryptWithSalt, edScore, getScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw, updateMapID } from "./modules/axisTools";
 import { axisHealthBar } from "./modules/axisHB";
 import { openJSON } from "./modules/easyform";
@@ -378,11 +378,6 @@ world.afterEvents.playerInteractWithBlock.subscribe(e => {
     let block = e.block.typeId
 
     let player = e.player
-    let inv = player.getComponent(EntityInventoryComponent.componentId)
-    let hand = player.selectedSlot
-    try{
-        let item = e.itemStack.typeId
-    }catch{}
 
     switch(block){
         case 'axiscube:hg_upgrade':
@@ -405,3 +400,21 @@ system.runInterval(async ()=>{
     }
     //runCMD(`say ${cryptWithSalt(map_id.toString(),'TMnrE')}`)
 },10)
+
+
+
+let last_item_in_hand = system.runInterval(()=>{
+    for (const player of [...world.getPlayers()]) {
+        let inv =  player.getComponent(EntityInventoryComponent.componentId)
+        let container = inv.container
+        let slot = player.selectedSlot
+        try{
+            //console.log(container.getItem(0), slot)
+            let item = container.getItem(slot)?.typeId;
+            if(item != undefined){
+                player.setDynamicProperty('hg:lst', item)
+            }
+        }catch{}
+    }
+},5)
+MT_GAMES.register(last_item_in_hand)

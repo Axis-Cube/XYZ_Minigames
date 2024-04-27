@@ -120,8 +120,9 @@ async function setCheckpoint(player){
                 playsound('random.orb', player.name)
             }else{
                 let vel = player.getVelocity()
-                if(vel.x != 0 && vel.z != 0)
-                actionbar('\ue116 Checkpoint already created!', player.name)
+                if(vel.x != 0 && vel.z != 0){
+                    actionbar('\ue116 Checkpoint already created!', player.name)
+                }
             }
         }
     }catch{}
@@ -157,24 +158,20 @@ async function prk_main(){
 }
 async function prkTick(){
     let playersCount = 0
-    let playersWin = 0
-
-    for (const player of [...world.getPlayers()]) {
-        if (!player.hasTag('spec')) {
-            setCheckpoint(player)
-            WinHandler(player)
-        }
-        if (player.hasTag('prk.member')) {
-            playersCount = playersCount + 1
-        } else if (player.hasTag('prk.winner')) {
-            playersWin = playersWin + 1
-        }
-        if (playersCount == 0) {
-            prkStop('no_players') //Winner 
-        }
-    }
     
 
+    for (const player of [...world.getPlayers()]) {
+        if (!player.hasTag('spec') && player.hasTag('prk.member')) {
+            setCheckpoint(player)
+            WinHandler(player)
+            playersCount++
+        }
+    }
+
+    if (playersCount == 0) {
+        prkStop('no_players') //Winner 
+    }
+    
 }
 
 async function prkTime(){
@@ -184,7 +181,7 @@ async function prkTime(){
 async function prkStop(reason){
     let w_names = []
     winners.map(itm => {w_names.push(itm.name)})
-    runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'Winners: ${w_names}\'"}]}`)
+    runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'Winners: ${w_names.join(', ')}\'"}]}`)
     stopGame(11,reason)
 
 }

@@ -1,5 +1,3 @@
-
-
 Add icons to games
 Add translation
 Evil Chicken
@@ -11,3 +9,5 @@ Spleef
 Deathrun
 About Menu
 Flagwars
+
+Items Upgrade bug

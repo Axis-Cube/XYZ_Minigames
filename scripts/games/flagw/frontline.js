@@ -10,7 +10,7 @@ import { MinecraftEnchantmentTypes } from "../../bundles/vanilla_data"
 export const GAMEDATA_FW_FRONTLINE = { // fw_frontline    
     id: 10,
     namespace: 'fw_frontline',
-    min_players: 1,
+    min_players: 2,
     tags: [
         'fw_frontline',
         'fw_frontline.member',
@@ -221,7 +221,7 @@ async function bridgeEquipment(){
                     
                     runCMDs([
                         `give @s iron_pickaxe 1 0 {"minecraft:can_destroy":{"blocks":["blue_concrete"]}}`,
-                        `give @s blue_concrete 32 0 {"minecraft:can_place_on":{"blocks":["blue_concrete_powder", "blue_concrete"]}}`
+                        `give @s blue_concrete 32 0 {"minecraft:can_place_on":{"blocks":["blue_concrete_powder", "blue_concrete", "red_concrete"]}}`
                     ],player)
 
                 }
@@ -230,8 +230,8 @@ async function bridgeEquipment(){
                     equipment.setEquipment(EquipmentSlot.Chest, teams_info[arn].red.armor.chest)
 
                     runCMDs([
-                        `give @s iron_pickaxe 1 0{"minecraft:can_destroy":{"blocks":["red_concrete"]}}`,
-                        `give @s red_concrete 32 0 {"minecraft:can_place_on":{"blocks":["red_concrete_powder", "red_concrete"]}}`
+                        `give @s iron_pickaxe 1 0 {"minecraft:can_destroy":{"blocks":["red_concrete"]}}`,
+                        `give @s red_concrete 32 0 {"minecraft:can_place_on":{"blocks":["red_concrete_powder", "red_concrete", "blue_concrete"]}}`
                     ],player)
                 }
             }

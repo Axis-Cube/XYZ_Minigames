@@ -28,45 +28,45 @@ export const GAMEDATA_DRP = { // Dropper
                     safe_y: 110,
                     win_y: 40
                 },
-                2: {
-                    spawnpoint: "1475.58 110.00 511.49", //7
+                2:{
+                    spawnpoint: "1506.71 110.25 462.61", 
                     safe_y: 110,
                     win_y: 40
                 },
                 3:{
-                    spawnpoint: "1442.33 109.50 537.09",
+                    spawnpoint: "1442.33 109.50 537.09", 
                     safe_y: 109,
                     win_y: 40
                 },
                 4:{
-                    spawnpoint: "1480.61 110.00 529.55",
+                    spawnpoint: "1524.51 110.00 509.88", 
                     safe_y: 110,
-                    win_y: 41
+                    win_y: 39
                 },
                 5:{
-                    spawnpoint: "1431.39 110.00 502.56",
+                    spawnpoint: "1431.39 110.00 502.56", 
                     safe_y: 110,
                     win_y: 43
                 },
                 6:{
-                    spawnpoint: "1439.22 111.00 471.93",
-                    safe_y: 111,
-                    win_y: 44
-                },
-                7:{
-                    spawnpoint: "1492.96 110.00 447.46",
+                    spawnpoint: "1492.96 110.00 447.46", 
                     safe_y: 110,
                     win_y: 39
                 },
-                8:{
-                    spawnpoint: "1506.71 110.25 462.61",
+                7: {
+                    spawnpoint: "1475.58 110.00 511.49",
                     safe_y: 110,
                     win_y: 40
                 },
-                9:{
-                    spawnpoint: "1524.51 110.00 509.88",
+                8:{
+                    spawnpoint: "1480.61 110.00 529.55", 
                     safe_y: 110,
-                    win_y: 39
+                    win_y: 41
+                },
+                9:{
+                    spawnpoint: "1439.22 111.00 471.93", 
+                    safe_y: 111,
+                    win_y: 44
                 }
             }
 
@@ -111,7 +111,10 @@ export const GAMEDATA_DRP = { // Dropper
         `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.stages" drp.display 998`,
     ],
     death_data: {},
-    stop_commands: [ ],
+    stop_commands: [
+        'structure load drop_0 1547 120 485',
+        'kill @e[type=snow_golem]'
+    ],
     boards: [
         ['drp.display', '\ue195§6 %axiscube.drp.name', true],
     ]

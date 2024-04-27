@@ -25,10 +25,10 @@ export const GAMEDATA_HG = { // Hunger Games
         },
     },
     ends: {
-        no_time: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.hg.no_time","with":{"rawtext":[{"selector":"@a[tag=hg.winner]"},{"text":`+80${SYM}`}]}}]},
-            cmd: [{'type':'money','sum': 80, 'target': '@a[tag=hg.winner]'}]
-        },
+        //no_time: {
+        //    msg: {"rawtext":[{"translate":"axiscube.games.game_over.hg.no_time","with":{"rawtext":[{"selector":"@a[tag=hg.winner]"},{"text":`+80${SYM}`}]}}]},
+        //    cmd: [{'type':'money','sum': 80, 'target': '@a[tag=hg.winner]'}]
+        //},
         no_players: {
             msg: {"rawtext":[{"translate":"axiscube.games.game_over.hg.no_players","with":{"rawtext":[{"selector":"@a[tag=hg.winner]"},{"text":`+100${SYM}`}]}}]},
             cmd: [{'type':'money','sum': 100, 'target': '@a[tag=hg.winner]'}]
@@ -45,7 +45,7 @@ export const GAMEDATA_HG = { // Hunger Games
     time: {
         value: 10000,
         tick_function: hgTick,
-        xp: true,
+        xp: false,
         actionbar_spec: true,
         notify_times: [300, 180, 60],
         events: {
@@ -224,11 +224,15 @@ async function information(){
 }
 
 export async function upgradeItem(player){
-    let inv = player.getComponent(EntityInventoryComponent.componentId)
+    let inv = await player.getComponent(EntityInventoryComponent.componentId)
     let container = inv.container
     let slot = player.selectedSlot
     try{
-        let item = container.getItem(player.selectedSlot).typeId
+        //console.log(container.getItem(0), slot)
+        let item = container.getItem(slot)?.typeId;
+        if(item === undefined){
+            item = player.getDynamicProperty('hg:lst')
+        }
         let item_properties = {
             type: item.split('_')[1],
             material: item.split('_')[0]
@@ -252,16 +256,19 @@ export async function upgradeItem(player){
         playsound('block.false_permissions', player)
         switch(e.message){
             case '12_0':
-                console.warn('This item Blocked and can not be upgraded')
+                console.log('This item Blocked and can not be upgraded')
             break;
             case '12_1':
-                console.warn('Item Id is Not defined')
+                console.log('Item Id is Not defined')
             break;
             case '12_2':
-                console.warn('You need tho items with Identical Id')
+                console.log('You need tho items with Identical Id')
+            break;
+            case '12_3':
+                console.log('Undefined Item In container')
             break;
             default:
-                console.warn('Undefined error')
+                console.log('Undefined error')
                 console.log(e.stack, e.message)
             break;
         }

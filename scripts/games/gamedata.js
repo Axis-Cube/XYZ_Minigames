@@ -58,7 +58,7 @@ export const GAMEDATA = {
     9: GAMEDATA_FW_BRIDGES, //Flagwars Bridges
     10: GAMEDATA_FW_FRONTLINE, //Flagwars Frontline
     11: GAMEDATA_PRK, //Parkour
-    12: GAMEDATA_HG //-2995.50 11.50 -2989.50
+    12: GAMEDATA_HG //Hunger Games
 }
 //GAMEDATA[1].start_commands.push(`execute as @a run scoreboard players random @s hns.block 0 ${HNS_BLOCKS.length-1}`)
     // GAMEDATA[2].time.events = {
