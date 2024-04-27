@@ -204,7 +204,13 @@ const PVP_KITSUIT = {
             'netherite_sword',
             'trident',
             'stick',
-            'fire_charge'
+            'fire_charge',
+            'wooden_axe',
+            'stone_axe',
+            'iron_axe',
+            'golden_axe',
+            'diamond_axe',
+            'netherite_axe'
         ],
         bow: [
             'air',
@@ -280,7 +286,13 @@ const PVP_ICONS = {
             6: ['\ue181','textures/items/netherite_sword'],
             7: ['\ue189','textures/items/trident'],
             8: ['\ue18a','textures/items/stick'],
-            9: ['\ue1ce','textures/items/fire_charge']
+            9: ['\ue1ce','textures/items/fire_charge'],
+            10: ['\ue17c','textures/items/wooden_axe'],
+            11: ['\ue17c','textures/items/stone_axe'],
+            12: ['\ue17c','textures/items/iron_axe'],
+            13: ['\ue17c','textures/items/golden_axe'],
+            14: ['\ue17c','textures/items/diamond_axe'],
+            15: ['\ue17c','textures/items/netherite_axe']
         },
         bow: {
             0: ['\ue17e','textures/ui/icons/items/air_bow'],
