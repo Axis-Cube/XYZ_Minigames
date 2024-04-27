@@ -203,7 +203,8 @@ const PVP_KITSUIT = {
             'diamond_sword',
             'netherite_sword',
             'trident',
-            'stick'
+            'stick',
+            'fire_charge'
         ],
         bow: [
             'air',
