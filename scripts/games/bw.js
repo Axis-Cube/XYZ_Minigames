@@ -312,7 +312,7 @@ const BW_SETS = {
         body: '%item.stone_pickaxe.name & %howtoplay.blocks (x5)',
         icon: 'textures/ui/icons/games/bw/kit_miner',
         getfun: (player) => {
-            runCMD('give @s stone_pickaxe',player)
+            runCMD('give @s iron_pickaxe',player)
             runCMD(`give @s ${getPlayerTeam(player)}_concrete 5`,player)
         }
     },
@@ -333,6 +333,7 @@ const BW_SETS = {
         getfun: (player) => {
             runCMD('give @s wooden_pickaxe',player)
             runCMD(`give @s ${getPlayerTeam(player)}_concrete 10`,player)
+            equipment.setEquipment(EquipmentSlot.head, new ItemStack('minecraft:golden_helmet',1))
         }
     }
 }
@@ -848,14 +849,14 @@ const bwShopData = {
         {
             name: '%item.stick.name (%enchantment.knockback)',
             icon: 'textures/items/baseball_bat',
-            price: 10,
+            price: 64,
             id: 'axiscube:baseball_bat',
             material: 'copper_ingot',
             buy: { type: 'item', components: CAN_DESTROY }
         },
         {
             id: 'stone_sword',
-            price: 7,
+            price: 5,
             material: 'iron_ingot',
             buy: { type: 'item', components: CAN_DESTROY }
         },
@@ -1093,7 +1094,7 @@ const bwShopData = {
         {
             id: '{{TEAM}}_concrete',
             name: '%tile.concrete.{{TEAM}}.name',
-            price: 4,
+            price: 5,
             material: 'copper_ingot',
             icon: 'textures/blocks/concrete_{{TEAM}}',
             buy: { type: 'slider', amount: 8, another_item_data: `2 ${CAN_PLACE}` }
@@ -1122,7 +1123,69 @@ const bwShopData = {
             price: 4,
             material: 'amethyst_shard',
             buy: { type: 'slider', amount: 1, another_item_data: `0 ${CAN_PLACE}` }
+        }
+        ],
+    4: [ // other: 
+        {
+            id: 'chest',
+            price: 4,
+            name: '%tile.chest.name',
+            material: 'iron_ingot',
+            icon: 'textures/blocks/chest_front',
+            buy: { type: 'item' }
         },
+        {
+            id: 'snowball',
+            price: 1,
+            material: 'gold_ingot',
+            buy: { type: 'slider', amount: 1 }
+        },
+        {
+            id: 'feather',
+            name: '%item.feather.name (%enchantment.knockback)',
+            price: 3,
+            icon: 'textures/items/feather',
+            material: 'amethyst_shard',
+            buy: { type: 'slider', amount: 1 }
+        },
+        {
+            id: 'gold_ingot',
+            price: 1,
+            material: 'amethyst_shard',
+            buy: { type: 'slider', amount: 3 }
+        },
+        {
+            id: 'iron_ingot',
+            price: 1,
+            material: 'gold_ingot',
+            buy: { type: 'slider', amount: 3 }
+        },
+        {
+            id: 'potion',
+            name: '%potion.jump.name (%enchantment.level.2)',
+            price: 4,
+            material: 'amethyst_shard',
+            icon: 'textures/items/potion_bottle_jump',
+            buy: { type: 'item', itemId: 11 }
+        },
+        {
+            id: 'potion',
+            name: '%potion.damageBoost.name (%enchantment.level.2)',
+            price: 4,
+            material: 'amethyst_shard',
+            icon: 'textures/items/potion_bottle_damageBoost',
+            buy: { type: 'item', itemId: 33 }
+        },
+        {
+            id: 'potion',
+            name: '%potion.moveSpeed.name (%enchantment.level.2)',
+            price: 4,
+            material: 'amethyst_shard',
+            icon: 'textures/items/potion_bottle_moveSpeed',
+            buy: { type: 'item', itemId: 16 }
+        }
+    ],
+    5: [ // tools:
         {
             id: 'wooden_pickaxe',
             name: '%item.wooden_pickaxe.name',
@@ -1187,66 +1250,6 @@ const bwShopData = {
             icon: 'textures/items/netherite_axe',
             buy: { type: 'item', components: CAN_DESTROY }
         }
-    ],
-    4: [ // other: 
-        {
-            id: 'chest',
-            price: 4,
-            name: '%tile.chest.name',
-            material: 'iron_ingot',
-            icon: 'textures/blocks/chest_front',
-            buy: { type: 'item' }
-        },
-        {
-            id: 'snowball',
-            price: 1,
-            material: 'gold_ingot',
-            buy: { type: 'slider', amount: 1 }
-        },
-        {
-            id: 'feather',
-            name: '%item.feather.name (%enchantment.knockback)',
-            price: 3,
-            icon: 'textures/items/feather',
-            material: 'amethyst_shard',
-            buy: { type: 'slider', amount: 1 }
-        },
-        {
-            id: 'gold_ingot',
-            price: 1,
-            material: 'amethyst_shard',
-            buy: { type: 'slider', amount: 3 }
-        },
-        {
-            id: 'iron_ingot',
-            price: 1,
-            material: 'gold_ingot',
-            buy: { type: 'slider', amount: 3 }
-        },
-        {
-            id: 'potion',
-            name: '%potion.jump.name (%enchantment.level.2)',
-            price: 4,
-            material: 'amethyst_shard',
-            icon: 'textures/items/potion_bottle_jump',
-            buy: { type: 'item', itemId: 11 }
-        },
-        {
-            id: 'potion',
-            name: '%potion.damageBoost.name (%enchantment.level.2)',
-            price: 4,
-            material: 'amethyst_shard',
-            icon: 'textures/items/potion_bottle_damageBoost',
-            buy: { type: 'item', itemId: 33 }
-        },
-        {
-            id: 'potion',
-            name: '%potion.moveSpeed.name (%enchantment.level.2)',
-            price: 4,
-            material: 'amethyst_shard',
-            icon: 'textures/items/potion_bottle_moveSpeed',
-            buy: { type: 'item', itemId: 16 }
-        }
     ]
 }
 
@@ -1274,8 +1277,9 @@ export function formBWshop(player, linkto=0,comment='') {
                 .body(current_res)
                 .button("%howtoplay.weapons", "textures/items/gold_sword")
                 .button("%howtoplay.armor", "textures/items/chainmail_chestplate")
-                .button("%howtoplay.blocks & %itemGroup.name.pickaxe", "textures/items/diamond_pickaxe")
+                .button("%howtoplay.blocks", "textures/blocks/wool_colored_white")
                 .button("%axiscube.bw.shop.other", "textures/items/potion_bottle_moveSpeed")
+                .button("%axiscube.bw.shop.tools", "textures/items/potion_bottle_moveSpeed")
                 //.button("%axiscube.bw.shop.upgrade", "textures/items/echo_shard")
             shopCategories.show(player).then(gg => {
                 if (gg.selection != undefined) {
