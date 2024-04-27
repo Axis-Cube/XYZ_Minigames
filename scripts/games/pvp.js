@@ -280,7 +280,7 @@ const PVP_ICONS = {
             6: ['\ue181','textures/items/netherite_sword'],
             7: ['\ue189','textures/items/trident'],
             8: ['\ue18a','textures/items/stick'],
-            9: ['\idk','textures/items/fire_charge']
+            9: ['\ue1ce','textures/items/fire_charge']
         },
         bow: {
             0: ['\ue17e','textures/ui/icons/items/air_bow'],
