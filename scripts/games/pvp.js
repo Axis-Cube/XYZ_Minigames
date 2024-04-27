@@ -420,7 +420,7 @@ export const PVP_KITTEMP = {
 
 export const PVP_VOIDSET = {
     name: 'Unknown set',
-    author: 'Unknown',
+    author: 'TechyTheGoat',
     icon: 'textures/block/barrier',
     suit: {
         armor: {
