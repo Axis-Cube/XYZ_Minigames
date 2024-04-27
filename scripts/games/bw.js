@@ -849,14 +849,14 @@ const bwShopData = {
         {
             name: '%item.stick.name (%enchantment.knockback)',
             icon: 'textures/items/baseball_bat',
-            price: 10,
+            price: 64,
             id: 'axiscube:baseball_bat',
             material: 'copper_ingot',
             buy: { type: 'item', components: CAN_DESTROY }
         },
         {
             id: 'stone_sword',
-            price: 7,
+            price: 5,
             material: 'iron_ingot',
             buy: { type: 'item', components: CAN_DESTROY }
         },
@@ -1094,7 +1094,7 @@ const bwShopData = {
         {
             id: '{{TEAM}}_concrete',
             name: '%tile.concrete.{{TEAM}}.name',
-            price: 4,
+            price: 5,
             material: 'copper_ingot',
             icon: 'textures/blocks/concrete_{{TEAM}}',
             buy: { type: 'slider', amount: 8, another_item_data: `2 ${CAN_PLACE}` }
@@ -1123,7 +1123,9 @@ const bwShopData = {
             price: 4,
             material: 'amethyst_shard',
             buy: { type: 'slider', amount: 1, another_item_data: `0 ${CAN_PLACE}` }
-        },
+        }
+        ],
+    5: [ // tools:
         {
             id: 'wooden_pickaxe',
             name: '%item.wooden_pickaxe.name',
