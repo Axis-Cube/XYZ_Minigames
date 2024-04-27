@@ -1125,6 +1125,66 @@ const bwShopData = {
             buy: { type: 'slider', amount: 1, another_item_data: `0 ${CAN_PLACE}` }
         }
         ],
+    4: [ // other: 
+        {
+            id: 'chest',
+            price: 4,
+            name: '%tile.chest.name',
+            material: 'iron_ingot',
+            icon: 'textures/blocks/chest_front',
+            buy: { type: 'item' }
+        },
+        {
+            id: 'snowball',
+            price: 1,
+            material: 'gold_ingot',
+            buy: { type: 'slider', amount: 1 }
+        },
+        {
+            id: 'feather',
+            name: '%item.feather.name (%enchantment.knockback)',
+            price: 3,
+            icon: 'textures/items/feather',
+            material: 'amethyst_shard',
+            buy: { type: 'slider', amount: 1 }
+        },
+        {
+            id: 'gold_ingot',
+            price: 1,
+            material: 'amethyst_shard',
+            buy: { type: 'slider', amount: 3 }
+        },
+        {
+            id: 'iron_ingot',
+            price: 1,
+            material: 'gold_ingot',
+            buy: { type: 'slider', amount: 3 }
+        },
+        {
+            id: 'potion',
+            name: '%potion.jump.name (%enchantment.level.2)',
+            price: 4,
+            material: 'amethyst_shard',
+            icon: 'textures/items/potion_bottle_jump',
+            buy: { type: 'item', itemId: 11 }
+        },
+        {
+            id: 'potion',
+            name: '%potion.damageBoost.name (%enchantment.level.2)',
+            price: 4,
+            material: 'amethyst_shard',
+            icon: 'textures/items/potion_bottle_damageBoost',
+            buy: { type: 'item', itemId: 33 }
+        },
+        {
+            id: 'potion',
+            name: '%potion.moveSpeed.name (%enchantment.level.2)',
+            price: 4,
+            material: 'amethyst_shard',
+            icon: 'textures/items/potion_bottle_moveSpeed',
+            buy: { type: 'item', itemId: 16 }
+        }
+    ],
     5: [ // tools:
         {
             id: 'wooden_pickaxe',
@@ -1190,66 +1250,6 @@ const bwShopData = {
             icon: 'textures/items/netherite_axe',
             buy: { type: 'item', components: CAN_DESTROY }
         }
-    ],
-    4: [ // other: 
-        {
-            id: 'chest',
-            price: 4,
-            name: '%tile.chest.name',
-            material: 'iron_ingot',
-            icon: 'textures/blocks/chest_front',
-            buy: { type: 'item' }
-        },
-        {
-            id: 'snowball',
-            price: 1,
-            material: 'gold_ingot',
-            buy: { type: 'slider', amount: 1 }
-        },
-        {
-            id: 'feather',
-            name: '%item.feather.name (%enchantment.knockback)',
-            price: 3,
-            icon: 'textures/items/feather',
-            material: 'amethyst_shard',
-            buy: { type: 'slider', amount: 1 }
-        },
-        {
-            id: 'gold_ingot',
-            price: 1,
-            material: 'amethyst_shard',
-            buy: { type: 'slider', amount: 3 }
-        },
-        {
-            id: 'iron_ingot',
-            price: 1,
-            material: 'gold_ingot',
-            buy: { type: 'slider', amount: 3 }
-        },
-        {
-            id: 'potion',
-            name: '%potion.jump.name (%enchantment.level.2)',
-            price: 4,
-            material: 'amethyst_shard',
-            icon: 'textures/items/potion_bottle_jump',
-            buy: { type: 'item', itemId: 11 }
-        },
-        {
-            id: 'potion',
-            name: '%potion.damageBoost.name (%enchantment.level.2)',
-            price: 4,
-            material: 'amethyst_shard',
-            icon: 'textures/items/potion_bottle_damageBoost',
-            buy: { type: 'item', itemId: 33 }
-        },
-        {
-            id: 'potion',
-            name: '%potion.moveSpeed.name (%enchantment.level.2)',
-            price: 4,
-            material: 'amethyst_shard',
-            icon: 'textures/items/potion_bottle_moveSpeed',
-            buy: { type: 'item', itemId: 16 }
-        }
     ]
 }
 
@@ -1277,8 +1277,9 @@ export function formBWshop(player, linkto=0,comment='') {
                 .body(current_res)
                 .button("%howtoplay.weapons", "textures/items/gold_sword")
                 .button("%howtoplay.armor", "textures/items/chainmail_chestplate")
-                .button("%howtoplay.blocks & %itemGroup.name.pickaxe", "textures/items/diamond_pickaxe")
+                .button("%howtoplay.blocks", "textures/blocks/wool_colored_white")
                 .button("%axiscube.bw.shop.other", "textures/items/potion_bottle_moveSpeed")
+                .button("%axiscube.bw.shop.tools", "textures/items/potion_bottle_moveSpeed")
                 //.button("%axiscube.bw.shop.upgrade", "textures/items/echo_shard")
             shopCategories.show(player).then(gg => {
                 if (gg.selection != undefined) {
