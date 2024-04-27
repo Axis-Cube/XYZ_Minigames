@@ -1,0 +1,28 @@
+{
+	"format_version": "1.16.100",
+	"minecraft:block": {
+		"description": {
+			"identifier": "axiscube:hg_upgrade"
+		},
+		
+		"components": {
+			"minecraft:explosion_resistance": 100000,
+			"minecraft:destroy_time": 100000,
+			"minecraft:on_interact": {
+				"event": "tools:test",
+				"target": "self"
+			}
+		},
+		
+		"events": {
+			"tools:test": {
+				"run_command": {
+					"command": [
+						"scriptevent tools:test"
+					],
+					"target": "self"
+				}
+			}
+		}
+	}
+}

@@ -1,10 +1,7 @@
 import {
-    ActionFormData,
-    ActionFormResponse,
-    MessageFormData,
-    ModalFormData
+    ActionFormData
 } from "@minecraft/server-ui"
-import { system, world } from "@minecraft/server"
+import { system } from "@minecraft/server"
 import { runCMD, rawtext, tellraw } from './axisTools'
 import { FORMS } from "../forms"
 import { axisEval } from "./evalSandbox"
@@ -52,8 +49,16 @@ export function openJSON(systemName,player,formobj=FORMS) {
         formTale.body(formData.body)
 
         let buttons = formData.buttons
+        for (let x in buttons) { //remove invisible
+            let thisButt = buttons[x]
+            if (thisButt.visible == false && thisButt.visible != undefined) {
+                buttons.splice(x,1)
+            }
+        }
+
         for (let i in buttons) {
             let thisButt = buttons[i]
+            
             if (thisButt.icon != undefined || thisButt.icon != '') {
                 formTale.button(thisButt.button_name,thisButt.icon)
             } else {

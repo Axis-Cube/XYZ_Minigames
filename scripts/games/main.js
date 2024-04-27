@@ -1,10 +1,11 @@
-import { system, world } from '@minecraft/server';
+import { Player, system, world } from '@minecraft/server';
 import { edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '../modules/axisTools'
 import { GAMEDATA } from './gamedata';
 import { killMessage } from '../tunes/killMessage';
-import { formTeamsel } from './category_team';
+//import { formTeamsel } from './category_team';
 import { getPlayerColor } from '../tunes/profile';
 import { checkPerm, isManager, isTempManager } from '../modules/perm';
+import { games_log } from '../modules/Logger/logger_env';
 
 /**
 * @returns {Number}
@@ -40,6 +41,49 @@ for (let i in GAMEDATA) {
     };
 };
 
+export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
+    const thisGame = GAMEDATA[id]
+    if (thisGame.min_players > [...world.getPlayers()].length) {
+        tellraw(`{"rawtext":[{"translate":"axiscube.games.startgame.no_players","with":{"rawtext":[{"translate":"axiscube.${thisGame.namespace}.name"},{"text":"${thisGame.min_players}"}]}}]}`)
+        return
+    }
+    if (thisGame.reset_player_color != undefined && thisGame.reset_player_color[getGameType()] == true) {
+        for (const playerT of world.getPlayers()) {
+            playerT.nameTag = playerT.name;
+        };
+    }
+    await clearTags();
+    let commands = [
+        'clear @a',
+        `title @a title ud0""`,
+        `scoreboard players set mg data ${id}`,
+        `scoreboard players set diff data ${diff}`,
+        { type:'tp', value: thisGame.loc[arn].spawn },
+        { type:'tp', value: thisGame.loc[arn].spawnpoint, action: 'spawnpoint' },
+        'scoreboard objectives add data.gametemp dummy "data.gametemp"',
+        'scoreboard objectives remove lobby.display',
+        `scoreboard players set time data.gametemp ${thisGame.time.value}`,
+    ]
+    await runCMDs(commands)
+    if (thisGame.time.xp) {
+        await runCMD(`xp ${thisGame.time.value}l @a`)
+    }
+    for(let i in thisGame.boards) {
+        let thisBoard = thisGame.boards[i]
+        if (thisBoard[1] == undefined) { thisBoard[1] = thisBoard[0] }
+        await runCMD(`scoreboard objectives add ${thisBoard[0]} dummy "${thisBoard[1]}"`)
+        if (thisBoard[2] == true) { await runCMD(`scoreboard objectives setdisplay sidebar ${thisBoard[0]}`) }
+    }
+    await runCMDs(thisGame.start_commands)
+}
+
+/**
+ * Starting game with specified id
+ * @param {number} id - Game id
+ * @param {Player} player - Player Target
+ * @param {number} arn - Arena
+ * @returns {void}
+ */
 export async function startGame( id, player, arn = getGameArena() ) {
     const thisGame = GAMEDATA[id]
     if (!checkPerm(player.name,'start')) { rawtext('axiscube.perm.denied.start',player.name,'translate','c'); return }
@@ -54,11 +98,13 @@ export async function startGame( id, player, arn = getGameArena() ) {
         };
     }
     await clearTags();
+    try{await runCMDs(thisGame.pre_commands)}catch{}
     let commands = [
         'clear @a',
+        `title @a title ud0""`,
         `scoreboard players set mg data ${id}`,
         `scoreboard players set arn data ${arn}`,
-        { type:'tp', value: thisGame.loc[arn].spawn },
+        { type:'tp', value: thisGame.loc[arn].spawn},
         { type:'tp', value: thisGame.loc[arn].spawnpoint, action: 'spawnpoint' },
         'scoreboard objectives add data.gametemp dummy "data.gametemp"',
         'scoreboard objectives remove lobby.display',
@@ -79,51 +125,60 @@ export async function startGame( id, player, arn = getGameArena() ) {
     await runCMDs(thisGame.start_commands)
 };
 
+/**
+ * Starts game times
+ * @param {number} id - Game id
+ * @returns {void}
+ */
 export async function startTimer(id=getGame()) {
-    await edScore('startgame.timer','data.gametemp',5)
-    const intTimer = system.runInterval(async () => {
-        const thisStage = getScore('startgame.timer','data.gametemp')
-        if (thisStage == 5) {
-            await edScore('startgame.timer','data.gametemp',1,'remove')
-        } else if (thisStage == 4) {
-            await runCMDs(GAMEDATA[id].time.events.t3)
-            await runCMD('titleraw @a title {"rawtext":[{"text":"§a"},{"translate":"axiscube.games.startgame.startmsg.t3"}]}')
-            await edScore('startgame.timer','data.gametemp',1,'remove')
-            await playsound('note.pling','@a',1,0.5)
-        } else if (thisStage == 3) {
-            await runCMDs(GAMEDATA[id].time.events.t2)
-            await runCMD('titleraw @a title {"rawtext":[{"text":"§g"},{"translate":"axiscube.games.startgame.startmsg.t2"}]}')
-            await edScore('startgame.timer','data.gametemp',1,'remove')
-            await playsound('note.pling','@a')
-        } else if (thisStage == 2) {
-            await runCMDs(GAMEDATA[id].time.events.t1)
-            switch(getGame()) {
-                case 2:
-                    await runCMD('titleraw @a title {"rawtext":[{"text":"§c"},{"translate":"axiscube.games.startgame.startmsg.t1.blockp"}]}')
-                break;
-                case 3:
-                    await runCMD('titleraw @a title {"rawtext":[{"text":"§c"},{"translate":"axiscube.games.startgame.startmsg.t1.pvp"}]}')
-                break;
-                default:
-                    await runCMD('titleraw @a title {"rawtext":[{"text":"§c"},{"translate":"axiscube.games.startgame.startmsg.t1"}]}')
+    try{
+        await edScore('startgame.timer','data.gametemp',5)
+        const intTimer = system.runInterval(async () => {
+            const thisStage = getScore('startgame.timer','data.gametemp')
+            if (thisStage == 5) {
+                await edScore('startgame.timer','data.gametemp',1,'remove')
+            } else if (thisStage == 4) {
+                await runCMDs(GAMEDATA[id].time.events.t3)
+                await runCMD('titleraw @a title {"rawtext":[{"text":"§a"},{"translate":"axiscube.games.startgame.startmsg.t3"}]}')
+                await edScore('startgame.timer','data.gametemp',1,'remove')
+                await playsound('note.pling','@a',1,0.5)
+            } else if (thisStage == 3) {
+                await runCMDs(GAMEDATA[id].time.events.t2)
+                await runCMD('titleraw @a title {"rawtext":[{"text":"§g"},{"translate":"axiscube.games.startgame.startmsg.t2"}]}')
+                await edScore('startgame.timer','data.gametemp',1,'remove')
+                await playsound('note.pling','@a')
+            } else if (thisStage == 2) {
+                await runCMDs(GAMEDATA[id].time.events.t1)
+                switch(getGame()) {
+                    case 2:
+                        await runCMD('titleraw @a title {"rawtext":[{"text":"§c"},{"translate":"axiscube.games.startgame.startmsg.t1.blockp"}]}')
                     break;
+                    case 3:
+                        await runCMD('titleraw @a title {"rawtext":[{"text":"§c"},{"translate":"axiscube.games.startgame.startmsg.t1.pvp"}]}')
+                    break;
+                    default:
+                        await runCMD('titleraw @a title {"rawtext":[{"text":"§c"},{"translate":"axiscube.games.startgame.startmsg.t1"}]}')
+                        break;
+                    }
+                await edScore('startgame.timer','data.gametemp',1,'remove')
+                await playsound('note.pling','@a',1,2)
+            } else if (thisStage == 1) {
+                await edScore('startgame.timer','data.gametemp','','reset')
+                if (GAMEDATA[id].time.events.t0) {
+                    runCMDs(GAMEDATA[id].time.events.t0)
+                } else {
+                    await beginGame(id)
                 }
-            await edScore('startgame.timer','data.gametemp',1,'remove')
-            await playsound('note.pling','@a',1,2)
-        } else if (thisStage == 1) {
-            await edScore('startgame.timer','data.gametemp','','reset')
-            if (GAMEDATA[id].time.events.t0) {
-                runCMDs(GAMEDATA[id].time.events.t0)
+                await playsound('mob.blaze.hit','@a',1,0.7)
+                system.clearRun(intTimer)
+                return
             } else {
-                await beginGame(id)
+                system.clearRun(intTimer)
             }
-            await playsound('mob.blaze.hit','@a',1,0.7)
-            system.clearRun(intTimer)
-            return
-        } else {
-            system.clearRun(intTimer)
-        }
-    }, 20)
+        }, 20)
+    }catch(e){
+        games_log.put(e)
+    }
 }
 
 system.runInterval((delta) => {
@@ -219,56 +274,71 @@ system.runInterval(async () => {
 
 },20);
 
+/**
+ * Clear game tags
+ * @param {Player} player - Player Target
+ * @returns {void}
+ */
 export async function clearTags(player='@a') {
     for (let i in GAMETAGS) {
         await runCMD(`tag @s remove ${GAMETAGS[i]}`,player);
     };
 };
 
+/**
+ * Stop game with specified id
+ * @param {number} id - Game id
+ * @param {string} finishType - Finish type
+ * @returns {void}
+ */
 export async function stopGame(id=getGame(),finishType='slient',finishVariables) {
-    if (getGame() == 0 && finishType != 'slient') return
-    await edScore('mg','data');
-    await edScore('stg','data');
-    await edScore('arn','data');
-    await edScore('type','data');
-    for (const player of world.getPlayers()) {
-        player.nameTag = `${getPlayerColor(player.name)}${player.name}§r`;
-    };
-    if (finishType != 'slient') {
-        playsound('axiscube.gameover')
-        let message = GAMEDATA[id].ends[finishType].msg
-        if (finishVariables != undefined) {
-            for (let i in finishVariables) {
-                message = message.replace(`$<${i.toUpperCase()}>`,finishVariables[i])
+    try{
+        if (getGame() == 0 && finishType != 'slient') return
+        await edScore('mg','data');
+        await edScore('stg','data');
+        await edScore('arn','data');
+        await edScore('type','data');
+        for (const player of world.getPlayers()) {
+            player.nameTag = `${getPlayerColor(player.name)}${player.name}§r`;
+        };
+        if (finishType != 'slient') {
+            playsound('axiscube.gameover')
+            let message = GAMEDATA[id].ends[finishType].msg
+            if (finishVariables != undefined) {
+                for (let i in finishVariables) {
+                    message = message.replace(`$<${i.toUpperCase()}>`,finishVariables[i])
+                }
             }
-        }
-        await rawtext('=-=-=-=-=-=-=-=','@a','text','b')
-        await rawtext('axiscube.games.game_over','@a','translate')
-        await tellraw(message)
-        await runCMDs(GAMEDATA[id].ends[finishType].cmd)
-        await rawtext('=-=-=-=-=-=-=-=','@a','text','b');
-        let duration = (GAMEDATA[id].time.value) - getScore('time','data.gametemp')
-        let durationMinutes = Math.floor(duration/60)
-        let durationSeconds = Math.floor(duration % 60)
-        if (durationMinutes == 0) {
-            await tellraw(`{"rawtext":[{"translate":"axiscube.games.game_over.duration.zero_minutes","with":["${durationSeconds}"]}]}`)
-        } else if (durationMinutes == 1) {
-            await tellraw(`{"rawtext":[{"translate":"axiscube.games.game_over.duration.one_minute","with":["${durationSeconds}"]}]}`)
+            await rawtext('=-=-=-=-=-=-=-=','@a','text','b')
+            await rawtext('axiscube.games.game_over','@a','translate')
+            await tellraw(message)
+            await runCMDs(GAMEDATA[id].ends[finishType].cmd)
+            await rawtext('=-=-=-=-=-=-=-=','@a','text','b');
+            let duration = (GAMEDATA[id].time.value) - getScore('time','data.gametemp')
+            let durationMinutes = Math.floor(duration/60)
+            let durationSeconds = Math.floor(duration % 60)
+            if (durationMinutes == 0) {
+                await tellraw(`{"rawtext":[{"translate":"axiscube.games.game_over.duration.zero_minutes","with":["${durationSeconds}"]}]}`)
+            } else if (durationMinutes == 1) {
+                await tellraw(`{"rawtext":[{"translate":"axiscube.games.game_over.duration.one_minute","with":["${durationSeconds}"]}]}`)
+            } else {
+                await tellraw(`{"rawtext":[{"translate":"axiscube.games.game_over.duration","with":["${durationMinutes}","${durationSeconds}"]}]}`)
+            }
+        };
+        for (let i in GAMEBOARDS) {
+            await runCMD(`scoreboard objectives remove ${GAMEBOARDS[i]}`);
+        };
+        await clearTags();
+        await runCMDs(GAMEDATA[id].stop_commands);
+        await runCMDs(GAMEDATA[0].start_commands);
+        if (finishType = 'slient') {
+            setTickTimeout(() => { runCMD(`tp @a ${GAMEDATA[0].loc[0].spawn}`); runCMD('gamemode a @a') },20);
         } else {
-            await tellraw(`{"rawtext":[{"translate":"axiscube.games.game_over.duration","with":["${durationMinutes}","${durationSeconds}"]}]}`)
-        }
-    };
-    for (let i in GAMEBOARDS) {
-        await runCMD(`scoreboard objectives remove ${GAMEBOARDS[i]}`);
-    };
-    await clearTags();
-    await runCMDs(GAMEDATA[id].stop_commands);
-    await runCMDs(GAMEDATA[0].start_commands);
-    if (finishType = 'slient') {
-        setTickTimeout(() => { runCMD(`tp @a ${GAMEDATA[0].loc[0].spawn}`); runCMD('gamemode a @a') },20);
-    } else {
-        setTickTimeout(() => { runCMD(`tp @a ${GAMEDATA[0].loc[0].spawn}`); runCMD('gamemode a @a') },60);
-    };
+            setTickTimeout(() => { runCMD(`tp @a ${GAMEDATA[0].loc[0].spawn}`); runCMD('gamemode a @a') },60);
+        };
+    }catch(e){
+        games_log.put(e)
+    }
 };
 
 export async function beginGame( id=getGame(), arn=getGameArena() ) {

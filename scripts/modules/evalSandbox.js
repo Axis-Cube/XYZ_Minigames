@@ -1,6 +1,7 @@
 // 100%
 //import { placePlatform, placePodushkaBezopasnosti } from "../games/blockp";
 import { formGameChooser } from "../games/chooser";
+import { formTestRun } from "../tunes/testrun";
 import { formProfile } from "../tunes/profile";
 import { getGameArena, startTimer } from "../games/main";
 import { pvpSetkit } from "../games/pvp";
@@ -14,10 +15,11 @@ import * as ax from "./axisTools";
 import { BlockPermutation, world } from "@minecraft/server";
 import { bwClear, formBWshop, generateRes, getResInterval } from "../games/bw";
 import { GAMEDATA } from "../games/gamedata";
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { DIM } from "../const";
 import {runCMD, runCMDs} from "./axisTools";
 
+export let EvalForm = new ModalFormData().title('Eval v0.1').textField('Command','Enter text...')
 
 export function axisEval(code,player) {
     let name

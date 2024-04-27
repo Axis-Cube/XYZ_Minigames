@@ -1,5 +1,4 @@
-import { edScore, getTargetByScore, nameToPlayer, rawtext, runCMD, tellraw } from "./axisTools"
-import { magicIt } from "./playerNameTag"
+import { nameToPlayer, rawtext, runCMD, tellraw } from "./axisTools"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { formPermLocalSettings, formPermSettings } from "../tunes/mapSettings"
 import { DATABASE_IDS, ICONS } from "../const"

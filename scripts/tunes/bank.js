@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server"
-import { actionbar, edScore, getTargetByScore, playsound, runCMD, runCMDs, setTickTimeout } from "../modules/axisTools"
+import { actionbar, edScore, playsound, runCMDs, setTickTimeout } from "../modules/axisTools"
 import { magicIt } from "../modules/playerNameTag"
 import { COPYRIGHT, MAP_NAME, SCOLOR, SYM } from "../const"
 import { getPlayerColor } from "./profile"

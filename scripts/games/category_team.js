@@ -11,6 +11,10 @@ export const TEAMS4 = [
     'red','green','blue','yellow'
 ]
 
+export const TEAMS2 = [
+    'red', 'blue'
+]
+
 export const TEAM_COLORS = {
     'red':'§c','blue':'§9','green':'§2','yellow':'§e','purple':'§u',
     'orange':'§6','pink':'§d','cyan':'§3','lime':'§a','black':'§8'

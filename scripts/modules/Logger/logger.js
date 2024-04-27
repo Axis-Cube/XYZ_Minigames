@@ -1,4 +1,4 @@
-import { runCMD, sleep } from "../axisTools"
+import { getScore, runCMD, sleep } from "../axisTools"
 import { ActionFormData, MessageFormData } from "@minecraft/server-ui"
 
 import * as log_env from './logger_env'
@@ -19,32 +19,26 @@ export class Logger{
     }
 
     put(content){
-        this.log.push(content)
+        let currentdate = new Date()
+        let correction = getScore('time_correction', 'settings')
+        this.log.push(`[${currentdate.getHours() + correction + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds()}] `+content)
+        console.log(`[${currentdate.getHours() + correction + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds()}] `+content)
     }
+
 
     load(t, next=''){
         try{
-            const next_page = next
-            runCMD(`titleraw ${t.name} actionbar {"rawtext":[{"text":"[LOGS] \ue134 Loading >>> ${this.name}"}]}`)
+            let next_page = next
+
+            const first_page = Object.keys(log_env)[0]
+            runCMD(`titleraw ${t.name} actionbar {"rawtext":[{"text":"[LOGS] \ue191 Loading >>> ${this.name}"}]}`)
             sleep(40)
 
-
             let form = new ActionFormData()
-            form.title(`[LOG Viewer v1.0] Channel: `+this.name)
-            
-
-            if(next == ''){
-                form.button('Back')
-            }else{
-                form.button(`Go To "${next_page}"`)
-            }
-
+            form.title(`[LOG Viewer v1.2] Channel: `+this.name)
+            if(next == ''){form.button(`Go To "${first_page}"`); next_page = first_page}else{form.button(`Go To "${next_page}"`)}
             let content = reverseArr(this.log)
-            if(content != ''){
-                form.body(content.join('\n'))
-            }else{
-                form.body('Empty Log...')
-            }
+            if(content != ''){form.body(content.join('\n'))}else{form.body('Empty Log...')}
             form.button('Exit')
             form.show(t).then(sel =>{
                 if(next = ''){}else{
@@ -64,19 +58,12 @@ export class Logger{
                     }
                 }
             })
-        }catch{
-            runCMD(`titleraw ${t.name} actionbar {"rawtext":[{"text":"[LOGS] \ue116 Failed to load ${this.name}"}]}`)
-        }
-            
-    
+        }catch{runCMD(`titleraw ${t.name} actionbar {"rawtext":[{"text":"[LOGS] \ue116 Failed to load ${this.name}"}]}`)}   
     }
-
 }
 
-export function load_log(name = 'default_log', source){
-    try{
-        log_env[name].load(source, Object.keys(log_env)[Object.keys(log_env).indexOf(name)+1])
-    }catch(e){
+export function load_log(name = 'games_log', source){
+    try{log_env[name].load(source, Object.keys(log_env)[Object.keys(log_env).indexOf(name)+1])}catch{
         runCMD(`titleraw ${source.name} actionbar {"rawtext":[{"text":"[LOGS] \ue116 Failed to load ${name}"}]}`)
     }
 }

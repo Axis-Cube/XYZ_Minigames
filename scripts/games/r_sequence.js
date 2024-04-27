@@ -1,22 +1,6 @@
 import { world } from "@minecraft/server";
 import { playsound, setTickTimeout, setblock } from "../modules/axisTools";
 
-//import * as remember from './games/r_sequence'
-
-// Player left event
-// const playerLeave = new PlayerLeaveEventSignal();
-// const leftCallback = playerLeave.subscribe(({player}) => {
-//     let names = [
-//         `${player.nameTag}`,
-//         `${player.name}`,
-//         `§o${player.name}`,
-//         `\ue113 §7${prey.name}`,
-//         `\ue114 §c${prey.name}`
-//     ]
-//     for (let i of names) {
-//         runCMD(`scoreboard players reset ${i} ${GAMEDATA[getGame()].namespace}.display`)
-//     }});
-
 let buttons = { //Buttons coordinates (like 3.25.-9 x.y.z)
     1: '3.25.-9', 2: '2.25.-9', 3: '1.25.-9',
     4: '3.24.-9', 5: '2.24.-9', 6: '1.24.-9',

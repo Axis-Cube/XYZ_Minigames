@@ -1,4 +1,5 @@
 import { ICONS } from "./const";
+import { getScore } from "./modules/axisTools";
 
 export const FORMS = {
     mainmenu: {
@@ -14,6 +15,12 @@ export const FORMS = {
                 button_name: "%axiscube.profile",
                 icon: "textures/ui/icons/avatars/1", 
                 on_click: [ { "type": "eval", "value": "formProfile(player)" } ]
+            },
+            {
+                button_name: "%axiscube.testrun",
+                icon: ICONS.console, 
+                visible: getScore('testrun', 'settings')==1,
+                on_click: [ { "type": "eval", "value": "formTestRun(player)" } ]
             },
             {
                 button_name: "%axiscube.settings.map",
@@ -34,7 +41,7 @@ export const FORMS = {
             {
                 button_name: "%axiscube.form.games.p2",
                 icon: "textures/ui/icons/plr2", 
-                on_click: [ { "type": "eval", "value": "formGameChooser(player,2)" } ]
+                on_click: [ { "type": "eval", "value": "formGameChooser(player,2,true)" } ]
             },
             {
                 button_name: "%gui.back",

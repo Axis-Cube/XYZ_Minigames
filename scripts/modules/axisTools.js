@@ -1,9 +1,8 @@
-import { Player, world, system, GameMode } from "@minecraft/server";
+import { Player, world, system, GameMode, Block, BlockComponent, EntityDamageCause } from "@minecraft/server";
 import { axisEval } from "./evalSandbox";
 import { scoreboardTeamcolor } from "../games/category_team";
 import { GAMEDATA } from "../games/gamedata";
 import { getGame } from "../games/main";
-import { addMoney } from "../tunes/bank";
 import { DIM } from "../const";
 import { command_log } from "./Logger/logger_env";
 
@@ -197,7 +196,7 @@ export function randomPlayerIcon() {
     return icons[randomInt(0,icons.length-1)]
 }
 
-export async function powerTP(pos='0 10 0',player='@a',target='@s',action='tp') {
+export async function powerTP(pos='0 10 0',player='@a',target='@s', action='tp') {
     if (typeof pos === 'string') {
         if (action == 'pos') return pos
         await runCMD(`${action} ${target} ${pos}`,player)
@@ -227,9 +226,16 @@ export async function powerTP(pos='0 10 0',player='@a',target='@s',action='tp') 
                     }
 
                     let xPos = shuffle(poss)
-                    for (const i in plrs2) {
-                        const playerT = plrs2[i]
-                        await runCMD(`${action} @s ${xPos[i]}`,playerT)
+                    if(pos.facing != undefined){
+                        for (const i in plrs2) {
+                            const playerT = plrs2[i]
+                            await runCMD(`${action} @s ${xPos[i]} facing ${pos.facing}`,playerT)
+                        }
+                    }else{
+                        for (const i in plrs2) {
+                            const playerT = plrs2[i]
+                            await runCMD(`${action} @s ${xPos[i]}`,playerT)
+                        }
                     }
                     return
                 }
@@ -373,9 +379,9 @@ export function isPlayerinArea(x1,x2,player){
 
 }
 
-export async function sleep(n){
-    system.runTimeout(()=>{Promise.resolve(0)},n)
-}
+export function sleep(tick = 1) {
+    return new Promise((resolve) => system.runTimeout(() => resolve(), tick));
+  }
 
 /**
 
@@ -391,4 +397,112 @@ export function array3ToVector3(array3) {
 */
 export function vector3ToArray3(vector3) {
     return [vector3.x,vector3.y,vector3.z]
+}
+
+export function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
+export function getSlotsByItemName(inv, typeId){
+    let inv_size = inv.inventorySize
+    let container = inv.container
+    let items = []
+
+    for(let i = 0; i<inv_size; i++){
+        try{
+            if(container.getSlot(i).typeId == typeId){items.push(i)}
+        }catch{continue}
+    }
+
+    return items
+}
+/**
+* Gets the Gamemode of a player
+* @author Lndrs_
+* @param {Array} loc3 Vector3 of zone center
+* @param {Number} radius Radius of zone
+* @param {Number} numPoints Count of particles
+* @returns {null}
+* @example if (getGamemode(player) == "creative") return;
+*/
+export async function safeZone(loc3, radius, numPoints = 20, miny= loc3.y, step= 10){
+    const points = [];
+
+    for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * 2 * Math.PI; // Calculate the angle for each particle
+        const offsetX = Math.cos(angle) * radius;
+        const offsetZ = Math.sin(angle) * radius;
+        for(let y = loc3.y; y>=miny; y-=step){
+            const pointsPos = {
+                x: loc3.x + offsetX,
+                y: y,
+                z: loc3.z + offsetZ
+            };
+            points.push(pointsPos);
+        }
+    }
+    return points
+    
+}
+
+export function safeZoneDamage(loc3, radius) {
+    let ploc;
+    for (const player of [...world.getPlayers({excludeGameModes: ['spectator', 'creative']})]) {
+        ploc = player.location
+        let r = radius
+        var dist_points = (ploc.x - loc3.x) * (ploc.x - loc3.x) + (ploc.z - loc3.z) * (ploc.z - loc3.z); // a=p b=p x=c y=c r=r
+        r *= r;
+        if (dist_points < r) {
+            //console.warn('true');
+            try{
+                DIM.runCommandAsync(`fog ${player.name} remove zone_fog`)
+            }catch{}
+        } else {
+            try{
+                DIM.runCommandAsync(`fog ${player.name} push minecraft:fog_crimson_forest zone_fog`)
+            }catch{}
+            if(player.getDynamicProperty('last_zone_damage') && (Date.now() - player.getDynamicProperty('last_zone_damage') >= 5000)){
+                player.setDynamicProperty('last_zone_damage', Date.now())
+                player.applyDamage(5)
+                console.warn(`${player.nameTag} Not in zone`);
+            }else if (!player.getDynamicProperty('last_zone_damage')){
+                player.setDynamicProperty('last_zone_damage', Date.now())
+            }
+        }
+    }
+}
+
+export const cryptWithSalt = (salt, text) => {
+    const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+    const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
+    const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+  
+    return text
+      .split("")
+      .map(textToChars)
+      .map(applySaltToChar)
+      .map(byteHex)
+      .join("");
+  };
+  
+export const decryptWithSalt = (salt, encoded) => {
+    const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+    const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+    return encoded
+        .match(/.{1,2}/g)
+        .map((hex) => parseInt(hex, 16))
+        .map(applySaltToChar)
+        .map((charCode) => String.fromCharCode(charCode))
+        .join("");
+};
+
+export const updateMapID = ()=>{edScore('map_id','settings',randomInt(10000,99999))}
+
+export const shortNick = async (nick) => { let short_nick = []
+
+    for(let i=0;i<nick.length;i++){
+        if(i%2==0&&nick[i]!=' '){short_nick.push(nick[i])}
+    }
+
+    return short_nick.join('')
 }

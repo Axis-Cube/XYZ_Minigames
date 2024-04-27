@@ -1,4 +1,4 @@
-import { world, system } from '@minecraft/server'
+import { world } from '@minecraft/server'
 import {runCMD} from './axisTools'
 import {db_log} from './Logger/logger_env'
 import { DIM } from '../const'

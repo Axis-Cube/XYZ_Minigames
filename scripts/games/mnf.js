@@ -1,15 +1,18 @@
 //FIELD ENGINE v0.2.5 by (AbstractScripts aka Lndrs_) License this so so. hmmm give 1000$ to us and unlock MIT license. Default license: idk
-import { actionbar, colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "../modules/axisTools";
-import { Block, system, world } from "@minecraft/server";
+import { colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "../modules/axisTools";
+import { system, world } from "@minecraft/server";
 import { GAMEDATA } from "./gamedata";
-import { beginGame, getGameArena, startTimer, stopGame } from "./main";
+import { forceGameRestart, getGame, getGameArena, startTimer, stopGame } from "./main";
 import { completeChallenge } from "./chooser";
 import { ModalFormData } from "@minecraft/server-ui";
 import { COPYRIGHT, DIM, SYM } from "../const";
 import { eliminatePlayerMessage } from "../tunes/profile";
+import { MT_GAMES } from "../modules/MultiTasking/instances";
+
+let sleep_modifier = 5
 
 export const GAMEDATA_MNF = { // Minefield
-    id: 2,
+    id: 4,
     namespace: 'mnf',
     min_players: 1,
     tags: [
@@ -19,25 +22,63 @@ export const GAMEDATA_MNF = { // Minefield
         'mnf.member'
     ],
     loc: {
-        0: {
+        0: { //Ready for 1.5
             gameplay: false,
-            spawn: { type: 'range', value: [ [ 2037, 2003 ], [ 1, 1 ], [ 2003, 2004 ] ] },
-            newplayer: { type: 'range', value: [ [ 2037, 2003 ], [ 1, 1 ], [ 2003, 2004 ] ] },
-            spawnpoint: { type: 'range', value: [ [ 2037, 2003 ], [ 1, 1 ], [ 2003, 2004 ] ] },
+            spawn: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
+            newplayer: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
 
-            field_from: [2000, 1, 2008],
-            field_to: [2039, 1, 2095],
+            field_from: [2502, 72, 2508],
+            field_to: [2541, 72, 2595],
             field_block: 'heavy_weighted_pressure_plate',
 
-            startpos: 2004,
+            startpos: 2504,
             startpos_type: 'z',
 
-            prestart_barrier_from: '2039 1 2007',
-            prestart_barrier_to: '2000 10 2007',
+            prestart_barrier_from: '2541 72 2507',
+            prestart_barrier_to: '2502 82 2507',
 
-            winpos_from: [2039, 11, 2101],
-            winpos_to: [2000, 0, 2097]
-        }
+            winpos_from: [2541, 80, 2601],
+            winpos_to: [2502, 72, 2597]
+        },
+        1: { //Ready for 1.5
+            gameplay: false,
+            spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+            newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+
+            field_from: [2489, 56, 2513],
+            field_to: [2430, 56, 2565],
+            field_block: 'heavy_weighted_pressure_plate',
+
+            startpos: 2512,
+            startpos_type: 'z',
+
+            prestart_barrier_from: '2489 56 2512',
+            prestart_barrier_to: '2428 66 2512',
+
+            winpos_from: [2489,56,2569],
+            winpos_to: [2429,66,2567]
+        },
+        //2: {
+        //    gameplay: false,
+        //    spawn: { type: 'range', value: [  ] },
+        //    newplayer: { type: 'range', value: [  ] },
+        //    spawnpoint: { type: 'range', value: [  ] },
+//
+        //    field_from: [],
+        //    field_to: [],
+        //    field_block: 'heavy_weighted_pressure_plate',
+//
+        //    startpos: 0,
+        //    startpos_type: 'z',
+//
+        //    prestart_barrier_from: '',
+        //    prestart_barrier_to: '',
+//
+        //    winpos_from: [],
+        //    winpos_to: []
+        //}
     },
     ends: {
         no_time: {
@@ -98,7 +139,7 @@ export const GAMEDATA_MNF = { // Minefield
             }
         }
     },
-    stop_commands: [  ],
+    stop_commands: [],
     boards: [
         ['mnf.display', '\ue195§6 %axiscube.mnf.name', true],
     ]
@@ -156,6 +197,7 @@ export class Field {
     async generate(percent=20) {
         if (percent <= 100){
             try{
+                //throw new Error('s')
                 let x = []
                 let z = []
 
@@ -193,10 +235,10 @@ export class Field {
                     if (DIM.getBlock({x:t_x,y:((this.from[1])-1),z:t_z}).typeId != 'minecraft:air') {
                         if (DIM.getBlock({x:t_x,y:((this.from[1])),z:t_z}).typeId == 'minecraft:air') {
                             runCMD(`fill ${t_x} ${this.from[1]} ${t_z} ${t_x} ${this.to[1]} ${t_z} heavy_weighted_pressure_plate replace air`)
-                            await sleep(5)
+                            await sleep(sleep_modifier)
                         } else if (DIM.getBlock({x:t_x,y:((this.from[1])+1),z:t_z}).typeId == 'minecraft:air') {
                             runCMD(`fill ${t_x} ${this.from[1]+1} ${t_z} ${t_x} ${this.to[1]+1} ${t_z} heavy_weighted_pressure_plate replace air`)
-                            await sleep(5)
+                            await sleep(sleep_modifier)
                         }
                         
                     } else {
@@ -204,14 +246,20 @@ export class Field {
                         while(world.getDimension('overworld').getBlock({x:t_x,y:((this.from[1])-testC),z:t_z}).typeId == 'minecraft:air') {
                             testC = testC + 1
                         }
-                        runCMD(`fill ${t_x} ${this.from[1]-testC+1} ${t_z} ${t_x} ${this.to[1]-testC+1} ${t_z} heavy_weighted_pressure_plate replace air`)
-                        await sleep(5)
+                        await runCMD(`fill ${t_x} ${this.from[1]-testC+1} ${t_z} ${t_x} ${this.to[1]-testC+1} ${t_z} heavy_weighted_pressure_plate replace air`)
+                        await sleep(sleep_modifier)
                     }
                 }
 
                 return Promise.resolve(0)
             }catch(e){
-                console.error(`[MN] ERROR STACK: ${e.stack} ERROR: ${e}`)
+                console.error(`[MN] ERROR STACK: ${e.stack} ERROR: ${e}`) 
+                runCMD('say Error catched when game loading. Restarting game...')
+                let temp_arena = getGameArena()
+                let temp_diff = getScore('diff','data')
+                await stopGame(getGame())
+                //await forceGameRestart(4,temp_arena)
+                
             }
         }else{
             console.error('[MN] fillPercent value must be <= 100')
@@ -261,37 +309,41 @@ export class Field {
         }catch{}
     }
 }
-
-
-export function fieldPlace() {
-    let field = new Field(GAMEDATA[4].loc[getGameArena()].field_from,GAMEDATA[4].loc[0].field_to)
-    field.destroy()
-    const diff = getScore('diff','data')
-    if (diff == 0) {
-        field.generate(45)
-    } else if (diff == 1) {
-        field.generate(50)
-    } else if (diff == 2) {
-        field.generate(55)
-    } else if (diff == 3) {
-        field.generate(60)
-    }
-    //field.generate(20+10*getScore('diff','data'))
+let field = 0
+export async function fieldPlace() {
+    field = new Field(GAMEDATA[4].loc[getGameArena()].field_from,GAMEDATA[4].loc[getGameArena()].field_to)
     runCMD(`fill ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_to} barrier`)
-    let status = system.runInterval(() => {
-        let fieldStatus = field.getStatus()
-        if (fieldStatus[0] == fieldStatus[1] || fieldStatus[0] == fieldStatus[1]-1 || fieldStatus[0] == fieldStatus[1]+1) {
-            startTimer(4)
-            runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[0]}","${fieldStatus[0]}","§q100"]}]}`)
-            if (diff == 3) {
-                rawtext('axiscube.mnf.hardcore','@a','tr','c\ue121 §l')
-            }
-            system.clearRun(status)
-        } else {
-            runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[1]}","${fieldStatus[0]}","§${colorPercent(fieldStatus[1]/fieldStatus[0])}${(100*(fieldStatus[1]/fieldStatus[0])).toFixed(2)}"]}]}`)
+    const diff = getScore('diff','data')
+    runCMD(`title @a actionbar \ue134 Preparing Engine... It's take a while`)
+    await field.destroy()
+    system.runTimeout(()=>{
+        if (diff == 0) {
+            field.generate(45)
+        } else if (diff == 1) {
+            field.generate(50)
+        } else if (diff == 2) {
+            field.generate(55)
+        } else if (diff == 3) {
+            field.generate(65)
         }
-    },5
-    )
+        //field.generate(20+10*getScore('diff','data'))
+        let status = system.runInterval(() => {
+            let fieldStatus = field.getStatus()
+            console.warn(fieldStatus)
+            if (fieldStatus[0] == fieldStatus[1] || fieldStatus[0] == fieldStatus[1]-1 || fieldStatus[0] == fieldStatus[1]+1) {
+                startTimer(4)
+                runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[0]}","${fieldStatus[0]}","§q100"]}]}`)
+                if (diff == 3) {
+                    rawtext('axiscube.mnf.hardcore','@a','tr','c\ue121 §l')
+                }
+                system.clearRun(status)
+            } else {
+                runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[1]}","${fieldStatus[0]}","§${colorPercent(fieldStatus[1]/fieldStatus[0])}${(100*(fieldStatus[1]/fieldStatus[0])).toFixed(2)}"]}]}`)
+            }
+        },5
+        )
+        MT_GAMES.register(status)
+    },50)
 }
 
 export function mnfRemoveBarrier() {
@@ -334,8 +386,10 @@ export function mnfTick() {
         //console.warn()
     }
     if ((diff != 3 && countNoWins == 0) || (diff == 3 && countMembers == 0 && countWins > 0)) {
+        field.destroy()
         stopGame(4,'no_players')
     } else if (diff = 3 && countMembers == 0) {
+        field.destroy()
         stopGame(4,'no_players_h')
     }
 }
@@ -457,3 +511,7 @@ export function mnDefuseForm(player,block) {
 //         }catch(e){console.warn(e);}
 //     }
 // })
+
+async function mnfStop(){
+    MT_GAMES.kill()
+}

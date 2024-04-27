@@ -5,8 +5,8 @@ import { getGameType, stopGame } from "./main"
 import { world } from "@minecraft/server"
 import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "./category_team"
 import { checkPerm } from "../modules/perm"
-import { magicIt } from "../modules/playerNameTag"
 import { dbGetRecord, dbRemoveRecord, dbSetRecord } from "../modules/cheesebase"
+//import { magicIt } from "../modules/playerNameTag"
 
 export const GAMEDATA_PVP = { // PVP
     id: 3,
@@ -14,7 +14,7 @@ export const GAMEDATA_PVP = { // PVP
         1: true
     },
     namespace: 'pvp',
-    min_players: 2,
+    min_players: 1,
     tags: [
         'pvp',
         'pvp.member',
@@ -37,17 +37,17 @@ export const GAMEDATA_PVP = { // PVP
         }
     },
     loc: {
-        0: {
-            gameplay: { type: 'arr', value: [ '-982 1 1018', '-1001 1 996', '-977.05 0.00 985.41', '-982.66 7.00 1013.89', '-1013.51 8.00 1011.40', '-1008.63 7.00 984.06', '-983.24 7.00 1012.80', '-981.53 1.00 1012.49' ] },
-            spawn: '-1000 15 1000',
-            newplayer: '-1000 15 1000',
-            spawnpoint: '-1000 15 1000',
+        0: { //Ready for 1.5                                                                                                   
+            gameplay: { type: 'arr', value: [ '-4916 1 1080', '-4935 1 1058', '-4911 0 1047', '-4916 7 1075', '-4948 8 1073', '-4942 7 1046', '-4917 7 1074', '-4915 1 1074' ] },
+            spawn: '-4934 15 1062',
+            newplayer: '-4934 15 1062',
+            spawnpoint: '-4934 15 1062',
         },
-        1: {
-            gameplay: { type: 'arr', value: [ '2098.42 1.00 2066.68', '2078.26 5.00 2073.46', '2101.70 8.00 2090.70', '2084.58 1.00 2031.12', '2077.53 -3.00 2043.50', '2073.29 1.00 2008.03', '2094.11 -3.00 2007.17', '2103.54 8.00 2026.22' ] },
-            spawn: '2090 11 2063',
-            newplayer: '2090 11 2063',
-            spawnpoint: '2090 11 2063',
+        1: { //Ready for 1.5                                                                    
+            gameplay: { type: 'arr', value: [ '-5467 22 1072', '-5487 26 1079', '-5464 29 1096', '-5481 22 1037', '-5488 18 1049', '-5492 22 1014', '-5471 18 1013', '-5462 29 1032' ] },
+            spawn: '-5475 32 1069',
+            newplayer: '-5475 32 1069',
+            spawnpoint: '-5475 32 1069',
         }
     },
     ends: {
@@ -422,7 +422,7 @@ export const PVP_KITTEMP = {
 
 export const PVP_VOIDSET = {
     name: 'Unknown set',
-    author: 'Unknown',
+    author: 'TechyTheGoat',
     icon: 'textures/block/barrier',
     suit: {
         armor: {

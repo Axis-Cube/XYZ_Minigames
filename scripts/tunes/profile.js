@@ -1,12 +1,11 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { ICONS, REGION_CODES, REGION_NAMES, SCOLOR, SYM } from "../const";
-import { edScore, getTargetByScore, playsound, randomInt, rawtext, tellraw } from "../modules/axisTools";
-import { magicIt } from "../modules/playerNameTag";
+import { playsound, randomInt,  tellraw } from "../modules/axisTools";
 import { playerKillmsgList } from "./killMessage";
 import { STORE_COLOR, formShowCategories, formShowOffersByCategory, getPurchasedItemsByCategory } from "./store";
 import { getMoney } from "./bank";
 import { openJSON } from "../modules/easyform";
-import { dbGetPlayerRecord, dbSetPlayerRecord, dbSetRecord } from "../modules/cheesebase";
+import { dbGetPlayerRecord, dbSetPlayerRecord } from "../modules/cheesebase";
 
 const DB_DEFAULT = {
     region: 0,
@@ -30,7 +29,8 @@ export const SOUNDMSG = {
     'mob.player.oof' : ['OOOF!',[0.5,1.5],[0.5,1]],
     'mob.evocation_illager.ambient' : ['Illager',[0.5,1.5],[0.5,1]],
     'mob.villager.no' : ['Angry Villager',[0.5,1.5],[0.5,1]],
-    'mob.villager.yes' : ['Good Villager',[0.5,1.5],[0.5,1]]
+    'mob.villager.yes' : ['Good Villager',[0.5,1.5],[0.5,1]],
+    'random.orb' : ['Orb',[0.5,1.5],[0.5,1]]
 }
 
 export function getPlayerSettings(name) {

@@ -1,7 +1,7 @@
 import { world } from "@minecraft/server";
 import { CHAT_CODES, CHAT_CODES_AV } from "../const";
 import { playsound, rawtext } from "./axisTools";
-import { getEmojiItembyValue, getPurchasedItems, isOwned, STORE_ITEMS } from "../tunes/store";
+import { getEmojiItembyValue, getPurchasedItems, STORE_ITEMS } from "../tunes/store";
 import { SOUNDMSG, getPlayerSoundMessage } from "../tunes/profile";
 
 const regex = new RegExp(":" + Object.keys(CHAT_CODES).join(":|:") + ":", "g");

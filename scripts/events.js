@@ -1,8 +1,6 @@
-import { world, system, EntityDamageCause } from "@minecraft/server";
-import { PlayerLeaveEventSignal } from "./modules/playerLeft";
-import { edScore, getScore, hasTag, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, tellraw } from "./modules/axisTools";
+import { world, system, ItemStack, EntityInventoryComponent, Block, BlockComponent, Player } from "@minecraft/server";
+import { cryptWithSalt, decryptWithSalt, edScore, getScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw, updateMapID } from "./modules/axisTools";
 import { axisHealthBar } from "./modules/axisHB";
-import { SYM } from "./const";
 import { openJSON } from "./modules/easyform";
 import { stopGame, beginGame, getGame, onDeathInGame, startGame, knockToGame, clearTags, killerCommands } from "./games/main";
 import { pvpImportForm2 } from "./games/pvp";
@@ -12,16 +10,20 @@ import { GAMEDATA } from "./games/gamedata";
 import { sendChatMessage } from "./modules/chat";
 import { getPlayerColor } from "./tunes/profile";
 import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "./games/mnf";
-
-import * as log_env from "./modules/Logger/logger_env";
 import { load_log } from "./modules/Logger/logger";
-import { magicIt } from "./modules/playerNameTag";
 import { isMainManager } from "./modules/perm";
-import { bwBegin, bwBlockBreak, bwBlockPlace, bwEquipmentCheck, bwHit, onItemUse } from "./games/bw";
-import { ActionFormData } from "@minecraft/server-ui";
+import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "./games/bw";
 import { formTeamsel } from "./games/category_team";
-import { LPN } from "./modules/plugins/index";
-import { events } from "./modules/plugins/ui/PluginManager";
+import { LPN } from "./modules/Core_Plugins/index";
+import { boardMoney } from "./tunes/bank";
+import "./tunes/hologram"
+import { MT_GAMES } from "./modules/MultiTasking/instances";
+import { prkCheckpointTp } from "./games/prk";
+import { holoEditor } from "./tunes/hologram";
+import { loadChests, upgradeItem } from "./games/hg";
+import { chests } from "./games/hg_chests"
+import { dbGetPlayerRecord, dbRemoveRecord, dbSetPlayerRecord, toCheeseId } from "./modules/cheesebase";
+import { DB_A, map_id } from "./const";
 
 async function sleep(n){
     system.runTimeout(()=>{Promise.resolve(0)},n)
@@ -125,6 +127,22 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     } = event;
     const player = sourceEntity
     switch (id) {
+        case 'tools:check_back':
+            let item_stack_checkpoint = new ItemStack('minecraft:stick')
+            item_stack_checkpoint.nameTag = 'debug_checkpoints_back'
+            player.getComponent('inventory').container.addItem(item_stack_checkpoint)
+            player.getComponent('inventory')
+        break;
+        case 'tools:holo_editor':
+            let item_stack_edit_holo = new ItemStack('minecraft:stick')
+            item_stack_edit_holo.nameTag = 'debug_holo_editor'
+            player.getComponent('inventory').container.addItem(item_stack_edit_holo)
+            player.getComponent('inventory')
+        break;
+        case 'tools:load':
+            loadChests(chests)
+        break;
+        //////////
         case 'axiscube:rename':
             player.nameTag = `${player.name}\n§r${message}`;
         break;
@@ -138,10 +156,12 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             openJSON(message,player)
         break;
         case 'axiscube:stopgame':
+            MT_GAMES.kill()
             stopGame(Number(message))
         break;
         case 'axiscube:startgame':
-            startGame(Number(message),sourceEntity)
+            let args = message.split('-')
+            startGame(Number(args[0]),sourceEntity,Number(args[1]))
         break;
         case 'axiscube:begingame':
             beginGame(Number(message))
@@ -172,21 +192,27 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             await runCMD('tag @s remove perm.op.main',mainOp)
             await runCMD('tag @s add perm.op.main',player)
         break;
-        // case 'axiscube:remember':
-        //     remember.start(player)
-        // break;
-        case 'l:put':
-            try{
-                let args = message.split('>')
-                log_env[args[0]].put(args[1])
-            }catch(e){console.warn(e)}
-            
-        break;
         case 'l:get_page':
-            load_log(message, player)
+            if(message != undefined){
+                load_log(message, player)
+            }else{
+                load_log('games_log', player)
+            }
             
         break;
         //PLUGINS
+
+        case 'bank:reload':
+            boardMoney()
+        break;
+        case 'database:reset':
+            try{
+                runCMDs([
+                    "scoreboard objectives remove data.userapi",
+                    "scoreboard objectives add data.userapi dummy data.userapi"
+                ])
+            }catch(e){console.warn(e)}
+        break;
         case 'plugins:get':
             console.warn(LPN)
         break;
@@ -265,6 +291,12 @@ world.beforeEvents.itemUse.subscribe((itemData) => {
     const itemAct = ITEMS[itemStack.typeId]
     // let isMenu = true
     // let clearItem = false
+    switch(itemStack.nameTag){
+        case 'debug_checkpoints_back':
+            prkCheckpointTp(player)
+        break;
+    }
+
     system.run( () => {
         if (itemAct != undefined) {
             if (itemAct.forgame == undefined || (itemAct.forgame === '*' && getGame() > 0) || (typeof itemAct.forgame == 'number' && itemAct.forgame == getGame()) || itemAct.forgame.includes(`${getGame()}`)) {
@@ -327,7 +359,62 @@ world.afterEvents.entityHitBlock.subscribe((data) => {
     }
 })
 
+world.afterEvents.entityHitEntity.subscribe((data) => {
+    if (data.hitEntity.typeId == 'axiscube:hologram') {
+        let inv = data.damagingEntity.getComponent(EntityInventoryComponent.componentId).container
+        if (inv.getItem(data.damagingEntity.selectedSlot)) {
+            if(inv.getItem(data.damagingEntity.selectedSlot).nameTag == 'debug_holo_editor')
+            holoEditor(data.hitEntity, data.damagingEntity) //Edit entity
+        }
+    }
+})
+
 world.beforeEvents.chatSend.subscribe((messageData) => {
     messageData.cancel = true
     sendChatMessage(messageData)
 })
+
+world.afterEvents.playerInteractWithBlock.subscribe(e => {
+    let block = e.block.typeId
+
+    let player = e.player
+
+    switch(block){
+        case 'axiscube:hg_upgrade':
+            upgradeItem(player)
+        break;
+    }
+
+})
+
+
+system.runInterval(async ()=>{
+    //updateMapID()
+    
+    for (const player of [...world.getPlayers({gameMode:"creative"})]) {
+        let short_nick = await shortNick(player.name)
+        //await dbSetPlayerRecord(short_nick,DB_A,{'0':cryptWithSalt(map_id.toString(), short_nick)})
+    
+        let flag = dbGetPlayerRecord(short_nick,DB_A)[0]
+        if(flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick){}else{runCMD(`gamemode a ${player.name} `);console.warn('Not Admin')}
+    }
+    //runCMD(`say ${cryptWithSalt(map_id.toString(),'TMnrE')}`)
+},10)
+
+
+
+let last_item_in_hand = system.runInterval(()=>{
+    for (const player of [...world.getPlayers()]) {
+        let inv =  player.getComponent(EntityInventoryComponent.componentId)
+        let container = inv.container
+        let slot = player.selectedSlot
+        try{
+            //console.log(container.getItem(0), slot)
+            let item = container.getItem(slot)?.typeId;
+            if(item != undefined){
+                player.setDynamicProperty('hg:lst', item)
+            }
+        }catch{}
+    }
+},5)
+MT_GAMES.register(last_item_in_hand)
