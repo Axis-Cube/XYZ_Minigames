@@ -312,7 +312,7 @@ const BW_SETS = {
         body: '%item.stone_pickaxe.name & %howtoplay.blocks (x5)',
         icon: 'textures/ui/icons/games/bw/kit_miner',
         getfun: (player) => {
-            runCMD('give @s stone_pickaxe',player)
+            runCMD('give @s iron_pickaxe',player)
             runCMD(`give @s ${getPlayerTeam(player)}_concrete 5`,player)
         }
     },
@@ -333,6 +333,7 @@ const BW_SETS = {
         getfun: (player) => {
             runCMD('give @s wooden_pickaxe',player)
             runCMD(`give @s ${getPlayerTeam(player)}_concrete 10`,player)
+            equipment.setEquipment(EquipmentSlot.head, new ItemStack('minecraft:golden_helmet',1))
         }
     }
 }
