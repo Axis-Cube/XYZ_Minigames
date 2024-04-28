@@ -81,6 +81,12 @@ export const GAMEDATA_HG = { // Hunger Games
         ['hg.display', '\ue195§6 %axiscube.hg.name', true],
     ]
 }
+
+const CAN_DESTROY = '' //'{"minecraft:can_destroy":{"blocks":["chest"]}}'
+
+const HG_BLOCKS_DROPC = {
+    'chest': MINECRAFT_AXES,
+}
 let zone;
 async function hg_main(){
     await loadChests(chests, 1)
