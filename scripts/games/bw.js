@@ -204,7 +204,8 @@ const BW_BLOCKS = [
     'obsidian',
     'planks',
     'chest',
-    'concrete'
+    'concrete',
+    'ladder'
 ]
 
 const BW_BLOCKS_T = [
@@ -218,6 +219,7 @@ const BW_BLOCKS_T = [
     'red_concrete',
     'yellow_concrete',
     'green_concrete',
+    'ladder',
 ]
 
 const BW_BLOCKS_DROPC = {
@@ -230,6 +232,7 @@ const BW_BLOCKS_DROPC = {
     'red_concrete': MINECRAFT_PICKAXES,
     'yellow_concrete': MINECRAFT_PICKAXES,
     'green_concrete': MINECRAFT_PICKAXES,
+    'ladder': true,
 }
 
 const UNICODES = {
@@ -841,7 +844,7 @@ export async function bwEquipmentCheck(player, id='minecraft:leather_helmet', sl
     }
 }
 
-const CAN_DESTROY = '' //'{"minecraft:can_destroy":{"blocks":["planks","web","obsidian","sandstone","end_stone","ice"]}}'
+const CAN_DESTROY = '' //'{"minecraft:can_destroy":{"blocks":["planks","web","obsidian","sandstone","end_stone","ice", "ladder"]}}'
 const CAN_PLACE = '' //'{"can_place_on":{"blocks":["stone", "wool", "podzol", "planks", "dirt", "grass", "log", "leaves", "leaves2", "log2", "sandstone", "bedrock", "bed", "wooden_slab", "wood","obsidian","web","stripped_spruce_log","end_stone","mycelium","spruce_stairs","basalt","polished_basalt","smooth_basalt","ladder","tallgrass","stone_block_slab","stone_block_slab2","stone_block_slab3","stone_block_slab4","concrete","stained_glass","stained_glass_pane","torch","slime","stained_hardened_clay","stone_stairs","verdant_froglight","sand","lantern","deadbush","deepslate_brick_slab","cobbled_deepslate_slab","bookshelf","ice"]}}'
 
 const bwShopData = {
@@ -1111,6 +1114,13 @@ const bwShopData = {
             material: 'iron_ingot',
             icon: 'textures/blocks/planks_oak',
             buy: { type: 'slider', amount: 8, another_item_data: `0 ${CAN_PLACE}` }
+        },
+        {
+            id: 'ladder',
+            price: 5
+            material: 'iron_ignot',
+            icon: 'textures/blocks/ladder',
+            buy: { type: 'slider', amount: 16, another_item_data: `0 ${CAN_PLACE}` }
         },
         {
             id: 'web',
