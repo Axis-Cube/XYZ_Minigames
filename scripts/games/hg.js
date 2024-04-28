@@ -84,8 +84,13 @@ export const GAMEDATA_HG = { // Hunger Games
 
 const CAN_DESTROY = '' //'{"minecraft:can_destroy":{"blocks":["chest"]}}'
 
-const HG_BLOCKS_DROPC = {
+const HG_BLOCKS = [
+    'chest'
+    ]
+
+const HG_BLOCKS_DROPC = [
     'chest': MINECRAFT_AXES,
+    ]
 }
 let zone;
 async function hg_main(){
