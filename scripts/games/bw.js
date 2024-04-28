@@ -1136,15 +1136,21 @@ const bwShopData = {
         },
         {
             id: 'snowball',
-            price: 1,
+            price: 3,
             material: 'gold_ingot',
-            buy: { type: 'slider', amount: 1 }
+            buy: { type: 'slider', amount: 2 }
         },
         {
             id: 'feather',
             name: '%item.feather.name (%enchantment.knockback)',
             price: 3,
             icon: 'textures/items/feather',
+            material: 'amethyst_shard',
+            buy: { type: 'slider', amount: 1 }
+        },
+        {
+            id: 'ender_pearl',
+            price: 6,
             material: 'amethyst_shard',
             buy: { type: 'slider', amount: 1 }
         },
