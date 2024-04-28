@@ -287,12 +287,12 @@ const PVP_ICONS = {
             7: ['\ue189','textures/items/trident'],
             8: ['\ue18a','textures/items/stick'],
             9: ['\ue1ce','textures/items/fire_charge'],
-            10: ['\ue17c','textures/items/wooden_axe'],
-            11: ['\ue17c','textures/items/stone_axe'],
-            12: ['\ue17c','textures/items/iron_axe'],
-            13: ['\ue17c','textures/items/golden_axe'],
-            14: ['\ue17c','textures/items/diamond_axe'],
-            15: ['\ue17c','textures/items/netherite_axe']
+            10: ['\ue1c8','textures/items/wood_axe'],
+            11: ['\ue1c9','textures/items/stone_axe'],
+            12: ['\ue1ca','textures/items/iron_axe'],
+            13: ['\ue1cb','textures/items/gold_axe'],
+            14: ['\ue1cc','textures/items/diamond_axe'],
+            15: ['\ue1cd','textures/items/netherite_axe']
         },
         bow: {
             0: ['\ue17e','textures/ui/icons/items/air_bow'],
