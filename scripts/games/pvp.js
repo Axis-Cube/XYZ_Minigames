@@ -210,7 +210,8 @@ const PVP_KITSUIT = {
             'iron_axe',
             'golden_axe',
             'diamond_axe',
-            'netherite_axe'
+            'netherite_axe',
+            'fishing_rod'
         ],
         bow: [
             'air',
@@ -292,7 +293,8 @@ const PVP_ICONS = {
             12: ['\ue1ca','textures/items/iron_axe'],
             13: ['\ue1cb','textures/items/gold_axe'],
             14: ['\ue1cc','textures/items/diamond_axe'],
-            15: ['\ue1cd','textures/items/netherite_axe']
+            15: ['\ue1cd','textures/items/netherite_axe'],
+            16: ['\ue17c','textures/items/fishing_rod']
         },
         bow: {
             0: ['\ue17e','textures/ui/icons/items/air_bow'],
