@@ -290,6 +290,15 @@ const HNS_TAUNTS = [
         },
         cooldown: 35,
         reward: 25
+            {
+        name: '%axiscube.hns.taunt.name.brewer',
+            icons: '',
+            eval: (player) => {
+            let sounds = ['random.potion.brewed']
+            runCMD('playsound random.potion.brewed @a ~~~',player)
+        },
+            cooldown: 5,
+            reward: 1
     }
 ]
 
