@@ -2,18 +2,18 @@ LICENSE:MIT
 Public GPG KEY (AbstractScripts)
 ---TODO---
 
-[] Add icons to games
-[] Add translation
-[] Evil Chicken
-[] MicroGames
-[] Skywars
-[] Floor is Lava
-[x] Hunger Games
-[] Spleef
-[] Deathrun
-[] About Menu
-[] Flagwars
-[] Items Upgrade bug fix
+-[] Add icons to games
+-[] Add translation
+-[] Evil Chicken
+-[] MicroGames
+-[] Skywars
+-[] Floor is Lava
+-[x] Hunger Games
+-[] Spleef
+-[] Deathrun
+-[] About Menu
+-[] Flagwars
+-[] Items Upgrade bug fix
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
