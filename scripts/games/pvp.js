@@ -207,7 +207,8 @@ const PVP_KITSUIT = {
             'trident',
             'stick',
             'fire_charge',
-            'fishing_rod'
+            'fishing_rod',
+            'blaze_rod'
             ],
         axe: [
             'wooden_axe',
@@ -295,7 +296,8 @@ const PVP_ICONS = {
             1: ['\ue189','textures/items/trident'],
             2: ['\ue18a','textures/items/stick'],
             3: ['\ue1ce','textures/items/fire_charge'],
-            4: ['ue17c','textures/items/fishing_rod']
+            4: ['\ue17c','textures/items/fishing_rod'],
+            5: ['\ue17c','textures/items/blaze_rod']
             },
         axe: {
             0: ['\ue17c','textures/ui/icons/items/air_sword'],
