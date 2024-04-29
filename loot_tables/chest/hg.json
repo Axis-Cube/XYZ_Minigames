@@ -47,6 +47,16 @@
             "name": "minecraft:iron_axe",
             "weight": 200
           },
+            {
+                "type": "item",
+                "name": "minecraft:diamond_sword",
+                "weight": 90
+            },
+            {
+                "type": "item",
+                "name": "minecraft:diamond_axe",
+                "weight": 75
+            },
           {
             "type": "item",
             "name": "minecraft:bow",
