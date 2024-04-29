@@ -1117,10 +1117,10 @@ const bwShopData = {
         },
         {
             id: 'ladder',
-            price: 5
-            material: 'iron_ignot',
+            price: 5,
+            material: 'iron_ingot',
             icon: 'textures/blocks/ladder',
-            buy: { type: 'slider', amount: 16, another_item_data: `0 ${CAN_PLACE}` }
+            buy: { type: 'slider', amount: 4, another_item_data: `0 ${CAN_PLACE}` }
         },
         {
             id: 'web',
