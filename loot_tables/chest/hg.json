@@ -50,12 +50,12 @@
             {
                 "type": "item",
                 "name": "minecraft:diamond_sword",
-                "weight": 180
+                "weight": 90
             },
             {
                 "type": "item",
                 "name": "minecraft:diamond_axe",
-                "weight": 150
+                "weight": 75
             },
           {
             "type": "item",
