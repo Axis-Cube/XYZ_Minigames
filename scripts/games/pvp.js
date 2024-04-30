@@ -202,16 +202,23 @@ const PVP_KITSUIT = {
             'iron_sword',
             'diamond_sword',
             'netherite_sword',
+            ],
+        misc: [
+            'air',
             'trident',
             'stick',
             'fire_charge',
+            'fishing_rod',
+            'blaze_rod'
+            ],
+        axe: [
+            'air',
             'wooden_axe',
             'stone_axe',
             'iron_axe',
             'golden_axe',
             'diamond_axe',
-            'netherite_axe',
-            'fishing_rod'
+            'netherite_axe'
         ],
         bow: [
             'air',
@@ -284,17 +291,24 @@ const PVP_ICONS = {
             3: ['\ue182','textures/items/stone_sword'],
             4: ['\ue185','textures/items/iron_sword'],
             5: ['\ue180','textures/items/diamond_sword'],
-            6: ['\ue181','textures/items/netherite_sword'],
-            7: ['\ue189','textures/items/trident'],
-            8: ['\ue18a','textures/items/stick'],
-            9: ['\ue1ce','textures/items/fire_charge'],
-            10: ['\ue1c8','textures/items/wood_axe'],
-            11: ['\ue1c9','textures/items/stone_axe'],
-            12: ['\ue1ca','textures/items/iron_axe'],
-            13: ['\ue1cb','textures/items/gold_axe'],
-            14: ['\ue1cc','textures/items/diamond_axe'],
-            15: ['\ue1cd','textures/items/netherite_axe'],
-            16: ['\ue17c','textures/items/fishing_rod']
+            6: ['\ue181','textures/items/netherite_sword']
+        },
+        misc: {
+            0: ['\ue1c6','textures/ui/icons/items/air_misc'],
+            1: ['\ue189','textures/items/trident'],
+            2: ['\ue18a','textures/items/stick'],
+            3: ['\ue1ce','textures/items/fire_charge'],
+            4: ['\ue1dd','textures/items/fishing_rod'],
+            5: ['\ue1de','textures/items/blaze_rod']
+        },
+        axe: {
+            0: ['\ue1c7','textures/ui/icons/items/air_axe'],
+            1: ['\ue1c8','textures/items/wood_axe'],
+            2: ['\ue1c9','textures/items/stone_axe'],
+            3: ['\ue1ca','textures/items/iron_axe'],
+            4: ['\ue1cb','textures/items/gold_axe'],
+            5: ['\ue1cc','textures/items/diamond_axe'],
+            6: ['\ue1cd','textures/items/netherite_axe']
         },
         bow: {
             0: ['\ue17e','textures/ui/icons/items/air_bow'],
@@ -333,6 +347,8 @@ export const PVP_KITTEMP = {
             },
             weapon: {
                 sword: 6,
+                misc: 0,
+                axe: 6,
                 bow: 1,
                 arrow: 64
             },
@@ -361,6 +377,8 @@ export const PVP_KITTEMP = {
             },
             weapon: {
                 sword: 0,
+                misc: 0,
+                axe: 0,
                 bow: 0,
                 arrow: 0
             },
@@ -389,6 +407,8 @@ export const PVP_KITTEMP = {
             },
             weapon: {
                 sword: 5,
+                misc: 0,
+                axe: 0,
                 bow: 0,
                 arrow: 0
             },
@@ -416,7 +436,9 @@ export const PVP_KITTEMP = {
                 feet: 3
             },
             weapon: {
-                sword: 7,
+                sword: 0,
+                misc: 1,
+                axe: 0,
                 bow: 0,
                 arrow: 0
             },
@@ -447,6 +469,8 @@ export const PVP_VOIDSET = {
         },
         weapon: {
             sword: 0,
+            misc: 0,
+            axe: 0,
             bow: 0,
             arrow: 0
         },
@@ -481,6 +505,12 @@ export async function pvpSetkit(player='@a',t=getPVPselectedSet()) {
     // SWORD
     let itemSword = PVP_KITSUIT.weapon.sword[obj.weapon.sword]
     await runCMD(`replaceitem entity @s slot.hotbar 0 ${itemSword} 1`,player)
+    // MISC
+    let itemMisc = PVP_KITSUIT.weapon.misc[obj.weapon.sword]
+    await runCMD(`replaceitem entity @s slot.hotbar 2 ${itemMisc} 1`,player) 
+    // AXE
+    let itemAxe = PVP_KITSUIT.weapon.axe[obj.weapon.axe]
+    await runCMD(`replaceitem entity @s slot.hotbar 3 ${itemAxe} 1`,player) 
     // BOW && ARROWS
     let itemBow = PVP_KITSUIT.weapon.bow[obj.weapon.bow]
     let slotBow = 1
@@ -580,36 +610,42 @@ function pvpIconKit(obj) {
     for (let slot in obj.suit.armor) {
         result = `${result}${PVP_ICONS.armor[slot][obj.suit.armor[slot]][0]}`
     }
-    result = `${result} ${PVP_ICONS.weapon.sword[obj.suit.weapon.sword][0]}`
-    result = `${result}${PVP_ICONS.weapon.bow[obj.suit.weapon.bow][0]}`
+    let sword_icon = (obj.suit.weapon.sword <= Object.keys(PVP_ICONS.weapon.sword).length-1) ? PVP_ICONS.weapon.sword[obj.suit.weapon.sword][0] : "\ue17c"
+    let axes_icon = (obj.suit.weapon.axe <= Object.keys(PVP_ICONS.weapon.axe).length-1) ? PVP_ICONS.weapon.axe[obj.suit.weapon.axe][0] : "\ue1c7"
+    let misc_icon = (obj.suit.weapon.misc <= Object.keys(PVP_ICONS.weapon.misc).length-1) ? PVP_ICONS.weapon.misc[obj.suit.weapon.misc][0] : "\ue1c6"
+    result = `${result}${sword_icon}` //Add sword icon
+    result = `${result}${PVP_ICONS.weapon.bow[obj.suit.weapon.bow][0]}` //Add bow icon
+    result = `${result}${axes_icon}` //Add axes icon
+    result = `${result}${misc_icon}` //Add misc icon
     return result
 }
 
 export function pvpSettingKit(player) {
+    try{
+        const SET_SELECTION = getPVPselectedSet()
+        const SETS = getPVPsetsList()
 
-    const SET_SELECTION = getPVPselectedSet()
-    const SETS = getPVPsetsList()
+        const form = new ActionFormData()
+        .title('%axiscube.pvp.kitset.management')
+        .body(`%axiscube.pvp.kitset.list`)
+        
+        for(let i of SETS) {
+            let isThisSel = ''
+            let thisObj = pvpExportKit(i)
+            let thisIco = pvpIconKit(thisObj)
+            let setName = thisObj.name
+            if (SET_SELECTION == i) { isThisSel = '\ue124 ' }
+            form.button(`${setName}\n${isThisSel}${thisIco}`)
+        }
+        form.button('%axiscube.pvp.kitset.create_new',ICONS.add)
+        form.button('%axiscube.pvp.kitset.templates','textures/items/wild_armor_trim_smithing_template')
 
-    const form = new ActionFormData()
-    .title('%axiscube.pvp.kitset.management')
-    .body(`%axiscube.pvp.kitset.list`)
-    
-    for(let i of SETS) {
-        let isThisSel = ''
-        let thisObj = pvpExportKit(i)
-        let thisIco = pvpIconKit(thisObj)
-        let setName = thisObj.name
-        if (SET_SELECTION == i) { isThisSel = '\ue124 ' }
-        form.button(`${setName}\n${isThisSel}${thisIco}`)
-    }
-    form.button('%axiscube.pvp.kitset.create_new',ICONS.add)
-    form.button('%axiscube.pvp.kitset.templates','textures/items/wild_armor_trim_smithing_template')
-
-    form.show(player).then(gg => { if (gg.selection != undefined) {
-            if (gg.selection < SETS.length) { pvpShowKitInfo(player,SETS[gg.selection]) }
-            else if (gg.selection == SETS.length) { pvpCreateKit(player) }
-            else if (gg.selection == SETS.length+1) { pvpTemplatesMenu(player) }
-    } })
+        form.show(player).then(gg => { if (gg.selection != undefined) {
+                if (gg.selection < SETS.length) { pvpShowKitInfo(player,SETS[gg.selection]) }
+                else if (gg.selection == SETS.length) { pvpCreateKit(player) }
+                else if (gg.selection == SETS.length+1) { pvpTemplatesMenu(player) }
+        } })
+    }catch(e){console.log(e, e.stack)}
 }
 
 export function pvpCreateKit(player) {
@@ -650,7 +686,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         let rawName = PVP_KITSUIT.armor.head[item]
         let finalName = `${PVP_ICONS.armor.head[headC][0]} %item.${rawName}.name`
         headArmorArr.push(finalName)
-        headC = headC+1
+        headC++
     }
     form.dropdown('\n%itemGroup.name.helmet',headArmorArr,obj.suit.armor.head)
 
@@ -661,7 +697,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         let rawName = PVP_KITSUIT.armor.chest[item]
         let finalName = `${PVP_ICONS.armor.chest[chestC][0]} %item.${rawName}.name`
         chestArmorArr.push(finalName)
-        chestC = chestC+1
+        chestC++
     }
     form.dropdown('%itemGroup.name.chestplate',chestArmorArr,obj.suit.armor.chest)
 
@@ -672,7 +708,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         let rawName = PVP_KITSUIT.armor.legs[item]
         let finalName = `${PVP_ICONS.armor.legs[legsC][0]} %item.${rawName}.name`
         legsArmorArr.push(finalName)
-        legsC = legsC+1
+        legsC++
     }
     form.dropdown('%itemGroup.name.leggings',legsArmorArr,obj.suit.armor.legs)
     
@@ -683,7 +719,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         let rawName = PVP_KITSUIT.armor.feet[item]
         let finalName = `${PVP_ICONS.armor.feet[feetC][0]} %item.${rawName}.name`
         feetArmorArr.push(finalName)
-        feetC = feetC+1
+        feetC++
     }
     form.dropdown('%itemGroup.name.boots',feetArmorArr,obj.suit.armor.legs)
 
@@ -694,9 +730,31 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         let rawName = PVP_KITSUIT.weapon.sword[item]
         let finalName = `${PVP_ICONS.weapon.sword[swordC][0]} %item.${rawName}.name`
         swordArr.push(finalName)
-        swordC = swordC+1
+        swordC++
     }
     form.dropdown('%itemGroup.name.sword',swordArr,obj.suit.weapon.sword)
+
+    // MISC
+    let miscArr = []
+    let miscC = 0
+    for (let item in PVP_KITSUIT.weapon.misc) {
+        let rawName = PVP_KITSUIT.weapon.misc[item]
+        let finalName = `${PVP_ICONS.weapon.misc[miscC][0]} %item.${rawName}.name`
+        miscArr.push(finalName)
+        miscC++
+    }
+    form.dropdown('%axiscube.itemGroups.name.misc',miscArr,obj.suit.weapon.misc)
+
+    // AXE
+    let axeArr = []
+    let axeC = 0
+    for (let item in PVP_KITSUIT.weapon.axe) {
+        let rawName = PVP_KITSUIT.weapon.axe[item]
+        let finalName = `${PVP_ICONS.weapon.axe[axeC][0]} %item.${rawName}.name`
+        axeArr.push(finalName)
+        axeC++
+    }
+    form.dropdown('%itemGroup.name.axe',axeArr,obj.suit.weapon.axe)
     
     // BOW
     let bowArr = []
@@ -705,7 +763,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         let rawName = PVP_KITSUIT.weapon.bow[item]
         let finalName = `${PVP_ICONS.weapon.bow[bowC][0]} %item.${rawName}.name`
         bowArr.push(finalName)
-        bowC = bowC+1
+        bowC++
     }
     form.dropdown('%item.bow.name',bowArr,obj.suit.weapon.bow)
     form.slider(`\n${PVP_ICONS.weapon.arrow[0]} %item.arrow.name`,0,128,1,obj.suit.weapon.arrow)
@@ -720,7 +778,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         rawName = rawName == 'totem_of_undying' ? 'totem' : rawName
         let finalName = `${PVP_ICONS.offhand.in_slot[leftItC][0]} %item.${rawName}.name`
         leftItArr.push(finalName)
-        leftItC = leftItC+1
+        leftItC++
     }
     form.dropdown('%axiscube.pvp.kitset.edit.offhand',leftItArr,obj.suit.offhand.in_slot)
     form.slider(`\n${PVP_ICONS.meal.golden_carrot[0]} %item.golden_carrot.name`,0,64,1,obj.suit.meal.golden_carrot)
@@ -728,13 +786,15 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.slider(`\n${PVP_ICONS.meal.enchanted_golden_apple[0]} %item.appleEnchanted.name`,0,8,1,obj.suit.meal.enchanted_golden_apple)
 
     form.show(player).then(async gg => { if (!gg.canceled) {
-        let [ sName, dHead, dChest, dLegs, dFeet, dSword, dBow, dArrow, dTotem, dShield, dLefthand, dCarrot, dApple, dEnapple ] = gg.formValues
+        let [ sName, dHead, dChest, dLegs, dFeet, dSword, dMisc, dAxe, dBow, dArrow, dTotem, dShield, dLefthand, dCarrot, dApple, dEnapple ] = gg.formValues
         obj.name = cutName(sName,player.name)
         obj.suit.armor.head = dHead
         obj.suit.armor.chest = dChest
         obj.suit.armor.legs = dLegs
         obj.suit.armor.feet = dFeet
         obj.suit.weapon.sword = dSword
+        obj.suit.weapon.misc = dMisc
+        obj.suit.weapon.axe = dAxe
         obj.suit.weapon.bow = dBow
         obj.suit.weapon.arrow = dArrow
         obj.suit.offhand.totem_of_undying = dTotem
@@ -802,6 +862,8 @@ export function pvpShowKitInfo(player,t=0,infotypeind=0,obj=pvpExportKit(t)) {
     }
     form.button(`%item.${PVP_KITSUIT.weapon.sword[obj.suit.weapon.sword]}.name`,`${PVP_ICONS.weapon.sword[obj.suit.weapon.sword][1]}`)
     form.button(`%item.${PVP_KITSUIT.weapon.bow[obj.suit.weapon.bow]}.name`,`${PVP_ICONS.weapon.bow[obj.suit.weapon.bow][1]}`)
+    form.button(`%item.${PVP_KITSUIT.weapon.axe[obj.suit.weapon.axe]}.name`,`${PVP_ICONS.weapon.axe[obj.suit.weapon.axe][1]}`)
+    form.button(`%item.${PVP_KITSUIT.weapon.misc[obj.suit.weapon.misc]}.name`,`${PVP_ICONS.weapon.misc[obj.suit.weapon.misc][1]}`)
     if (obj.suit.weapon.arrow) {
         form.button(`%item.arrow.name (x${obj.suit.weapon.arrow})`,PVP_ICONS.weapon.arrow[1])
     }
