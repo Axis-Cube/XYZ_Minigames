@@ -160,8 +160,8 @@ async function bridgePrepair(){
     edScore('fw_br_blue','data.gametemp',points)
     //startTimer(9)
 }
-//{"minecraft:can_place_on": 
-//{"minecraft:can_destroy":{"blocks":["blue_concrete"]}}
+//{"minecraft:can_place_on":
+//{"minecraft:can_destroy":{"blocks":["blue_concrete, red_concrete"]}}
 
 async function bridgeEquipment(){
     let all_blocks = []
