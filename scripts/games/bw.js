@@ -914,6 +914,7 @@ const bwShopData = {
                 bwEquipmentCheck(player,'minecraft:leather_chestplate',EquipmentSlot.chest)
                 bwEquipmentCheck(player,'minecraft:leather_leggings',EquipmentSlot.legs)
                 bwEquipmentCheck(player,'minecraft:leather_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -923,6 +924,7 @@ const bwShopData = {
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:leather_helmet',EquipmentSlot.head)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -932,6 +934,7 @@ const bwShopData = {
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:leather_chestplate',EquipmentSlot.chest)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -941,6 +944,7 @@ const bwShopData = {
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:leather_leggings',EquipmentSlot.legs)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -950,6 +954,7 @@ const bwShopData = {
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:leather_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -962,6 +967,7 @@ const bwShopData = {
                 bwEquipmentCheck(player,'minecraft:chainmail_chestplate',EquipmentSlot.chest)
                 bwEquipmentCheck(player,'minecraft:chainmail_leggings',EquipmentSlot.legs)
                 bwEquipmentCheck(player,'minecraft:chainmail_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -970,6 +976,7 @@ const bwShopData = {
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:chainmail_helmet',EquipmentSlot.head)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -978,6 +985,7 @@ const bwShopData = {
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:chainmail_chestplate',EquipmentSlot.chest)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -986,6 +994,7 @@ const bwShopData = {
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:chainmail_leggings',EquipmentSlot.legs)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -994,6 +1003,7 @@ const bwShopData = {
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:chainmail_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1002,6 +1012,7 @@ const bwShopData = {
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:iron_helmet',EquipmentSlot.head)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1010,6 +1021,7 @@ const bwShopData = {
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:iron_chestplate',EquipmentSlot.chest)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1018,6 +1030,7 @@ const bwShopData = {
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:iron_leggings',EquipmentSlot.legs)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1026,6 +1039,7 @@ const bwShopData = {
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:iron_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1034,6 +1048,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:diamond_helmet',EquipmentSlot.head)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1042,6 +1057,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:diamond_chestplate',EquipmentSlot.chest)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1050,6 +1066,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:diamond_leggings',EquipmentSlot.legs)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1058,6 +1075,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:diamond_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1066,6 +1084,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:netherite_helmet',EquipmentSlot.head)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1074,6 +1093,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:netherite_chestplate',EquipmentSlot.chest)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1082,6 +1102,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:netherite_leggings',EquipmentSlot.legs)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         },
         {
@@ -1090,6 +1111,7 @@ const bwShopData = {
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
                 bwEquipmentCheck(player,'minecraft:netherite_boots',EquipmentSlot.feet)
+                runCMD('tellraw @s {"rawtext":[{"text":"§b>> §7Woosh! Your armor has been automatically equipped!"}]}')
             } }
         }
     ],
