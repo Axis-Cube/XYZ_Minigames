@@ -11,3 +11,4 @@ About Menu
 Flagwars
 
 Items Upgrade bug
+Fix bow enchant in flagw frontl

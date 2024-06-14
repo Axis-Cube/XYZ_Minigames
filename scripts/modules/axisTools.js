@@ -1,11 +1,11 @@
-import { Player, world, system, GameMode, Block, BlockComponent, EntityDamageCause } from "@minecraft/server";
+import { world, system, GameMode } from "@minecraft/server";
 import { axisEval } from "./evalSandbox";
 import { scoreboardTeamcolor } from "../games/category_team";
 import { GAMEDATA } from "../games/gamedata";
 import { getGame } from "../games/main";
-import { DIM } from "../const";
+import { DB_A, DIM, map_id } from "../const";
 import { command_log } from "./Logger/logger_env";
-
+import { dbGetPlayerRecord } from "./cheesebase";
 /**
  * Gets the Gamemode of a player
  * @author Smell of Curry
@@ -16,43 +16,40 @@ import { command_log } from "./Logger/logger_env";
 export function getGamemode(player) {
     return Object.values(GameMode).find((g) => [...world.getPlayers({ name: player.name, gameMode: g })].length);
 }
-
 export function nameToPlayer(name) {
     for (const player of [...world.getPlayers()]) {
-        if (player.name == name) return player
+        if (player.name == name)
+            return player;
     }
-    return undefined
+    return undefined;
 }
-
-export function onItemInteraction(player,isMenu=true) {
-    if (isMenu) playsound('random.pop2',player)
+export function onItemInteraction(player, isMenu = true) {
+    if (isMenu)
+        playsound('random.pop2', player);
 }
-
 export function nerdMessage(name) {
-    for (let i = 0; i != 6; i ++) {
-        setTickTimeout( () => {
-            runCMD('titleraw @s actionbar {"rawtext":[{"text":"\ue1e3 "},{"translate":"axiscube.msg.nerd.typing"}]}',name)
-            playsound('mob.villager.yes',name)
-            rawtext(`axiscube.msg.nerd.say.t${i}`,name,'translate')
-        }, (40*i)+1 )
+    for (let i = 0; i != 6; i++) {
+        setTickTimeout(() => {
+            runCMD('titleraw @s actionbar {"rawtext":[{"text":"\ue1e3 "},{"translate":"axiscube.msg.nerd.typing"}]}', name);
+            playsound('mob.villager.yes', name);
+            rawtext(`axiscube.msg.nerd.say.t${i}`, name, 'translate');
+        }, (40 * i) + 1);
     }
-    setTickTimeout( () => {
-        playsound('mob.villager.yes',name)
-        tellraw(`{"rawtext":[{"text":"§bH T T P S ("},{"translate":"accessibility.text.colon"},{"text":") ("},{"translate":"accessibility.text.forwardSlash"},{"text":") ("},{"translate":"accessibility.text.forwardSlash"},{"text":") D I S C O R D ("},{"translate":"accessibility.text.period.url"},{"text":") C O M ("},{"translate":"accessibility.text.forwardSlash"},{"text":") I N V I T E ("},{"translate":"accessibility.text.forwardSlash"},{"text":") W a T p w W 2 e Q 8"}]}`,name)
+    setTickTimeout(() => {
+        playsound('mob.villager.yes', name);
+        tellraw(`{"rawtext":[{"text":"§bH T T P S ("},{"translate":"accessibility.text.colon"},{"text":") ("},{"translate":"accessibility.text.forwardSlash"},{"text":") ("},{"translate":"accessibility.text.forwardSlash"},{"text":") D I S C O R D ("},{"translate":"accessibility.text.period.url"},{"text":") C O M ("},{"translate":"accessibility.text.forwardSlash"},{"text":") I N V I T E ("},{"translate":"accessibility.text.forwardSlash"},{"text":") W a T p w W 2 e Q 8"}]}`, name);
         //rawtext(`% %accessibility.text.forwardSlash  accessibility.text.period.url C O M %accessibility.text.forwardSlash I N V I T E %accessibility.text.forwardSlash W a T p w W 2 e Q 8`,name)
-    }, 40*6 )
+    }, 40 * 6);
 }
-
-export function getTargetByScore(score=0,objectiveId='data',ifNothing=undefined) {
-    const oB = world.scoreboard.getObjective(objectiveId)
+export function getTargetByScore(score = 0, objectiveId = 'data', ifNothing = undefined) {
+    const oB = world.scoreboard.getObjective(objectiveId);
     for (let trg of [...oB.getParticipants()]) {
         if (oB.getScore(trg) === score) {
-            return trg.displayName
+            return trg.displayName;
         }
     }
-    return ifNothing
+    return ifNothing;
 }
-
 /**
  * Gets the score recorded for {displayName} on {objective}
  * @param {String} target or entity on the scoreboard
@@ -63,20 +60,25 @@ export function getTargetByScore(score=0,objectiveId='data',ifNothing=undefined)
  */
 export function getScore(target, objectiveId, useZero = true) {
     try {
-        const oB = world.scoreboard.getObjective(objectiveId)
-        if (typeof target != 'string') { target = target.name }
-        return oB.getScore(oB.getParticipants().find(pT => pT.displayName == target))
-    } catch {
-        return useZero ? 0 : NaN
+        const oB = world.scoreboard.getObjective(objectiveId);
+        if (typeof target != 'string') {
+            target = target.name;
+        }
+        return oB.getScore(oB.getParticipants().find(pT => pT.displayName == target));
+    }
+    catch {
+        return useZero ? 0 : NaN;
     }
 }
-
-export async function edScore(target, objective='data', value=0, operator='set') {
-    if (typeof target == 'object') { target = target.name }
-    if (!target.startsWith('@')) {target = `"${target}"`}
-    await runCMD(`scoreboard players ${operator} ${target} ${objective} ${value}`,undefined,true)
+export async function edScore(target, objective = 'data', value = 0, operator = 'set') {
+    if (typeof target == 'object') {
+        target = target.name;
+    }
+    if (!target.startsWith('@')) {
+        target = `"${target}"`;
+    }
+    await runCMD(`scoreboard players ${operator} ${target} ${objective} ${value}`, undefined, true);
 }
-
 /**
  * Fires 1 second delay,
  * @param {() => void} callback
@@ -85,354 +87,405 @@ export async function edScore(target, objective='data', value=0, operator='set')
 */
 export function setTickTimeout(callback, tick) {
     const id = system.runInterval(() => {
-      callback();
-      system.clearRun(id);
+        callback();
+        system.clearRun(id);
     }, tick);
 }
-
 export function shuffle(array) {
-    let currentIndex = array.length,  randomIndex;
+    let currentIndex = array.length, randomIndex;
     while (currentIndex != 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
         [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
+            array[randomIndex], array[currentIndex]
+        ];
     }
     return array;
 }
-
 export function getItemAmounts(player, items) {
     const inv = player.getComponent('inventory')?.container;
-    if (!inv) return;
+    if (!inv)
+        return;
     const counts = {};
     for (let id of items) {
-      counts[id] = 0;
+        counts[id] = 0;
     }
     for (let i = 0; i < inv.size; i++) {
-      const item = inv.getItem(i);
-      if (!item) continue;
-      const itemId = item.typeId.replace('minecraft:', '')
-      const id = items.find(v => itemId == v.replace('minecraft:', ''))
-      if (id) counts[id] += item.amount;
+        const item = inv.getItem(i);
+        if (!item)
+            continue;
+        const itemId = item.typeId.replace('minecraft:', '');
+        const id = items.find(v => itemId == v.replace('minecraft:', ''));
+        if (id)
+            counts[id] += item.amount;
     }
     return counts;
 }
-
-export function placeError(player,errorCode='unknown',errorDetails=[]) {
-    errorDetails = JSON.stringify(errorDetails)
-    tellraw(`{"rawtext":[{"translate":"axiscube.error.generic","with":{"rawtext":[{"text":"${errorCode.toUpperCase()}"},{"translate":"axiscube.error.${errorCode.toLowerCase()}","with":${errorDetails}}]}}]}`,player)
+export function placeError(player, errorCode = 'unknown', errorDetails = []) {
+    errorDetails = JSON.stringify(errorDetails);
+    tellraw(`{"rawtext":[{"translate":"axiscube.error.generic","with":{"rawtext":[{"text":"${errorCode.toUpperCase()}"},{"translate":"axiscube.error.${errorCode.toLowerCase()}","with":${errorDetails}}]}}]}`, player);
 }
-
-export function randomInt(min=1, max=2) { return Math.floor(Math.random() * (max - min + 1) + min) }
-
-export async function playsound(sound,player='@a',volume=1,pitch=1) {
-    await runCMD(`playsound ${sound} @s ~~~ ${volume} ${pitch}`,player)
+export function randomInt(min = 1, max = 2) { return Math.floor(Math.random() * (max - min + 1) + min); }
+export async function playsound(sound, player = '@a', volume = 1, pitch = 1) {
+    await runCMD(`playsound ${sound} @s ~~~ ${volume} ${pitch}`, player);
 }
-
-export function axlog(msg) {
-    console.warn(`[AxisLog] ${msg}`)
+export function setblock(x, y, z, id) {
+    runCMD(`setblock ${x} ${y} ${z} ${id}`);
 }
-
-export function setblock(x,y,z,id){
-    runCMD(`setblock ${x} ${y} ${z} ${id}`)
+export async function rawtext(text, name = '@a', type = 'text', color = 'r') {
+    if (type == 'tr')
+        type = 'translate';
+    text = text.replace(/\"/g, '\u005c\"');
+    await tellraw(`{"rawtext":[{"text":"§${color}"},{"${type}":"${text}"}]}`, name);
 }
-
-export async function rawtext(text,name='@a',type='text',color='r') {
-    if (type == 'tr') type = 'translate'
-    text = text.replace(/\"/g, '\u005c\"')
-    await tellraw(`{"rawtext":[{"text":"§${color}"},{"${type}":"${text}"}]}`,name)
+export function actionbar(text, name = '@a', color = 'r') {
+    runCMD(`title @s actionbar §${color}${text}`, name);
 }
-
-export function actionbar(text,name='@a',color='r') {
-    runCMD(`title @s actionbar §${color}${text}`,name)
-}
-
 /**
  * @param {import("@minecraft/server").RawMessage} rawtext
 */
-export async function tellraw(rawtext,name='@a',type) {
-    if (typeof rawtext == 'object') rawtext = JSON.stringify(rawtext)
-    if (type == undefined)  { await runCMD(`tellraw @s ${rawtext}`,name,true)} 
-    else if (type == 'actionbar' || type == 'act')  { await runCMD(`titleraw @s actionbar${rawtext}`,name,true)} 
+export async function tellraw(rawtext, name = '@a', type = undefined) {
+    if (typeof rawtext == 'object')
+        rawtext = JSON.stringify(rawtext);
+    if (type == undefined) {
+        await runCMD(`tellraw @s ${rawtext}`, name, true);
+    }
+    else if (type == 'actionbar' || type == 'act') {
+        await runCMD(`titleraw @s actionbar${rawtext}`, name, true);
+    }
 }
-
-export function hasTag(source, tag){
-    return source.getTags().indexOf(tag) != -1
-  }
-
+export function hasTag(source, tag) {
+    return source.getTags().indexOf(tag) != -1;
+}
 /**
  * @param {String} command
  * @param {import("@minecraft/server").Player} source
  * @param {Boolean} needLog
 */
-export async function runCMD(command, source, needLog = false){
-    if (command == undefined) { return }
-    else if (typeof command === 'object') { runCMDs(command,source,needLog); return }
-    else if (typeof command === 'function') { command(source); return }
-    else if (command.startsWith('/')) command = command.slice(1)
+export async function runCMD(command, source = undefined, needLog = false) {
+    if (command == undefined) {
+        return;
+    }
+    else if (typeof command === 'object') {
+        runCMDs(command, source, needLog);
+        return;
+    }
+    else if (typeof command === 'function') {
+        command(source);
+        return;
+    }
+    else if (command.startsWith('/'))
+        command = command.slice(1);
     try {
         if (source == undefined) {
-            await DIM.runCommandAsync(command)
-        } else if (typeof source == 'object') {
-            await source.runCommandAsync(command)
-            return
-        } else if (typeof source == 'string' && source.startsWith('@')) {
-            await DIM.runCommandAsync(`execute as ${source} at @s run execute positioned as @s run ${command}`)
-            return
-        } else if (typeof source == 'string' && !source.startsWith('@')) {
-            await DIM.runCommandAsync(`execute as "${source}" at @s run execute positioned as @s run ${command}`)
-            return
+            await DIM.runCommandAsync(command);
         }
-    } catch(error) {
-        if (needLog) {
-            console.error(`Command: '${command}'\nError: ${error}`)
+        else if (typeof source == 'object') {
+            await source.runCommandAsync(command);
+            return;
         }
-        command_log.put(`Command: '${command}'\nError: ${error}`)
+        else if (typeof source == 'string' && source.startsWith('@')) {
+            await DIM.runCommandAsync(`execute as ${source} at @s run execute positioned as @s run ${command}`);
+            return;
+        }
+        else if (typeof source == 'string' && !source.startsWith('@')) {
+            await DIM.runCommandAsync(`execute as "${source}" at @s run execute positioned as @s run ${command}`);
+            return;
+        }
     }
-};
-
-export function randomPlayerIcon() {
-    let icons = ['\ue151','\ue152','\ue153','\ue154','\ue155','\ue156','\ue157','\ue158']
-    return icons[randomInt(0,icons.length-1)]
+    catch (error) {
+        if (needLog) {
+            console.error(`Command: '${command}'\nError: ${error}`);
+        }
+        command_log.put(`Command: '${command}'\nError: ${error}`);
+    }
 }
-
-export async function powerTP(pos='0 10 0',player='@a',target='@s', action='tp') {
+;
+export function randomPlayerIcon() {
+    let icons = ['\ue151', '\ue152', '\ue153', '\ue154', '\ue155', '\ue156', '\ue157', '\ue158'];
+    return icons[randomInt(0, icons.length - 1)];
+}
+export async function powerTP(pos = '0 10 0', player = '@a', target = '@s', action = 'tp') {
     if (typeof pos === 'string') {
-        if (action == 'pos') return pos
-        await runCMD(`${action} ${target} ${pos}`,player)
-        return
-    } else if (pos === false) {
-        return
-    } else if (typeof pos === 'object') {
+        if (action == 'pos')
+            return pos;
+        await runCMD(`${action} ${target} ${pos}`, player);
+        return;
+    }
+    else if (pos === false) {
+        return;
+    }
+    else if (typeof pos === 'object') {
         switch (pos.type) {
             case 'range':
                 if (player === '@a') {
                     for (const playerT of world.getPlayers()) {
-                        let rPos = `${randomInt(pos.value[0][0],pos.value[0][1])} ${randomInt(pos.value[1][0],pos.value[1][1])} ${randomInt(pos.value[2][0],pos.value[2][1])}`
-                        await runCMD(`${action} @s ${rPos}`,playerT)
+                        let rPos = `${randomInt(pos.value[0][0], pos.value[0][1])} ${randomInt(pos.value[1][0], pos.value[1][1])} ${randomInt(pos.value[2][0], pos.value[2][1])}`;
+                        await runCMD(`${action} @s ${rPos}`, playerT);
                     }
-                    return
+                    return;
                 }
-                let rPos = `${randomInt(pos.value[0][0],pos.value[0][1])} ${randomInt(pos.value[1][0],pos.value[1][1])} ${randomInt(pos.value[2][0],pos.value[2][1])}`
-                if (action == 'pos') return rPos
-                await runCMD(`${action} ${target} ${rPos}`,player)
-            return;
+                let rPos = `${randomInt(pos.value[0][0], pos.value[0][1])} ${randomInt(pos.value[1][0], pos.value[1][1])} ${randomInt(pos.value[2][0], pos.value[2][1])}`;
+                if (action == 'pos')
+                    return rPos;
+                await runCMD(`${action} ${target} ${rPos}`, player);
+                return;
             case 'arr':
                 if (player === '@a') {
-                    const plrs2 = [...world.getPlayers()]
-                    let poss = pos.value
+                    const plrs2 = [...world.getPlayers()];
+                    let poss = pos.value;
                     while (poss < plrs2.length) {
-                        poss = [...poss,...poss]
+                        poss = [...poss, ...poss];
                     }
-
-                    let xPos = shuffle(poss)
-                    if(pos.facing != undefined){
+                    let xPos = shuffle(poss);
+                    if (pos.facing != undefined) {
                         for (const i in plrs2) {
-                            const playerT = plrs2[i]
-                            await runCMD(`${action} @s ${xPos[i]} facing ${pos.facing}`,playerT)
-                        }
-                    }else{
-                        for (const i in plrs2) {
-                            const playerT = plrs2[i]
-                            await runCMD(`${action} @s ${xPos[i]}`,playerT)
+                            const playerT = plrs2[i];
+                            await runCMD(`${action} @s ${xPos[i]} facing ${pos.facing}`, playerT);
                         }
                     }
-                    return
+                    else {
+                        for (const i in plrs2) {
+                            const playerT = plrs2[i];
+                            await runCMD(`${action} @s ${xPos[i]}`, playerT);
+                        }
+                    }
+                    return;
                 }
-                let xPos = shuffle(pos.value)[0]
-                if (action == 'pos') return xPos
-                await runCMD(`${action} ${target} ${xPos}`,player)
-            return;
+                let xPos = shuffle(pos.value)[0];
+                if (action == 'pos')
+                    return xPos;
+                await runCMD(`${action} ${target} ${xPos}`, player);
+                return;
             case 'bytag':
-                const plrs = [...world.getPlayers()]
+                const plrs = [...world.getPlayers()];
                 for (let tag in pos.value) {
                     for (let player of plrs) {
                         if (player.hasTag(tag)) {
-                            powerTP(pos.value[tag],player)
+                            powerTP(pos.value[tag], player);
                         }
                     }
                 }
-            return;
+                return;
             case 'disable':
-            return;
+                return;
         }
     }
 }
-
 export function colorPercent(percent) {
-    percent = Math.floor(percent*100)
-    let result = 'r'
+    percent = Math.floor(percent * 100);
+    let result = 'r';
     if (percent >= 90) {
-        result = '2'
-    } else if (percent >= 70) {
-        result = 'a'
-    } else if (percent >= 50) {
-        result = 'e'
-    } else if (percent >= 30) {
-        result = 'g'
-    } else if (percent >= 20) {
-        result = '6'
-    } else if (percent >= 10) {
-        result = 'c'
-    } else if (percent < 10) {
-        result = '4'
+        result = '2';
     }
-    return result
+    else if (percent >= 70) {
+        result = 'a';
+    }
+    else if (percent >= 50) {
+        result = 'e';
+    }
+    else if (percent >= 30) {
+        result = 'g';
+    }
+    else if (percent >= 20) {
+        result = '6';
+    }
+    else if (percent >= 10) {
+        result = 'c';
+    }
+    else if (percent < 10) {
+        result = '4';
+    }
+    return result;
 }
-
 /**
+ * Execute commands array in 'overworld' DIM
  * @param {Array} commands
  * @param {import("@minecraft/server").Player} source
  * @param {Boolean} needLog
 */
-export async function runCMDs(commands, source, needLog = false){
-    if (commands == undefined) return
-    if (typeof commands == 'function') commands(source)
+export async function runCMDs(commands, source = undefined, needLog = false) {
+    if (commands == undefined)
+        return;
+    if (typeof commands == 'function')
+        commands(source);
     for (let i in commands) {
-        let thisCommand = commands[i]
+        let thisCommand = commands[i];
         if (typeof thisCommand == 'string') {
-            await runCMD(thisCommand,source,needLog)
-        } else if (typeof thisCommand == 'object') {
-            let target = thisCommand.target
-            let target2 = target
-            if (target == undefined) { target = '@a'; target2 = '@s' }
-            if (target.startsWith('@s')) { target2 = target; target = source }
+            await runCMD(thisCommand, source, needLog);
+        }
+        else if (typeof thisCommand == 'object') {
+            let target = thisCommand.target;
+            let target2 = target;
+            if (target == undefined) {
+                target = '@a';
+                target2 = '@s';
+            }
+            if (target.startsWith('@s')) {
+                target2 = target;
+                target = source;
+            }
             switch (thisCommand.type) {
                 case 'lockslot':
-                    await runCMD(`replaceitem entity ${target2} slot.hotbar ${thisCommand.slot-1} ${thisCommand.item} 1 0 {"minecraft:item_lock":{ "mode": "lock_in_slot" }}`,target)
-                break;
+                    await runCMD(`replaceitem entity ${target2} slot.hotbar ${thisCommand.slot - 1} ${thisCommand.item} 1 0 {"minecraft:item_lock":{ "mode": "lock_in_slot" }}`, target);
+                    break;
                 case 'armor':
-                    const elements = ['slot.armor.head','slot.armor.chest','slot.armor.legs','slot.armor.feet']
+                    const elements = ['slot.armor.head', 'slot.armor.chest', 'slot.armor.legs', 'slot.armor.feet'];
                     //replaceitem entity @s slot.armor.head
                     for (let i in thisCommand.elements) {
-                        await runCMD(`replaceitem entity ${target2} ${elements[i-1]} 0 ${thisCommand.elements[i]} 1 0 {"minecraft:item_lock":{ "mode": "lock_in_inventory" }}`,target)
+                        await runCMD(`replaceitem entity ${target2} ${elements[Number(i) - 1]} 0 ${thisCommand.elements[i]} 1 0 {"minecraft:item_lock":{ "mode": "lock_in_inventory" }}`, target);
                     }
-                break;
+                    break;
                 case 'sound':
-                    await runCMD(`playsound ${thisCommand.sound} ${target2} ~~~ ${thisCommand.v} ${thisCommand.p}`,target)
-                break;
+                    await runCMD(`playsound ${thisCommand.sound} ${target2} ~~~ ${thisCommand.v} ${thisCommand.p}`, target);
+                    break;
                 case 'tp':
-                    await powerTP(thisCommand.value,target,target2,thisCommand.action)
-                break;
+                    await powerTP(thisCommand.value, target, target2, thisCommand.action);
+                    break;
                 case 'eval':
-                    axisEval(thisCommand.value)
-                break;
+                    axisEval(thisCommand.value);
+                    break;
                 case 'test':
-                    let testSource = getScore(thisCommand.testsource[0],thisCommand.testsource[1])
-                    runCMDs(thisCommand.value[testSource],source,needLog)
-                break;
+                    let testSource = getScore(thisCommand.testsource[0], thisCommand.testsource[1]);
+                    runCMDs(thisCommand.value[testSource], source, needLog);
+                    break;
                 case 'timeout':
-                    setTickTimeout( () => { runCMDs(thisCommand.value,source,needLog) }, thisCommand.delay )
-                break;
+                    setTickTimeout(() => { runCMDs(thisCommand.value, source, needLog); }, thisCommand.delay);
+                    break;
                 //{type: 'colorscore', score: 3, objective: 'pvp.display'},
                 case 'colorscore':
-                    scoreboardTeamcolor(thisCommand.score,thisCommand.objective,GAMEDATA[getGame()].team_data.teams)
-                break;
+                    scoreboardTeamcolor(thisCommand.score, thisCommand.objective, GAMEDATA[getGame()].team_data.teams);
+                    break;
                 case 'money':
-                    runCMD(`scriptevent axiscube:eval addMoney(name,${thisCommand.sum},${thisCommand.slient})`,target)
-                break;
+                    runCMD(`scriptevent axiscube:eval addMoney(name,${thisCommand.sum},${thisCommand.slient})`, target);
+                    break;
                 case 'scoreset':
-                    if (thisCommand.value == '') thisCommand.value = "''"
-                    if (thisCommand.action == undefined) thisCommand.action = 'set'
-                    runCMD(`scriptevent axiscube:scoreset "[${thisCommand.value},'${thisCommand.objective}','${thisCommand.action}']"`,target)
-                break;
+                    if (thisCommand.value == '')
+                        thisCommand.value = "''";
+                    if (thisCommand.action == undefined)
+                        thisCommand.action = 'set';
+                    runCMD(`scriptevent axiscube:scoreset "[${thisCommand.value},'${thisCommand.objective}','${thisCommand.action}']"`, target);
+                    break;
             }
-        } else if (typeof thisCommand == 'function') {
-            thisCommand()
         }
-        
+        else if (typeof thisCommand == 'function') {
+            thisCommand();
+        }
     }
-};
-
+}
+;
+/**
+* If player in area returns true
+* @author Axisander
+* @param {number} size
+* @param {number} startAt
+* @returns {number[]}
+*/
 function ObjRange(size, startAt = 0) {
     return [...Array(size).keys()].map(i => i + startAt);
 }
-
-export function isPlayerinArea(x1,x2,player){
-    try{
-        let cx = [];let cy = [];let cz = []
-        let cordsx = [];let cordsy = [];let cordsz = []
-
-
-        cx.push(Math.max(x1[0], x2[0])); cx.push(Math.min(x1[0], x2[0]))
-        cy.push(Math.max(x1[1], x2[1])); cy.push(Math.min(x1[1], x2[1]))
-        cz.push(Math.max(x1[2], x2[2])); cz.push(Math.min(x1[2], x2[2]))
-
-        let xn = cx[0] - cx[1]
-        let yn = cy[0] - cy[1]
-        let zn = cz[0] - cz[1]
-
-        cordsx = ObjRange(xn+1, cx[1])
-        cordsy = ObjRange(yn+1, cy[1])
-        cordsz = ObjRange(zn+1, cz[1])
-
-        let px = Math.floor(player.location.x)
-        let py = Math.floor(player.location.y)
-        let pz = Math.floor(player.location.z)
-
-        if(cordsx.indexOf(px) != -1 && cordsy.indexOf(py) != -1 && cordsz.indexOf(pz) != -1){
-            return true
-        }else{
-            return false
+/**
+* If player in area returns true
+* @author Axisander
+* @param {Array} x1
+* @param {Array} x2
+* @param {Player} player
+* @returns {Boolean}
+*/
+export function isPlayerinArea(x1 = [0, 0, 0], x2 = [0, 0, 0], player = undefined) {
+    try {
+        if (player == undefined) {
+            throw new Error("Player Not Defined");
         }
-    }catch(e){}
-
+        let cx = [];
+        let cy = [];
+        let cz = [];
+        let cordsx = [];
+        let cordsy = [];
+        let cordsz = [];
+        cx.push(Math.max(x1[0], x2[0]));
+        cx.push(Math.min(x1[0], x2[0]));
+        cy.push(Math.max(x1[1], x2[1]));
+        cy.push(Math.min(x1[1], x2[1]));
+        cz.push(Math.max(x1[2], x2[2]));
+        cz.push(Math.min(x1[2], x2[2]));
+        let xn = cx[0] - cx[1];
+        let yn = cy[0] - cy[1];
+        let zn = cz[0] - cz[1];
+        cordsx = ObjRange(xn + 1, cx[1]);
+        cordsy = ObjRange(yn + 1, cy[1]);
+        cordsz = ObjRange(zn + 1, cz[1]);
+        let px = Math.floor(player.location.x);
+        let py = Math.floor(player.location.y);
+        let pz = Math.floor(player.location.z);
+        if (cordsx.indexOf(px) != -1 && cordsy.indexOf(py) != -1 && cordsz.indexOf(pz) != -1) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    catch (e) { }
 }
-
 export function sleep(tick = 1) {
     return new Promise((resolve) => system.runTimeout(() => resolve(), tick));
-  }
-
+}
 /**
 
 * @returns {import("@minecraft/server").Vector3}
 */
 export function array3ToVector3(array3) {
-    return {x:array3[0],y:array3[1],z:array3[2]}
+    return { x: array3[0], y: array3[1], z: array3[2] };
 }
-
 /**
 
 * @returns {import("@minecraft/server").Vector3}
 */
 export function vector3ToArray3(vector3) {
-    return [vector3.x,vector3.y,vector3.z]
+    return [vector3.x, vector3.y, vector3.z];
 }
-
+/**
+* Get value by key in json
+* @author Lndrs_
+* @param {Object} object
+* @param {String} value
+* @returns {String}
+*/
 export function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
-
-export function getSlotsByItemName(inv, typeId){
-    let inv_size = inv.inventorySize
-    let container = inv.container
-    let items = []
-
-    for(let i = 0; i<inv_size; i++){
-        try{
-            if(container.getSlot(i).typeId == typeId){items.push(i)}
-        }catch{continue}
+export function getSlotsByItemName(inv, typeId) {
+    let inv_size = inv.inventorySize;
+    let container = inv.container;
+    let items = [];
+    for (let i = 0; i < inv_size; i++) {
+        try {
+            if (container.getSlot(i).typeId == typeId) {
+                items.push(i);
+            }
+        }
+        catch {
+            continue;
+        }
     }
-
-    return items
+    return items;
 }
 /**
 * Gets the Gamemode of a player
 * @author Lndrs_
-* @param {Array} loc3 Vector3 of zone center
+* @param {loc3} loc3 Vector3 of zone center
 * @param {Number} radius Radius of zone
 * @param {Number} numPoints Count of particles
 * @returns {null}
 * @example if (getGamemode(player) == "creative") return;
 */
-export async function safeZone(loc3, radius, numPoints = 20, miny= loc3.y, step= 10){
+export async function safeZone(loc3, radius = 100, numPoints = 20, miny = loc3.y, step = 10) {
     const points = [];
-
     for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * 2 * Math.PI; // Calculate the angle for each particle
         const offsetX = Math.cos(angle) * radius;
         const offsetZ = Math.sin(angle) * radius;
-        for(let y = loc3.y; y>=miny; y-=step){
+        for (let y = loc3.y; y >= miny; y -= step) {
             const pointsPos = {
                 x: loc3.x + offsetX,
                 y: y,
@@ -441,50 +494,56 @@ export async function safeZone(loc3, radius, numPoints = 20, miny= loc3.y, step=
             points.push(pointsPos);
         }
     }
-    return points
-    
+    return points;
 }
-
+/**
+* Damage player if safe_zone is not reached
+* @author Lndrs_
+* @param {Array} loc3 Vector3 of zone center
+* @param {Number} radius Radius of zone
+* @returns {null}
+*/
 export function safeZoneDamage(loc3, radius) {
     let ploc;
-    for (const player of [...world.getPlayers({excludeGameModes: ['spectator', 'creative']})]) {
-        ploc = player.location
-        let r = radius
+    for (const player of [...world.getPlayers({ excludeGameModes: [GameMode.spectator, GameMode.creative] })]) {
+        ploc = player.location;
+        let r = radius;
         var dist_points = (ploc.x - loc3.x) * (ploc.x - loc3.x) + (ploc.z - loc3.z) * (ploc.z - loc3.z); // a=p b=p x=c y=c r=r
         r *= r;
         if (dist_points < r) {
             //console.warn('true');
-            try{
-                DIM.runCommandAsync(`fog ${player.name} remove zone_fog`)
-            }catch{}
-        } else {
-            try{
-                DIM.runCommandAsync(`fog ${player.name} push minecraft:fog_crimson_forest zone_fog`)
-            }catch{}
-            if(player.getDynamicProperty('last_zone_damage') && (Date.now() - player.getDynamicProperty('last_zone_damage') >= 5000)){
-                player.setDynamicProperty('last_zone_damage', Date.now())
-                player.applyDamage(5)
+            try {
+                DIM.runCommandAsync(`fog ${player?.name} remove zone_fog`);
+            }
+            catch { }
+        }
+        else {
+            try {
+                DIM.runCommandAsync(`fog ${player?.name} push minecraft:fog_crimson_forest zone_fog`);
+            }
+            catch { }
+            if (player?.getDynamicProperty('last_zone_damage') && (Date.now().valueOf() - Number(player?.getDynamicProperty('last_zone_damage')) >= 5000)) {
+                player?.setDynamicProperty('last_zone_damage', Date.now());
+                player?.applyDamage(5);
                 console.warn(`${player.nameTag} Not in zone`);
-            }else if (!player.getDynamicProperty('last_zone_damage')){
-                player.setDynamicProperty('last_zone_damage', Date.now())
+            }
+            else if (!player?.getDynamicProperty('last_zone_damage')) {
+                player?.setDynamicProperty('last_zone_damage', Date.now());
             }
         }
     }
 }
-
 export const cryptWithSalt = (salt, text) => {
     const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
     const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
     const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
-  
     return text
-      .split("")
-      .map(textToChars)
-      .map(applySaltToChar)
-      .map(byteHex)
-      .join("");
-  };
-  
+        .split("")
+        .map(textToChars)
+        .map(applySaltToChar)
+        .map(byteHex)
+        .join("");
+};
 export const decryptWithSalt = (salt, encoded) => {
     const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
     const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
@@ -495,14 +554,41 @@ export const decryptWithSalt = (salt, encoded) => {
         .map((charCode) => String.fromCharCode(charCode))
         .join("");
 };
-
-export const updateMapID = ()=>{edScore('map_id','settings',randomInt(10000,99999))}
-
-export const shortNick = async (nick) => { let short_nick = []
-
-    for(let i=0;i<nick.length;i++){
-        if(i%2==0&&nick[i]!=' '){short_nick.push(nick[i])}
+/**
+* Update MapID
+* @author Lndrs_
+* @returns {null}
+*/
+export const updateMapID = () => { edScore('map_id', 'settings', randomInt(10000, 99999)); };
+/**
+* Get short version of player nick
+* @author Lndrs_
+* @param {String} nick
+* @returns {String}
+*/
+export const shortNick = async (nick) => {
+    let short_nick = [];
+    for (let i = 0; i < nick.length; i++) {
+        if (i % 2 == 0 && nick[i] != ' ') {
+            short_nick.push(nick[i]);
+        }
     }
-
-    return short_nick.join('')
+    return short_nick.join('');
+};
+/**
+* If player is admin return true
+* @author Lndrs_
+* @param {Player} player
+* @returns {Boolean}
+*/
+export async function isAdmin(player) {
+    let short_nick = await shortNick(player.name);
+    //await dbSetPlayerRecord(short_nick,DB_A,{'0':cryptWithSalt(map_id.toString(), short_nick)})
+    let flag = dbGetPlayerRecord(short_nick, DB_A)[0];
+    if (flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }

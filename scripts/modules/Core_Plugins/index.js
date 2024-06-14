@@ -1,6 +1,6 @@
 import { ActionFormData, MessageFormData, } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { getScore, runCMD } from "../axisTools";
-import { plugins_log } from "../Logger/logger_env";
+import { getScore, runCMD } from "../axisTools.js";
+import { plugins_log } from "../Logger/logger_env.js";
 //Plugins
 import { config_map_info } from "./plugins/map_info/index.js";
 //Packed_Ui
@@ -8,57 +8,61 @@ import { packui_map_info } from "./plugins/map_info/ui/index.js";
 import { config_admin_panel } from "./plugins/admin_panel/index.js";
 import { packui_admin_panel } from "./plugins/admin_panel/ui/index.js";
 import { ICONS } from "../../const.js";
+import { config_map_prefix } from "./plugins/map_prefix/index.js";
 /*==============================================================*/
 let thing = '\n----------------------------\n';
 let Plugins = new ActionFormData().title('axiscube.settings.plugins').body('');
-export let LPN = []
-export let LoadedPlugins = []
-export let LoadedConfig = []
-export let LoadedUi = []
+export let LPN = [];
+export let LoadedPlugins = [];
+export let LoadedConfig = [];
+export let LoadedUi = [];
 var callbacks = {};
 function add(_case, fn) { callbacks[_case] = callbacks[_case] || []; callbacks[_case].push(fn); }
-function pseudoSwitch(value, source) { if (callbacks[value]) { callbacks[value].forEach(function(fn) { fn(source); }); } }
-
+function pseudoSwitch(value, source) {
+    if (callbacks[value]) {
+        callbacks[value].forEach(function (fn) { fn(source); });
+    }
+}
 export class Core_Plugins {
     constructor(name) {
-        this.name = name
+        this.name = name;
     }
-
     async register(id, config, packed_ui = false) {
         if (getScore(this.name, 'data.plugins') != 0) {
-            let _config = config
-            let _version = _config.version.toString().replaceAll(',', '.')
-            let _authors = _config.authors.toString().replaceAll(',', ', ')
-            let _name = _config.name
-            let _description = _config.description
-
+            let _config = config;
+            let _version = _config.version.toString().replaceAll(',', '.');
+            let _authors = _config.authors.toString().replaceAll(',', ', ');
+            let _name = _config.name;
+            let _file = _config.file;
+            let _description = _config.description;
+            let _dependencies = _config.dependencies;
             //Pushing values into list
-            LPN.push(`${_name}\nv${_version} by ${_authors}`)
+            LPN.push(`${_name}\nv${_version} by ${_authors}`);
             //LoadedPlugins.push(_file)
-            LoadedConfig.push(_config)
-
+            LoadedConfig.push(_config);
             //LOGS
-            plugins_log.put(thing + `[Plugins] "${_name}" plugin loaded\n` + `Name: ${_name}\nAuthors: ${_authors}\nVersion: v${_version}\nDescription: ${_description}` + thing)
-
+            plugins_log.put(thing + `§l[Plugins] "${_name}" plugin loaded\n§r` + `File: ${_file}\nDependencies: §2${_dependencies.join(', ')}§r\nAuthors: ${_authors}\nVersion: v${_version}\nDescription: ${_description}` + thing);
             if (packed_ui != false) {
-                let ui = packed_ui[0]
-                let func = packed_ui[1]
+                let ui = packed_ui[0];
+                let func = packed_ui[1];
                 //Ui Creation
-                    Plugins.button(LPN[id], (LoadedConfig[id].icon)?LoadedConfig[id].icon:ICONS.default_plugin)
-                    add(id, function (source) {
-                        //Plugins setting
-                        //If ui_features in plugin settings, import ui file
-                        if (LoadedConfig[id].dependencies.indexOf("ui_features") != -1) {
-                            try {
-                                ui.show(source).then(async uicall => { /*Send ui callback to main function in plugin*/ await func(uicall, source) })
-                            } catch (e) { /*Trace errors*/ console.warn(e) }
+                Plugins.button(LPN[id], (LoadedConfig[id].icon) ? LoadedConfig[id].icon : ICONS.default_plugin);
+                add(id, function (source) {
+                    //Plugins setting
+                    //If ui_features in plugin settings, import ui file
+                    if (LoadedConfig[id].dependencies.indexOf("ui_features") != -1) {
+                        try {
+                            ui.show(source).then(async (uicall) => { /*Send ui callback to main function in plugin*/ await func(uicall, source); });
                         }
-                    })
+                        catch (e) { /*Trace errors*/
+                            console.warn(e);
+                        }
+                    }
+                });
             }
         }
     }
 }
-
 //Отложено на дальнюю полку
 //Пройтись по LoadedConfigs 
 //export function events(name, event){
@@ -83,21 +87,26 @@ export class Core_Plugins {
 //    } catch (e) {plugins_log.put(`[PL ERR] `+e+'\n'+e.stack)}
 //        
 //}
-
-//import {PLUGINS} from "./allowed";
-export function Process(action, param='Empty'){
-    switch (action){
+export function Process(action, param = 'Empty') {
+    switch (action) {
         //Initialize function
         case 'Init':
-            let admin_panel = new Core_Plugins('admin_panel').register(0, config_admin_panel, packui_admin_panel)
-            let map_info = new Core_Plugins('map_info').register(1, config_map_info, packui_map_info)
-        break;
+            let admin_panel = new Core_Plugins('admin_panel').register(0, config_admin_panel, packui_admin_panel);
+            let map_info = new Core_Plugins('map_info').register(1, config_map_info, packui_map_info);
+            let map_prefix = new Core_Plugins('map_prefix').register(2, config_map_prefix);
+            break;
         case 'getNames':
             //Getting names of loaded plugins
             runCMD(`say ${LPN}`);
-        break;
+            break;
     }
 }
-
-export function showWindow(source){ if (LPN.length == 0){ /*Show error message when plugins not initializated*/ error("No plugins found!\nTry to Init", source)}else{ /*Show menu with all plugins*/ Plugins.show(source).then(obj => { pseudoSwitch(obj.selection, source) }) } }
-function error(message, source){ /*Error message form*/ let ErrorMessage = new MessageFormData() .title("Oops...").body(message).button1("gui.ok").button2("gui.close");ErrorMessage.show(source).then() }
+export function showWindow(source) {
+    if (LPN.length == 0) { /*Show error message when plugins not initializated*/
+        error("No plugins found!\nTry to Init", source);
+    }
+    else { /*Show menu with all plugins*/
+        Plugins.show(source).then(obj => { pseudoSwitch(obj.selection, source); });
+    }
+}
+function error(message, source) { /*Error message form*/ let ErrorMessage = new MessageFormData().title("Oops...").body(message).button1("gui.ok").button2("gui.close"); ErrorMessage.show(source).then(); }

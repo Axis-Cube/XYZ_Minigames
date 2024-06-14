@@ -1,6 +1,5 @@
 import { ICONS } from "./const";
 import { getScore } from "./modules/axisTools";
-
 export const FORMS = {
     mainmenu: {
         title: "%axiscube.form.mainmenu",
@@ -8,24 +7,24 @@ export const FORMS = {
         buttons: [
             {
                 button_name: "%axiscube.form.games",
-                icon: "textures/ui/icons/gamepad", 
-                on_click: [ { "type": "form", "value": "gamesel" } ]
+                icon: "textures/ui/icons/gamepad",
+                on_click: [{ "type": "form", "value": "gamesel" }]
             },
             {
                 button_name: "%axiscube.profile",
-                icon: "textures/ui/icons/avatars/1", 
-                on_click: [ { "type": "eval", "value": "formProfile(player)" } ]
+                icon: "textures/ui/icons/avatars/1",
+                on_click: [{ "type": "eval", "value": "formProfile(player)" }]
             },
             {
                 button_name: "%axiscube.testrun",
-                icon: ICONS.console, 
-                visible: getScore('testrun', 'settings')==1,
-                on_click: [ { "type": "eval", "value": "formTestRun(player)" } ]
+                icon: ICONS.console,
+                visible: getScore('testrun', 'settings') == 1,
+                on_click: [{ "type": "eval", "value": "formTestRun(player)" }]
             },
             {
                 button_name: "%axiscube.settings.map",
-                icon: ICONS.settings, 
-                on_click: [ { "type": "eval", "value": "formMapSettings(player)" } ]
+                icon: ICONS.settings,
+                on_click: [{ "type": "eval", "value": "formMapSettings(player)" }]
             }
         ]
     },
@@ -35,18 +34,18 @@ export const FORMS = {
         buttons: [
             {
                 button_name: "%axiscube.form.games.p1",
-                icon: "textures/ui/icons/plr1", 
-                on_click: [ { "type": "eval", "value": "formGameChooser(player,1)" } ]
+                icon: "textures/ui/icons/plr1",
+                on_click: [{ "type": "eval", "value": "formGameChooser(player,1)" }]
             },
             {
                 button_name: "%axiscube.form.games.p2",
-                icon: "textures/ui/icons/plr2", 
-                on_click: [ { "type": "eval", "value": "formGameChooser(player,2,true)" } ]
+                icon: "textures/ui/icons/plr2",
+                on_click: [{ "type": "eval", "value": "formGameChooser(player,2,true)" }]
             },
             {
                 button_name: "%gui.back",
-                icon: ICONS.back, 
-                on_click: [ { "type": "form", "value": "mainmenu" } ]
+                icon: ICONS.back,
+                on_click: [{ "type": "form", "value": "mainmenu" }]
             }
         ]
     }

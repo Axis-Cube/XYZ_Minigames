@@ -1,5 +1,4 @@
-import { COPYRIGHT, SYM } from '../const';
-import { getScore, randomInt, runCMD, runCMDs } from '../modules/axisTools'
+import { runCMD } from '../modules/axisTools';
 import { boardMoney } from '../tunes/bank';
 import { GAMEDATA_BW } from './bw';
 import { GAMEDATA_HNS } from './hns';
@@ -13,17 +12,14 @@ import { GAMEDATA_FW_BRIDGES } from './flagw/bridges';
 import { GAMEDATA_FW_FRONTLINE } from './flagw/frontline';
 import { GAMEDATA_PRK } from './prk';
 import { GAMEDATA_HG } from './hg';
-import { MT_GAMES } from '../modules/MultiTasking/instances';
-
 // GLOBAL
-
 export const GAMEDATA = {
     0: {
         id: 0,
         min_players: 0,
-        tags: [ 'lobby' ],
+        tags: ['lobby'],
         loc: { 0: { spawn: '-9925 39 -9925' } },
-        start_commands: async function() {
+        start_commands: async function () {
             let commands = [
                 'xp -1000000L @a',
                 'clearspawnpoint @a',
@@ -39,9 +35,9 @@ export const GAMEDATA = {
                 'effect @a clear',
                 'difficulty p',
                 { type: 'lockslot', slot: 1, item: 'axiscube:menu' },
-            ]
-            await runCMD(commands)
-            await boardMoney()
+            ];
+            await runCMD(commands);
+            await boardMoney();
         },
         death_data: {
             death_commands: []
@@ -59,8 +55,7 @@ export const GAMEDATA = {
     10: GAMEDATA_FW_FRONTLINE, //Flagwars Frontline
     11: GAMEDATA_PRK, //Parkour
     12: GAMEDATA_HG //Hunger Games
-}
+};
 //GAMEDATA[1].start_commands.push(`execute as @a run scoreboard players random @s hns.block 0 ${HNS_BLOCKS.length-1}`)
-    // GAMEDATA[2].time.events = {
-
-    // }
+// GAMEDATA[2].time.events = {
+// }
