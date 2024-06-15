@@ -19,7 +19,9 @@ async function main(response, source){
         case 0:
             get_admin_form.show(source).then(gg => {
                 if(gg.canceled){}
-                let [code] = gg.formValues
+                if(!gg.formValues){return;}
+
+                let code: string  = String(gg.formValues[0])
                 if(code != '')
                 setCode(source, code)
             })

@@ -18,7 +18,6 @@ export const TESTERS = {
     "lndrs2224": 4,
     "drak5945": 1,
     "tvminerpe": 3,
-    "lndrs2224(2)":3
 }
 
 export const TESTER_LEVELS = [
@@ -77,27 +76,30 @@ export async function formTestRun(target) {
     form.title("%axiscube.testrun.button")
     form.body(bodyText)
     //form.button(`Unlimited emeralds ${ue_status[getScore('settings','tsrun_unlimit_em',true)]}`,'textures/items/emerald')
-    form.button('%axiscube.testrun.logs'+check_perms('logs')[1] ,'textures/items/spyglass')
-    form.button('%axiscube.testrun.eval'+check_perms('eval')[1] ,'textures/items/spyglass')
-    form.button('%gui.close','textures/blocks/barrier')
+    form.button('%axiscube.testrun.logs' + check_perms('logs')[1], 'textures/items/spyglass')
+    form.button('%axiscube.testrun.eval' + check_perms('eval')[1], 'textures/items/spyglass')
+    form.button('%gui.close', 'textures/blocks/barrier')
     form.show(target).then(gg => {
-        if(gg.canceled) return
-        switch (gg.selection){
+        if (gg.canceled) return
+        switch (gg.selection) {
             case 0:
-                if(check_perms('logs')[0]){
+                if (check_perms('logs')[0]) {
                     load_log('games_log', target)
                 }
                 break;
-                //scoreboard('tsrun_unlimit_em', ue_next(getScore('settings','tsrun_unlimit_em',true)), 'settings')
+            //scoreboard('tsrun_unlimit_em', ue_next(getScore('settings','tsrun_unlimit_em',true)), 'settings')
             case 1:
-                if(check_perms('eval')[0]){
-                    EvalForm.show(target).then(ef=>{
-                        let [command] = ef.formValues
-                        axisEval(command,target)
+                if (check_perms('eval')[0]) {
+                    EvalForm.show(target).then(ef => {
+                        if(!ef.formValues){return;}
+
+                        let [command] = String(ef.formValues)
+                        axisEval(command, target)
                     })
                 }
                 break;
             default:
                 break;
         }
-    })}
+    })
+}

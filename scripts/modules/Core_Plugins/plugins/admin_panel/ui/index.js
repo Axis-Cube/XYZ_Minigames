@@ -1,7 +1,7 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { cryptWithSalt, edScore, getScore, runCMD, shortNick } from "../../../../axisTools.js";
+import { shortNick } from "../../../../axisTools.js";
 import { dbSetPlayerRecord } from "../../../../cheesebase.js";
-import { DB_A, map_id } from "../../../../../const.js";
+import { DB_A } from "../../../../../const.js";
 let FORM = new ActionFormData()
     .title('Admin Panel')
     .button('Get Admin Priveleges');
@@ -13,7 +13,10 @@ async function main(response, source) {
         case 0:
             get_admin_form.show(source).then(gg => {
                 if (gg.canceled) { }
-                let [code] = gg.formValues;
+                if (!gg.formValues) {
+                    return;
+                }
+                let code = String(gg.formValues[0]);
                 if (code != '')
                     setCode(source, code);
             });

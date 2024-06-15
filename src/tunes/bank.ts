@@ -18,7 +18,8 @@ export function getPlayerMoneyData() {
 export async function boardMoney() {
     let players = getPlayerMoneyData()
     let leaders = Object.keys(players).sort(function(a,b){return players[a]-players[b]}).reverse()
-    
+    //let leaders = ["Lndrs2224", "Axisander", "MiauMiez"]
+    //let leaders = []
     let commands = [
         `scoreboard objectives add lobby.display dummy "${MAP_NAME}"`,
         'scoreboard objectives setdisplay sidebar lobby.display',
@@ -33,12 +34,12 @@ export async function boardMoney() {
     if (leaders.length > 2) {
         for (let i in leaders) {
             let color = '§r'
-            if (i == 0) {
+            if (Number(i) == 0) {
                 color = '§0§g'
                 await playsound('mob.ghast.fireball')
                 await edScore(`${color}${leaders[i]}`,'lobby.display',players[leaders[i]])
                 continue
-            } else if (i == 1) {
+            } else if (Number(i) == 1) {
                 color = '§1§7'
                 setTickTimeout( () => {
                     playsound('mob.ghast.fireball')
@@ -46,21 +47,21 @@ export async function boardMoney() {
                 },20 )
                 continue
                 
-            } else if (i == 2) {
+            } else if (Number(i) == 2) {
                 color = '§2§6'
                 setTickTimeout( () => {
                     playsound('mob.ghast.fireball')
                     edScore(`${color}${leaders[i]}`,'lobby.display',players[leaders[i]])
                 }, 40 )
                 continue
-            } else {
-                for (let i in leaders.slice(i,(leaders.length-1))) {
-                    setTickTimeout( () => {
-                        playsound('mob.ghast.fireball')
-                        edScore(`${color}${leaders[i]}`,'lobby.display',players[leaders[i]])
-                    }, 60 )
-                }
-                break
+            //} else {
+            //    for (let i in leaders.slice(Number(i),(leaders.length-1))) {
+            //        setTickTimeout( () => {
+            //            playsound('mob.ghast.fireball')
+            //            edScore(`${color}${leaders[i]}`,'lobby.display',players[leaders[i]])
+            //        }, 60 )
+            //    }
+            //    break
             }
         }
     } else {

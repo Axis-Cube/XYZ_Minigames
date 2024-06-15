@@ -1,0 +1,6 @@
+.megaignore
+/scripts
+/node_modules
+/.vscode
+/.fleet
+/.debris

@@ -1,5 +1,5 @@
 //import { getScore, getScorev2, scoreboard } from "../modules/axisTools";
-import { ActionFormData, ModalFormData, } from "@minecraft/server-ui";
+import { ActionFormData, } from "@minecraft/server-ui";
 import { load_log } from "../modules/Logger/logger";
 import { EvalForm, axisEval } from "../modules/evalSandbox";
 export const TESTERS = {
@@ -14,7 +14,6 @@ export const TESTERS = {
     "lndrs2224": 4,
     "drak5945": 1,
     "tvminerpe": 3,
-    "lndrs2224(2)": 3
 };
 export const TESTER_LEVELS = [
     'axiscube.testrun.level.beginner',
@@ -84,7 +83,10 @@ export async function formTestRun(target) {
             case 1:
                 if (check_perms('eval')[0]) {
                     EvalForm.show(target).then(ef => {
-                        let [command] = ef.formValues;
+                        if (!ef.formValues) {
+                            return;
+                        }
+                        let [command] = String(ef.formValues);
                         axisEval(command, target);
                     });
                 }

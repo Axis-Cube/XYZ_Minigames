@@ -41,7 +41,8 @@ export function holoEditor(entity, player){
     .dropdown("Edit", ["Name_tag", "Name", "Objective", "Kill" ,"Clear tags"])
     .textField("Editor","Enter text")
     .show(player).then(ed => {
-        let [ dropdown, text] = ed.formValues
+        if(!ed.formValues){return;}
+        let [ dropdown, text ] = ed.formValues
         switch(dropdown){
             case 0:
                 entity.nameTag = text

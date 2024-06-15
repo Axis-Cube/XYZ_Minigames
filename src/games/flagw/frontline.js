@@ -1,4 +1,4 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes } from "@minecraft/server"
+import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType } from "@minecraft/server"
 import { COPYRIGHT, DIM, SYM } from "../../const"
 import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, setblock, sleep, tellraw } from "../../modules/axisTools"
 import { GAMEDATA } from "../gamedata"
@@ -204,7 +204,6 @@ async function bridgeEquipment(){
         //@minecraft/vanilla-data (Not released) [/bundles/vanilla_data]
         let bow = new ItemStack('minecraft:bow', 1)
         let ench = bow.getComponent(ItemComponentTypes.Enchantable)
-        bow.getComponent(ItemComponentTypes.Enchantable)
         ench.addEnchantment({ type: MinecraftEnchantmentTypes.Power, level: 5 });
 
 

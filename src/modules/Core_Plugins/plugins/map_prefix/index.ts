@@ -1,18 +1,8 @@
 import { EntityFlyingSpeedComponent, system, world } from "@minecraft/server"
-import { MT_GAMES } from "../../../MultiTasking/instances"
-import { isAdmin } from "../../../axisTools";
+import { MT_GAMES, MT_PLUGINS } from "../../../MultiTasking/instances"
+import { getScore, isAdmin } from "../../../axisTools";
 import { TESTERS } from "../../../../tunes/testrun";
-export const config_map_prefix = {
-  "version": [ 0, 1, 0 ],
-  "engine_version": [ 1, 3, 0 ],
-  "file": "map_prefix",
-  "name": "MPR Plugin",
-  "description": "Prefix Plugin",
-  "authors": ["Lndrs_"],
-  "license": "MIT",
-  "dependencies": [],
-  "protection_code": undefined
-}
+import { config_map_prefix } from "./config";
 
 let prefixes = {
     admin: "04",
@@ -27,13 +17,13 @@ let prefixes = {
 
 function containsUnicode(str) {
     for (var i = 0, n = str.length; i < n; i++) {
-        if (str.charCodeAt( i ) > 57600 && str.charCodeAt( i ) < 57856 /*e1_glyph*/) { return true; }
+        if (str.charCodeAt( i ) > 57600 && str.charCodeAt( i ) < 57856 /*e1_glyphs*/) { return true; }
     }
     return false;
 }
 
 let admin_icon = "04"
-system.runInterval(async ()=>{
+let prefix_interval = system.runInterval(async ()=>{
     for(const player of [...world.getPlayers()]){
         //console.warn(`Your nick -> ${player.nameTag}`, await isAdmin(player))
         if(!containsUnicode(player.nameTag)){ //1 Because 0 is a "
@@ -46,10 +36,10 @@ system.runInterval(async ()=>{
                 player.nameTag = new_name
             }
         }else{
-            if(await isAdmin(player) == false && player.nameTag.charCodeAt() == 57604){
+            if(await isAdmin(player) == false && player.nameTag.charCodeAt(0) == 57604){
                 let new_name = `${player.nameTag.slice(2)}`
                 player.nameTag = new_name
-            }else if(await isAdmin(player) && player.nameTag.charCodeAt() != 57604){
+            }else if(await isAdmin(player) && player.nameTag.charCodeAt(0) != 57604){
                 let new_name = `${player.nameTag.slice(2)}`
                 player.nameTag = new_name
             }
@@ -57,3 +47,5 @@ system.runInterval(async ()=>{
     }
     
 },50)
+
+MT_PLUGINS.registerNamed(config_map_prefix.file, prefix_interval)

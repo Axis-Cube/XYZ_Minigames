@@ -16,253 +16,43 @@ export const DB_DEFAULT = "[]"
 export const CATEGORIES = ['setpack','killmsg','elmsg','colorname','emoji', 'soundmsg']
 
 export const STORE_ITEMS = {
-    0: {
-        type: 'killmsg',
-        localData: 1,
-        price: -1,
-        linked: 2,
-        uid: '-66eb48ef'
-    },
-    1: {
-        type: 'killmsg',
-        localData: 2,
-        price: 200,
-        uid: '-8202a7'
-    },
-    2: {
-        type: 'setpack',
-        namespace: 'devpack',
-        author: 'AxisCube',
-        include: [0,3,8,17,25,34],
-        price: 1500,
-        uid: 'a087576'
-    },
-    3: {
-        type: 'colorname',
-        localData: '§q',
-        price: -1,
-        linked: 2,
-        uid: '213dc54'
-    },
-    4: {
-        type: 'colorname',
-        localData: '§k',
-        price: 5000,
-        uid: '4c195691'
-    },
-    5: {
-        type: 'colorname',
-        localData: '§d',
-        linked: 11,
-        price: -1,
-        uid: '-6297602a'
-    },
-    6: {
-        type: 'colorname',
-        linked: 11,
-        localData: '§u',
-        price: -1,
-        uid: '6b130197'
-    },
-    7: {
-        type: 'colorname',
-        localData: '§6',
-        price: 500,
-        uid: '-24f7cd85'
-    },
-    8: {
-        type: 'colorname',
-        localData: '§3',
-        price: 500,
-        linkeds: [2],
-        uid: '-574d6bc4'
-    },
-    9: {
-        type: 'colorname',
-        localData: '§c',
-        price: 500,
-        uid: '765cf5fd'
-    },
-    10: {
-        type: 'colorname',
-        localData: '§9',
-        price: 500,
-        uid: '-6ea6719d'
-    },
-    11: {
-        type: 'setpack',
-        namespace: 'pinkpack',
-        author: 'AxisCube',
-        include: [5,6,16,32],
-        price: 1500,
-        uid: '-6da7e41c'
-    },
-    12: {
-        type: 'colorname',
-        localData: '§n',
-        price: 500,
-        uid: '2cae51e5'
-    },
-    13: {
-        type: 'colorname',
-        localData: '§1',
-        price: 500,
-        uid: '-5a74c5a'
-    },
-    14: {
-        type: 'colorname',
-        localData: '§g',
-        price: 500,
-        uid: '-37fcea99'
-    },
-    15: {
-        type: 'colorname',
-        localData: '§0',
-        linked: 31,
-        price: -1,
-        uid: 'd5ab209'
-    },
-    16: {
-        type: 'killmsg',
-        localData: 3,
-        linked: 11,
-        price: -1,
-        uid: '-3ef2f63a'
-    },
-    17: {
-        type: 'colorname',
-        localData: '§a',
-        price: -1,
-        linked: 2,
-        uid: '-71489479'
-    },
-    18: {
-        type: 'colorname',
-        localData: '§b',
-        price: 500,
-        uid: '-1536395'
-    },
-    19: {
-        type: 'emoji',
-        localData: `pepe`,
-        price: -1,
-        linked: 20,
-        uid: '2a0c2f09'
-    },
-    20: {
-        type: 'setpack',
-        namespace: 'memepack',
-        author: 'xdCube',
-        include: [19,21,22,23,26,33],
-        price: 1500,
-        uid: '-53b06f7e'
-    },
-    21: {
-        type: 'emoji',
-        localData: `peped`,
-        price: -1,
-        linked: 20,
-        uid: '-5ba508a0'
-    },
-    22: {
-        type: 'killmsg',
-        localData: 4,
-        price: -1,
-        linked: 20,
-        uid: '72055921'
-    },
-    23: {
-        type: 'colorname',
-        localData: '§2',
-        price: -1,
-        linked: 20,
-        uid: '3fafbae2'
-    },
-    24: {
-        type: 'soundmsg',
-        localData: 'random.pop',
-        price: 0,
-        uid: 'c22e'
-    },
-    25: {
-        type: 'soundmsg',
-        localData: 'random.toast',
-        price: -1,
-        linked: 2,
-        uid: '-24fb819c'
-    },
-    26: {
-        type: 'soundmsg',
-        localData: 'mob.player.oof',
-        price: -1,
-        linked: 20,
-        uid: '-57511fdb'
-    },
-    27: {
-        type: 'killmsg',
-        localData: '5',
-        price: 500,
-        uid: '18a41109'
-    },
-    28: {
-        type: 'soundmsg',
-        localData: 'mob.evocation_illager.ambient',
-        price: 666,
-        uid: '-4e9736b8'
-    },
-    29: {
-        type: 'soundmsg',
-        localData: 'mob.villager.yes',
-        price: 450,
-        uid: '9faee1b'
-    },
-    30: {
-        type: 'soundmsg',
-        localData: 'mob.villager.no',
-        price: 450,
-        uid: '-4960ab4f'
-    },
-    31: {
-        type: 'setpack',
-        namespace: 'echopack',
-        author: 'AxisCube',
-        include: [15],
-        price: -3,
-        chalId: 0
-    },
-    32: {
-        type: 'elmsg',
-        price: -1,
-        linked: 11,
-        localData: 1
-    },
-    33: {
-        type: 'elmsg',
-        price: -1,
-        linked: 20,
-        localData: 2
-    },
-    34: {
-        type: 'elmsg',
-        price: -1,
-        linked: 2,
-        localData: 3
-    },
-    35: {
-        type: 'setpack',
-        namespace: 'glasspack',
-        author: 'Lndrs_',
-        include: [36],
-        price: -3,
-        chalId: 1
-    },
-    36: {
-        type: 'soundmsg',
-        localData: 'random.orb',
-        price: -1,
-        linked: 35,
-        uid: '-6faf497c'
-    },
+    0: { type: 'killmsg', localData: 1, price: -1, linked: 2, uid: '-66eb48ef' },
+    1: { type: 'killmsg', localData: 2, price: 200, uid: '-8202a7' },
+    2: { type: 'setpack', namespace: 'devpack', author: 'AxisCube', include: [0, 3, 8, 17, 25, 34], price: 1500, uid: 'a087576' },
+    3: { type: 'colorname', localData: '§q', price: -1, linked: 2, uid: '213dc54' },
+    4: { type: 'colorname', localData: '§k', price: 5000, uid: '4c195691' },
+    5: { type: 'colorname', localData: '§d', linked: 11, price: -1, uid: '-6297602a' },
+    6: { type: 'colorname', linked: 11, localData: '§u', price: -1, uid: '6b130197' },
+    7: { type: 'colorname', localData: '§6', price: 500, uid: '-24f7cd85' },
+    8: { type: 'colorname', localData: '§3', price: 500, linkeds: [2], uid: '-574d6bc4' },
+    9: { type: 'colorname', localData: '§c', price: 500, uid: '765cf5fd' },
+    10: { type: 'colorname', localData: '§9', price: 500, uid: '-6ea6719d' },
+    11: { type: 'setpack', namespace: 'pinkpack', author: 'AxisCube', include: [5, 6, 16, 32], price: 1500, uid: '-6da7e41c' },
+    12: { type: 'colorname', localData: '§n', price: 500, uid: '2cae51e5' },
+    13: { type: 'colorname', localData: '§1', price: 500, uid: '-5a74c5a' },
+    14: { type: 'colorname', localData: '§g', price: 500, uid: '-37fcea99' },
+    15: { type: 'colorname', localData: '§0', linked: 31, price: -1, uid: 'd5ab209' },
+    16: { type: 'killmsg', localData: 3, linked: 11, price: -1, uid: '-3ef2f63a' },
+    17: { type: 'colorname', localData: '§a', price: -1, linked: 2, uid: '-71489479' },
+    18: { type: 'colorname', localData: '§b', price: 500, uid: '-1536395' },
+    19: { type: 'emoji', localData: `pepe`, price: -1, linked: 20, uid: '2a0c2f09' },
+    20: { type: 'setpack', namespace: 'memepack', author: 'xdCube', include: [19, 21, 22, 23, 26, 33], price: 1500, uid: '-53b06f7e' },
+    21: { type: 'emoji', localData: `peped`, price: -1, linked: 20, uid: '-5ba508a0' },
+    22: { type: 'killmsg', localData: 4, price: -1, linked: 20, uid: '72055921' },
+    23: { type: 'colorname', localData: '§2', price: -1, linked: 20, uid: '3fafbae2' },
+    24: { type: 'soundmsg', localData: 'random.pop', price: 0, uid: 'c22e' },
+    25: { type: 'soundmsg', localData: 'random.toast', price: -1, linked: 2, uid: '-24fb819c' },
+    26: { type: 'soundmsg', localData: 'mob.player.oof', price: -1, linked: 20, uid: '-57511fdb' },
+    27: { type: 'killmsg', localData: '5', price: 500, uid: '18a41109' },
+    28: { type: 'soundmsg', localData: 'mob.evocation_illager.ambient', price: 666, uid: '-4e9736b8' },
+    29: { type: 'soundmsg', localData: 'mob.villager.yes', price: 450, uid: '9faee1b' },
+    30: { type: 'soundmsg', localData: 'mob.villager.no', price: 450, uid: '-4960ab4f' },
+    31: { type: 'setpack', namespace: 'echopack', author: 'AxisCube', include: [15], price: -3, chalId: 0 },
+    32: { type: 'elmsg', price: -1, linked: 11, localData: 1 },
+    33: { type: 'elmsg', price: -1, linked: 20, localData: 2 },
+    34: { type: 'elmsg', price: -1, linked: 2, localData: 3 },
+    35: { type: 'setpack', namespace: 'glasspack', author: 'Lndrs_', include: [36], price: -3, chalId: 1 },
+    36: { type: 'soundmsg', localData: 'random.orb', price: -1, linked: 35, uid: '-6faf497c' },
 }
 
 export function isOwned(id,name) {

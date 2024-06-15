@@ -1,5 +1,5 @@
 import { ModalFormData } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { edScore, getScore, runCMD } from "../../../../axisTools.js";
+import { edScore, runCMD } from "../../../../axisTools.js";
 let FORM = new ModalFormData()
     .title('Map_info')
     .toggle('Enabled');
