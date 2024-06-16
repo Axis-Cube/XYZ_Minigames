@@ -1,8 +1,8 @@
 .megaignore
-/scripts
-/node_modules
-/.vscode
-/.fleet
-/.debris
+scripts
+node_modules
+.vscode
+.fleet
+.debris
 todo.md
-/docs
+docs

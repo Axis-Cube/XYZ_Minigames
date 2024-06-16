@@ -133,7 +133,7 @@ export function placeError(player,errorCode='unknown',errorDetails: any = []) {
 
 export function randomInt(min=1, max=2) { return Math.floor(Math.random() * (max - min + 1) + min) }
 
-export async function playsound(sound,player='@a',volume=1,pitch=1) {
+export async function playsound(sound,player: Entity | string='@a',volume=1,pitch=1) {
     await runCMD(`playsound ${sound} @s ~~~ ${volume} ${pitch}`,player)
 }
 

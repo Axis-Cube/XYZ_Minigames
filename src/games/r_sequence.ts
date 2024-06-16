@@ -14,7 +14,7 @@ let blocks = { //Blocks coordinates (like 3.25.-9 x.y.z)
     7: '3.23.-8', 8: '2.23.-8', 9: '1.23.-8',
 }
 
-let sequence = [] //Dynamic
+let sequence: number[] = [] //Dynamic
 
 function getRandomNum(min, max) {return Math.random() * (max - min) + min;}
 function addToSequence(){sequence.push(Math.floor(getRandomNum(1,10)))}

@@ -14,7 +14,7 @@ import { bwEquipmentCheck } from "../games/bw";
 import * as ax from "./axisTools";
 import { BlockPermutation, Player, world } from "@minecraft/server";
 import { bwClear, formBWshop, generateRes, getResInterval } from "../games/bw";
-//import { GAMEDATA } from "../games/gamedata";
+import { GAMEDATA } from "../games/gamedata";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { DIM } from "../const";
 import {runCMD, runCMDs} from "./axisTools";
@@ -25,7 +25,6 @@ export function axisEval(code = "", player) {
     let name;
     if (player != undefined) { name = player.name; }
     try {
-        console.warn(code)
         eval(code) 
     } catch(error) { console.warn(error.name,error,'\n',error.stack) }
 }

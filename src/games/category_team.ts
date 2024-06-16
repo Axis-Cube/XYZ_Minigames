@@ -23,7 +23,7 @@ export const TEAM_COLORS = {
 export const TEAM_NOTEAMSELECTOR = '@a[tag=!team.red,tag=!team.green,tag=!team.blue,tag=!team.yellow,tag=!team.purple,tag=!team.orange,tag=!team.pink,tag=!team.cyan,tag=!team.lime,tag=!team.black]'
 
 export function teamArray() {
-    let teams = []
+    let teams: string[] = []
     for (let playerT of [...world.getPlayers()]) {
         for (let i in TEAMS) {
             if (playerT.hasTag(`team.${TEAMS[i]}`) && !teams.includes(TEAMS[i]) && !playerT.hasTag(`spec`)) {
@@ -76,6 +76,8 @@ export function formTeamsel(player,teamsList=TEAMS,addSpectator=true,colorNameTa
         form.button(`${isSel}%axiscube.teamgame.team.${teamsList[i]}`,`textures/ui/icons/teams/${iconType}/${teamsList[i]}`)
     }
     form.show(player).then(async gg => { if (!gg.canceled) {
+        if(!gg.selection){return;}
+
         let playerTags = [...player.getTags()]
         for (let i in playerTags) {
             if (playerTags[i].startsWith('team.')) {await runCMD(`tag @s remove ${playerTags[i]}`,player)}

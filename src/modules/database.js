@@ -14,6 +14,7 @@ export function getTargetByScore(score=0,objectiveId='data',ifNothing=undefined)
 }
 
 export class DataBase{
+
     constructor(container){
         this.container = container
     }

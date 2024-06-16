@@ -178,7 +178,7 @@ export const GAMEDATA_HNS =  {
 }
 
 export function hnsBlockListUI(player) {
-    const EasyFormObj = {
+    const EasyFormObj: any = {
         'x': {
             title: "axiscube.hns.block_list",
             body: "%axiscube.hns.block_list.d",
@@ -321,6 +321,8 @@ export function hnsFormTaunts(player) {
         form.button(`${i.name}\n${i.cooldown} sec | ${SCOLOR}${i.reward}${SYM}`,i.icons)
     }
     form.show(player).then( gg => { if (!gg.canceled) {
+        if(!gg.selection){return;}
+
         edScore(player,'hns.taunt',HNS_TAUNTS[gg.selection].cooldown*20)
         addMoney(player.name,HNS_TAUNTS[gg.selection].reward)
         HNS_TAUNTS[gg.selection].eval(player)
@@ -328,9 +330,9 @@ export function hnsFormTaunts(player) {
 }
 
 export function hnsBlockChoice(player) {
-    let result = []
+    let result: any = []
     for (let i in HNS_BLOCKS) {
-        let button_result = {}
+        let button_result: any = {}
         let thisBlock = HNS_BLOCKS[i]
         if (thisBlock.name == undefined) {
             button_result['button_name'] = `tile.${thisBlock.id}.name`
