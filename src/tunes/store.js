@@ -606,7 +606,7 @@ export function getItemsByCategory(category) {
 /**
  * Получение id эмодзи.
  *
- * @param {number} object Таблица с предметами.
+ * @param {object} object Таблица с предметами.
  * @param {string} value Название эмодзи.
  * @return {number} id, id эмодзи.
  */

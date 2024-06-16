@@ -18,7 +18,6 @@ export class MultiTasking{
 
     async register(pid){
         this.query.push(pid)
-        console.warn(this.query)
     }
 
     async kill(pid: number | null = null){

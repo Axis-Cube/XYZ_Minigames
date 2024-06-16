@@ -170,8 +170,8 @@ async function bridgeEquipment(){
             if (!player.hasTag('spec')) {
                 const equipment = player.getComponent('equippable')
                 if(hasTag(player, 'team.blue')){
-                    equipment.setEquipment(EquipmentSlot.Head, teams_info['blue'].armor.head);
-                    equipment.setEquipment(EquipmentSlot.Chest, teams_info['blue'].armor.chest)
+                    equipment?.setEquipment(EquipmentSlot.Head, teams_info['blue'].armor.head);
+                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info['blue'].armor.chest)
 
                     runCMDs([
                         `give @s iron_sword`,
@@ -182,8 +182,8 @@ async function bridgeEquipment(){
                     ],player)
                 }
                 else if(hasTag(player, 'team.red')){
-                    equipment.setEquipment(EquipmentSlot.Head, teams_info['red'].armor.head);
-                    equipment.setEquipment(EquipmentSlot.Chest, teams_info['red'].armor.chest)
+                    equipment?.setEquipment(EquipmentSlot.Head, teams_info['red'].armor.head);
+                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info['red'].armor.chest)
 
                     runCMDs([
                         `give @s iron_sword`,

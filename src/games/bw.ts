@@ -2,7 +2,7 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { actionbar, array3ToVector3, edScore, getGamemode, getItemAmounts, getScore, hasTag, nameToPlayer, playsound, rawtext, runCMD, runCMDs, setTickTimeout, sleep, tellraw, vector3ToArray3 } from "../modules/axisTools"
 import { COPYRIGHT, DATABASE_IDS, DIM, ICONS, MINECRAFT_PICKAXES, SYM } from "../const"
 import { TEAMS4, getPlayerTeam, teamArray, teamCheck } from "./category_team"
-import { Block, BlockPermutation, Dimension, Player, system, world, EquipmentSlot, ItemStack} from "@minecraft/server"
+import { Block, BlockPermutation, Dimension, Player, system, world, EquipmentSlot, ItemStack, EntityComponentTypes} from "@minecraft/server"
 import { GAMEDATA } from "./gamedata"
 import { getGameArena, stopGame } from "./main"
 import { DataBase } from "../modules/database"
@@ -325,8 +325,8 @@ const BW_SETS = {
         icon: 'textures/ui/icons/games/bw/kit_sworder',
         getfun: (player) => {
             runCMD('give @s wooden_sword',player)
-            const equipment = player.getComponent("minecraft:equipment_inventory")
-            equipment.setEquipment(EquipmentSlot.head, new ItemStack('minecraft:chainmail_helmet',1))
+            const equipment = player.getComponent(EntityComponentTypes.Equippable)
+            equipment?.setEquipment(EquipmentSlot.Head, new ItemStack('minecraft:chainmail_helmet',1))
         }
     },
     2: {
@@ -336,7 +336,8 @@ const BW_SETS = {
         getfun: (player) => {
             runCMD('give @s wooden_pickaxe',player)
             runCMD(`give @s ${getPlayerTeam(player)}_concrete 10`,player)
-            equipment.setEquipment(EquipmentSlot.head, new ItemStack('minecraft:golden_helmet',1))
+            const equipment = player.getComponent(EntityComponentTypes.Equippable)
+            equipment?.setEquipment(EquipmentSlot.Head, new ItemStack('minecraft:golden_helmet',1))
         }
     }
 }
@@ -457,7 +458,7 @@ export async function bwDeath(player) {
         runCMD('gamemode spectator',player)
         playsound('mob.elderguardian.hit')
         if (!teamArray().includes(getPlayerTeam(player))) {
-            edScore(`${BW_TEAMSCORES[`${team}_des`]}`,'bw.display','','reset')
+            //edScore(`${BW_TEAMSCORES[`${team}_des`]}`,'bw.display','','reset') // *CHECK*
         } 
         return
     } else if (player.hasTag('spec')) {
@@ -539,6 +540,8 @@ export function bwSettingGame(player,l=0) {
         // .button('item.gold_ingot.name','textures/items/gold_ingot')
         // .button('item.amethyst_shard.name','textures/items/amethyst_shard')
         form.show(player).then( async gg => {
+            if(!gg.selection){return;}
+
             if (gg.selection == 0) {
                 bwSettingGame(player,0)
             } else if (gg.selection == 1 || gg.selection > 3) {
@@ -559,9 +562,11 @@ export function bwSettingGame(player,l=0) {
             formEdit.slider(`${UNICODES[item]} %item.${item}.name (%gui.default: ${DB_DEFAULT.gen[item]/20})`,1,30,1,currentSettings.gen[item]/20)
         }
         formEdit.show(player).then( async gl => { if (!gl.canceled) {
+            if(!gl.formValues){return;}
+
             let i = 0
             for (let item in DB_DEFAULT.gen) {
-                currentSettings.gen[item] = gl.formValues[i]*20
+                currentSettings.gen[item] = Number(gl.formValues[i])*20
                 i++
             }
             await bwSetSettings(currentSettings)
@@ -577,6 +582,8 @@ export function bwSettingGame(player,l=0) {
             formEdit.slider(`${UNICODES[item]} %item.${item}.name (%gui.default: ${DB_DEFAULT.limits[item]})`,1,64,1,currentSettings.limits[item])
         }
         formEdit.show(player).then( async gl => { if (!gl.canceled) {
+            if(!gl.formValues){return;}
+
             let i = 0
             for (let item in DB_DEFAULT.gen) {
                 currentSettings.limits[item] = gl.formValues[i]
@@ -594,6 +601,8 @@ export function bwSettingGame(player,l=0) {
             formEdit.slider(`${UNICODES[item]} %item.${item}.name (%gui.default: ${DB_DEFAULT.upgprice[item]})`,1,64,1,currentSettings.upgprice[item])
         }
         formEdit.show(player).then( async gl => { if (!gl.canceled) {
+            if(!gl.formValues){return;}
+
             currentSettings.enable_upgrade = gl.formValues[0]
             let i = 1
             for (let item in DB_DEFAULT.gen) {
@@ -645,7 +654,7 @@ function bwGetItemAmountPerSpawn(res,cord,isBlock=false) {
 export function onItemUse(player,block) {
     const res = BW_GENBLOCKS[block.typeId.split(':')[1]]
     if (res != undefined) {
-        if (nameToPlayer(player.name).isSneaking) {
+        if (nameToPlayer(player.name)?.isSneaking) {
             if (!bwGetSettings().enable_upgrade)  {
                 tellraw({rawtext:[{translate:'axiscube.bw.gen.upgrade.disabled'}]},player,'act')
                 return
@@ -679,10 +688,12 @@ export async function generateRes(resourceTypeId){
         let ents = DIM.getEntitiesAtBlockLocation(array3ToVector3(cord))
         for (let ent of ents) {
             if (ent.typeId == 'minecraft:item') {
-                const itemStack = ent.getComponent('minecraft:item').itemStack
-                if (itemStack.amount < 2 || itemStack.typeId.split(':')[1] != resourceTypeId) {
+                const itemStack = ent.getComponent('minecraft:item')?.itemStack
+                if(!itemStack){return}
+
+                if (itemStack?.amount < 2 || itemStack?.typeId.split(':')[1] != resourceTypeId) {
                     continue
-                } else if (itemStack.amount >= bwGetSettings().limits[resourceTypeId]) {
+                } else if (itemStack?.amount >= bwGetSettings().limits[resourceTypeId]) {
                     spawnHere = false
                 }
             } else if (ent.typeId == 'minecraft:player') {
@@ -747,7 +758,7 @@ export async function bwTick() {
 
 function bwCheckBed(team) {
     const cord = GAMEDATA_BW.loc[getGameArena()].beds[team].pos
-    return DIM.getBlock(array3ToVector3(cord)).typeId == 'minecraft:bed'
+    return DIM.getBlock(array3ToVector3(cord))?.typeId == 'minecraft:bed'
 }
 
 function bwBreakBed(team,player) {
@@ -780,7 +791,7 @@ export function bwBlockBreak(player,block,brokenBlockPermutation) {
         player.dimension.getBlock(block.location).setPermutation(brokenBlockPermutation)
     } else if (getGamemode(player) != 'creative') {
         const equipment = player.getComponent("minecraft:equipment_inventory")
-        const mainhand = equipment.getEquipment(EquipmentSlot.mainhand).typeId.split(':')[1]
+        const mainhand = equipment.getEquipment(EquipmentSlot.Mainhand).typeId.split(':')[1]
         const blockId = brokenBlockPermutation.type.id.split(':')[1]
         if (BW_BLOCKS_DROPC[blockId] === true || BW_BLOCKS_DROPC[blockId].includes(mainhand)) {
             DIM.spawnItem(new ItemStack(brokenBlockPermutation.type.id,1),block.location)
@@ -808,11 +819,11 @@ const BW_EQUIPMENT_REGEX = ['leather.+', 'chainmail.+', 'iron.+', 'diamond.+', '
 * @param {Block} block
 * @param {Dimension} dimension
 */
-export async function bwEquipmentCheck(player, id='minecraft:leather_helmet', slot=EquipmentSlot.head){
+export async function bwEquipmentCheck(player, id='minecraft:leather_helmet', slot=EquipmentSlot.Head){
     try{
-        let temp_regex = undefined //Temp regexp
-        let pre = undefined //
-        let element = undefined //Armor element
+        let temp_regex: any = undefined //Temp regexp
+        let pre: any = undefined //
+        let element: any = undefined //Armor element
 
         const equipment = player.getComponent("minecraft:equipment_inventory");
         try{
@@ -910,10 +921,10 @@ const bwShopData = {
             price: 20,
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:leather_helmet',EquipmentSlot.head)
-                bwEquipmentCheck(player,'minecraft:leather_chestplate',EquipmentSlot.chest)
-                bwEquipmentCheck(player,'minecraft:leather_leggings',EquipmentSlot.legs)
-                bwEquipmentCheck(player,'minecraft:leather_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:leather_helmet',EquipmentSlot.Head)
+                bwEquipmentCheck(player,'minecraft:leather_chestplate',EquipmentSlot.Chest)
+                bwEquipmentCheck(player,'minecraft:leather_leggings',EquipmentSlot.Legs)
+                bwEquipmentCheck(player,'minecraft:leather_boots',EquipmentSlot.Feet)
             } }
         },
         {
@@ -922,7 +933,7 @@ const bwShopData = {
             price: 5,
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:leather_helmet',EquipmentSlot.head)
+                bwEquipmentCheck(player,'minecraft:leather_helmet',EquipmentSlot.Head)
             } }
         },
         {
@@ -931,7 +942,7 @@ const bwShopData = {
             price: 5,
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:leather_chestplate',EquipmentSlot.chest)
+                bwEquipmentCheck(player,'minecraft:leather_chestplate',EquipmentSlot.Chest)
             } }
         },
         {
@@ -940,7 +951,7 @@ const bwShopData = {
             price: 5,
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:leather_leggings',EquipmentSlot.legs)
+                bwEquipmentCheck(player,'minecraft:leather_leggings',EquipmentSlot.Legs)
             } }
         },
         {
@@ -949,7 +960,7 @@ const bwShopData = {
             price: 5,
             material: 'copper_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:leather_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:leather_boots',EquipmentSlot.Feet)
             } }
         },
         {
@@ -958,10 +969,10 @@ const bwShopData = {
             price: 22,
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:chainmail_helmet',EquipmentSlot.head)
-                bwEquipmentCheck(player,'minecraft:chainmail_chestplate',EquipmentSlot.chest)
-                bwEquipmentCheck(player,'minecraft:chainmail_leggings',EquipmentSlot.legs)
-                bwEquipmentCheck(player,'minecraft:chainmail_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:chainmail_helmet',EquipmentSlot.Head)
+                bwEquipmentCheck(player,'minecraft:chainmail_chestplate',EquipmentSlot.Chest)
+                bwEquipmentCheck(player,'minecraft:chainmail_leggings',EquipmentSlot.Legs)
+                bwEquipmentCheck(player,'minecraft:chainmail_boots',EquipmentSlot.Feet)
             } }
         },
         {
@@ -969,7 +980,7 @@ const bwShopData = {
             price: 5,
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:chainmail_helmet',EquipmentSlot.head)
+                bwEquipmentCheck(player,'minecraft:chainmail_helmet',EquipmentSlot.Head)
             } }
         },
         {
@@ -977,7 +988,7 @@ const bwShopData = {
             price: 7,
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:chainmail_chestplate',EquipmentSlot.chest)
+                bwEquipmentCheck(player,'minecraft:chainmail_chestplate',EquipmentSlot.Chest)
             } }
         },
         {
@@ -985,7 +996,7 @@ const bwShopData = {
             price: 6,
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:chainmail_leggings',EquipmentSlot.legs)
+                bwEquipmentCheck(player,'minecraft:chainmail_leggings',EquipmentSlot.Legs)
             } }
         },
         {
@@ -993,7 +1004,7 @@ const bwShopData = {
             price: 5,
             material: 'iron_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:chainmail_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:chainmail_boots',EquipmentSlot.Feet)
             } }
         },
         {
@@ -1001,7 +1012,7 @@ const bwShopData = {
             price: 5,
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:iron_helmet',EquipmentSlot.head)
+                bwEquipmentCheck(player,'minecraft:iron_helmet',EquipmentSlot.Head)
             } }
         },
         {
@@ -1009,7 +1020,7 @@ const bwShopData = {
             price: 6,
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:iron_chestplate',EquipmentSlot.chest)
+                bwEquipmentCheck(player,'minecraft:iron_chestplate',EquipmentSlot.Chest)
             } }
         },
         {
@@ -1017,7 +1028,7 @@ const bwShopData = {
             price: 5,
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:iron_leggings',EquipmentSlot.legs)
+                bwEquipmentCheck(player,'minecraft:iron_leggings',EquipmentSlot.Legs)
             } }
         },
         {
@@ -1025,7 +1036,7 @@ const bwShopData = {
             price: 4,
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:iron_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:iron_boots',EquipmentSlot.Feet)
             } }
         },
         {
@@ -1033,7 +1044,7 @@ const bwShopData = {
             price: 4,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:diamond_helmet',EquipmentSlot.head)
+                bwEquipmentCheck(player,'minecraft:diamond_helmet',EquipmentSlot.Head)
             } }
         },
         {
@@ -1041,7 +1052,7 @@ const bwShopData = {
             price: 4,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:diamond_chestplate',EquipmentSlot.chest)
+                bwEquipmentCheck(player,'minecraft:diamond_chestplate',EquipmentSlot.Chest)
             } }
         },
         {
@@ -1049,7 +1060,7 @@ const bwShopData = {
             price: 4,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:diamond_leggings',EquipmentSlot.legs)
+                bwEquipmentCheck(player,'minecraft:diamond_leggings',EquipmentSlot.Legs)
             } }
         },
         {
@@ -1057,7 +1068,7 @@ const bwShopData = {
             price: 4,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:diamond_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:diamond_boots',EquipmentSlot.Feet)
             } }
         },
         {
@@ -1065,7 +1076,7 @@ const bwShopData = {
             price: 6,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:netherite_helmet',EquipmentSlot.head)
+                bwEquipmentCheck(player,'minecraft:netherite_helmet',EquipmentSlot.Head)
             } }
         },
         {
@@ -1073,7 +1084,7 @@ const bwShopData = {
             price: 6,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:netherite_chestplate',EquipmentSlot.chest)
+                bwEquipmentCheck(player,'minecraft:netherite_chestplate',EquipmentSlot.Chest)
             } }
         },
         {
@@ -1081,7 +1092,7 @@ const bwShopData = {
             price: 6,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:netherite_leggings',EquipmentSlot.legs)
+                bwEquipmentCheck(player,'minecraft:netherite_leggings',EquipmentSlot.Legs)
             } }
         },
         {
@@ -1089,7 +1100,7 @@ const bwShopData = {
             price: 6,
             material: 'amethyst_shard',
             buy: { type: 'eval', value: (player) => {
-                bwEquipmentCheck(player,'minecraft:netherite_boots',EquipmentSlot.feet)
+                bwEquipmentCheck(player,'minecraft:netherite_boots',EquipmentSlot.Feet)
             } }
         }
     ],
@@ -1374,9 +1385,9 @@ export function formBWshop(player, linkto=0,comment='') {
                                     }
                                     await runCMD(forRun)
                                 break
-                                case 'cmds':
-                                    runCMDs(clickedItem.buy.value[i],name)
-                                break
+                                //case 'cmds':
+                                //    runCMDs(clickedItem.buy.value[i],name)
+                                //break
                                 case 'eval':
                                     clickedItem.buy.value(player)
                                 break
@@ -1397,7 +1408,9 @@ export function formBWshop(player, linkto=0,comment='') {
                                         //.slider(`${itemName}`, 10, 1000, 10, 10)
                                         .slider(`${itemName.replaceAll('{{TEAM}}',getPlayerTeam(player))}`, clickedItem.buy.amount, item_max, clickedItem.buy.amount, clickedItem.buy.amount)
                                     await bw_shop_sliderform.show(player).then(gg => {
-                                        let [item_count] = gg.formValues
+                                        if(!gg.formValues){return;}
+
+                                        let item_count = Number(gg.formValues[0])
                                         resToClear = item_count/(clickedItem.buy.amount)*(clickedItem.price)
                                         let another_item_data = clickedItem.buy.another_item_data
                                         if (another_item_data == undefined) {

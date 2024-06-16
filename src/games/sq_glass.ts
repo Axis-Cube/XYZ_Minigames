@@ -1,9 +1,10 @@
 import { COPYRIGHT, DIM, SYM } from "../const";
-import { PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
+import { GameMode, PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
 import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt} from "../modules/axisTools";
 import { GAMEDATA } from "./gamedata";
 import { forceGameRestart, getGameArena, startTimer, stopGame } from "./main";
 import { completeChallenge } from "./chooser";
+import { eliminatePlayerMessage } from "tunes/profile";
 
 export const GAMEDATA_GLS = { // Glass
     id: 6,
@@ -183,16 +184,16 @@ function glsTime(){
     //Add Barriers
 }
 
-let loose_area = []
+let loose_area: any[] = []
 
 function glsTick(){
     let countNoWins = 0
     let countWins = 0
     let diff = getScore('diff','data')
     let countMembers = 0
-    for (const player of [...world.getPlayers()]) {
+    for (const player of [...world.getPlayers({excludeGameModes:[GameMode.spectator]})]) {
         if (!player.hasTag('spec')) {
-            const lives = player.getDynamicProperty('gls_lives')
+            const lives = Number(player.getDynamicProperty('gls_lives'))
             const isInWinnerArea = isPlayerinArea(GAMEDATA[6].loc[getGameArena()].winpos_from,GAMEDATA[6].loc[getGameArena()].winpos_to,player)
             const isInLooseArea = isPlayerinArea(GAMEDATA[6].loc[getGameArena()].loose_from,GAMEDATA[6].loc[getGameArena()].loose_to,player)
             const platform_y = GAMEDATA[6].loc[getGameArena()].platforms_y

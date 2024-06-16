@@ -93,7 +93,7 @@ export async function formTestRun(target) {
                     EvalForm.show(target).then(ef => {
                         if(!ef.formValues){return;}
 
-                        let [command] = String(ef.formValues)
+                        let command = String(ef.formValues[0])
                         axisEval(command, target)
                     })
                 }

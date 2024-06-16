@@ -175,6 +175,14 @@ function shuffle(array) {
 
 export class Field {
 
+    from: number[];
+    to: number[];
+    bombs: number;
+    step: number;
+    verify_cords: any[]
+    event: null
+
+
     /**
     * @param {Object} from Начальная координата
     * @param {Object} to Конечная координата
@@ -198,14 +206,14 @@ export class Field {
         if (percent <= 100){
             try{
                 //throw new Error('s')
-                let x = []
-                let z = []
+                let x: number[] = []
+                let z: number[] = []
 
                 //Block range ex [10,-3]
-                let t_x = []
-                let t_z = []
+                let t_x: any = []
+                let t_z: any = []
 
-                let final_coords = []
+                let final_coords: string[] = []
 
                 t_x.push(Math.max(this.from[0], this.to[0]));t_x.push(Math.min(this.from[0], this.to[0]))
                 t_z.push(Math.max(this.from[2], this.to[2]));t_z.push(Math.min(this.from[2], this.to[2]))
@@ -232,18 +240,18 @@ export class Field {
                     t_x = Number(final_coords[i].split('.')[0])
                     t_z = Number(final_coords[i].split('.')[1])
                     this.step = i
-                    if (DIM.getBlock({x:t_x,y:((this.from[1])-1),z:t_z}).typeId != 'minecraft:air') {
-                        if (DIM.getBlock({x:t_x,y:((this.from[1])),z:t_z}).typeId == 'minecraft:air') {
+                    if (DIM.getBlock({x:t_x,y:((this.from[1])-1),z:t_z})?.typeId != 'minecraft:air') {
+                        if (DIM.getBlock({x:t_x,y:((this.from[1])),z:t_z})?.typeId == 'minecraft:air') {
                             runCMD(`fill ${t_x} ${this.from[1]} ${t_z} ${t_x} ${this.to[1]} ${t_z} heavy_weighted_pressure_plate replace air`)
                             await sleep(sleep_modifier)
-                        } else if (DIM.getBlock({x:t_x,y:((this.from[1])+1),z:t_z}).typeId == 'minecraft:air') {
+                        } else if (DIM.getBlock({x:t_x,y:((this.from[1])+1),z:t_z})?.typeId == 'minecraft:air') {
                             runCMD(`fill ${t_x} ${this.from[1]+1} ${t_z} ${t_x} ${this.to[1]+1} ${t_z} heavy_weighted_pressure_plate replace air`)
                             await sleep(sleep_modifier)
                         }
                         
                     } else {
                         let testC = 1
-                        while(world.getDimension('overworld').getBlock({x:t_x,y:((this.from[1])-testC),z:t_z}).typeId == 'minecraft:air') {
+                        while(world.getDimension('overworld').getBlock({x:t_x,y:((this.from[1])-testC),z:t_z})?.typeId == 'minecraft:air') {
                             testC = testC + 1
                         }
                         await runCMD(`fill ${t_x} ${this.from[1]-testC+1} ${t_z} ${t_x} ${this.to[1]-testC+1} ${t_z} heavy_weighted_pressure_plate replace air`)
@@ -283,33 +291,33 @@ export class Field {
         return [this.bombs, this.step]
     }
 
-        /**
-    * @example <Field>.linkEvent(callback / function(){})
-    * @returns {Boolean}
-    */
-    linkEvent(callback=ex_callback){
-        this.unlinkEvent()
-        this.event = world.afterEvents.pressurePlatePush.subscribe(pp => {
-            let plate_cords = []
-            plate_cords.push(pp.block.x); plate_cords.push(pp.block.z)
-
-            if (this.verify_cords.indexOf(plate_cords.join('.')) < this.bombs && this.verify_cords.indexOf(plate_cords.join('.')) != -1){
-                callback()
-            }else{return false}
-        })
-    }
-
-    /**
-    * @example <Field>.unlinkEvent()
-    * @returns {null}
-    */
-    unlinkEvent(){
-        try{
-            world.afterEvents.pressurePlatePush.unsubscribe(this.event)
-        }catch{}
-    }
+    //    /**
+    //* @example <Field>.linkEvent(callback / function(){})
+    //* @returns {Boolean}
+    //*/
+    //linkEvent(callback=ex_callback){
+    //    this.unlinkEvent()
+    //    this.event = world.afterEvents.pressurePlatePush.subscribe(pp => {
+    //        let plate_cords = []
+    //        plate_cords.push(pp.block.x); plate_cords.push(pp.block.z)
+    //
+    //        if (this.verify_cords.indexOf(plate_cords.join('.')) < this.bombs && this.verify_cords.indexOf(plate_cords.join('.')) != -1){
+    //            callback()
+    //        }else{return false}
+    //    })
+    //}
+    //
+    ///**
+    //* @example <Field>.unlinkEvent()
+    //* @returns {null}
+    //*/
+    //unlinkEvent(){
+    //    try{
+    //        world.afterEvents.pressurePlatePush.unsubscribe(this.event)
+    //    }catch{}
+    //}
 }
-let field = 0
+let field: Field = new Field([0,0,0],[0,0,0])
 export async function fieldPlace() {
     field = new Field(GAMEDATA[4].loc[getGameArena()].field_from,GAMEDATA[4].loc[getGameArena()].field_to)
     runCMD(`fill ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_to} barrier`)
@@ -482,8 +490,10 @@ export function mnDefuseForm(player,block) {
     .slider('%axiscube.mnf.defuse.form.num2',0,arr[4],arr[2],arr[2])
     .show(player).then( gg => {
         if(gg.canceled) return;
-        
-        let [ slider1, slider2, toggle1, toggle2] = gg.formValues
+        if(!gg.formValues){return;}
+
+        let slider1: number = Number(gg.formValues[0])
+        let slider2: number = Number(gg.formValues[1])
 
         if(slider1+slider2 == arr[0]){
             runCMD(`tag @a[r=2,x=${block.x},y=${block.y},z=${block.z}] remove mnf.halfdead`)

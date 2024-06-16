@@ -1,6 +1,6 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { ICONS, REGION_CODES, REGION_NAMES, SCOLOR, SYM } from "../const";
-import { playsound, randomInt,  tellraw } from "../modules/axisTools";
+import { playsound, randomInt,  shuffle,  tellraw } from "../modules/axisTools";
 import { playerKillmsgList } from "./killMessage";
 import { STORE_COLOR, formShowCategories, formShowOffersByCategory, getPurchasedItemsByCategory } from "./store";
 import { getMoney } from "./bank";
@@ -157,6 +157,8 @@ export function formSetSoundmsg(player) {
         form.button(`${currentSound == i ? '\ue124 ' : ''}${SOUNDMSG[i][0]}`)
     }
     form.show(player).then(async gg => { if (!gg.canceled) {
+        if(!gg.selection){return;}
+
         if (gg.selection === 0) {
             formCustomize(player)
         } else if (gg.selection === 1) {
@@ -178,7 +180,9 @@ export function formEditRegion(player,comment='') {
     .title('%axiscube.profile.region')
     .textField(body,'%axiscube.profile.region.edit.placeholder')
     .show(player).then(gg => { if (!gg.canceled) {
-        let enteredCode = gg.formValues[0].toUpperCase()
+        if(!gg.formValues){return;}
+
+        let enteredCode = String(gg.formValues[0]).toUpperCase()
         if (REGION_NAMES[enteredCode] == undefined) {
             formEditRegion(player,'§c%axiscube.profile.region.edit.d.error\n§r\n')
             return
@@ -247,6 +251,8 @@ export function playerElmsgList(player,showBackButton=true) {
         form.button({rawtext:[{text:`${currentSettings.sel.elmsg == item ? '\ue124 ' : ''}§r`},{translate:`axiscube.games.eliminated.t${item}`,with:[`§q${player.nameTag}`]}]})
     }
     form.show(player).then(async gg => {
+        if(!gg.selection){return;}
+
         if ((gg.selection == 0 && !showBackButton) || gg.selection == 1 && showBackButton) {
             formShowOffersByCategory(player,'elmsg',false)
         } else if (showBackButton && gg.selection == 0) {

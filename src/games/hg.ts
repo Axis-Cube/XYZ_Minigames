@@ -206,7 +206,7 @@ export async function loadChests(chests, info=0) {
 async function getNextUpgrade(material, type){
     if(upgradeItems.material.indexOf(material) != -1 && upgradeItems.material[upgradeItems.material.indexOf(material)+1]){
         return upgradeItems.material[upgradeItems.material.indexOf(material)+1]+'_'+type
-    }else if( upgradeArmor.material.indexOf(material) != -1 && upgradeArmor.material[upgradeArmor.material.indexOf(material)+1] != 0){
+    }else if( upgradeArmor.material.indexOf(material) != -1 && Number(upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]) != 0){
         return upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]+'_'+type
     }
 }
@@ -244,7 +244,8 @@ export async function upgradeItem(player){
         
         let slotswithitem = getSlotsByItemName(inv, item)
         if(slotswithitem.length >= 2){
-            let next_update = await getNextUpgrade(item_properties.material, item_properties.type)
+            let next_update: string | undefined = await getNextUpgrade(item_properties.material, item_properties.type)
+            if(next_update == undefined){return;}
             let new_item = new ItemStack(next_update, 1)
 
             container.setItem(slotswithitem[0], undefined)

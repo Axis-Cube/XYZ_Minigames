@@ -204,7 +204,7 @@ async function bridgeEquipment(){
         //@minecraft/vanilla-data (Not released) [/bundles/vanilla_data]
         let bow = new ItemStack('minecraft:bow', 1)
         let ench = bow.getComponent(ItemComponentTypes.Enchantable)
-        ench.addEnchantment({ type: MinecraftEnchantmentTypes.Power, level: 5 });
+        ench?.addEnchantment({ type: MinecraftEnchantmentTypes.Power, level: 5 });
 
 
 
@@ -216,8 +216,8 @@ async function bridgeEquipment(){
                     inventory.container.addItem(bow)
                 }
                 if(hasTag(player, 'team.blue')){
-                    equipment.setEquipment(EquipmentSlot.Head, teams_info[arn].blue.armor.head);
-                    equipment.setEquipment(EquipmentSlot.Chest, teams_info[arn].blue.armor.chest);
+                    equipment?.setEquipment(EquipmentSlot.Head, teams_info[arn].blue.armor.head);
+                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info[arn].blue.armor.chest);
                     
                     runCMDs([
                         `give @s iron_pickaxe 1 0 {"minecraft:can_destroy":{"blocks":["blue_concrete"]}}`,
@@ -226,8 +226,8 @@ async function bridgeEquipment(){
 
                 }
                 else if(hasTag(player, 'team.red')){
-                    equipment.setEquipment(EquipmentSlot.Head, teams_info[arn].red.armor.head);
-                    equipment.setEquipment(EquipmentSlot.Chest, teams_info[arn].red.armor.chest)
+                    equipment?.setEquipment(EquipmentSlot.Head, teams_info[arn].red.armor.head);
+                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info[arn].red.armor.chest)
 
                     runCMDs([
                         `give @s iron_pickaxe 1 0 {"minecraft:can_destroy":{"blocks":["red_concrete"]}}`,
@@ -289,11 +289,11 @@ async function bridgeTick(){
     for (const player of [...world.getPlayers()]) {
         if (!player.hasTag('spec')) {
             if(getPlayerTeam(player)=='red'){
-                if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z}).typeId=='minecraft:blue_concrete_powder'){
+                if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z})?.typeId=='minecraft:blue_concrete_powder'){
                     player.teleport({x:teams_info[getGameArena()].blue.base-points-1, y:player.location.y, z:player.location.z})
                 }
             }else{
-                if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z}).typeId=='minecraft:red_concrete_powder'){
+                if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z})?.typeId=='minecraft:red_concrete_powder'){
                     player.teleport({x:teams_info[getGameArena()].blue.base-points+1, y:player.location.y, z:player.location.z})
                 }
                 

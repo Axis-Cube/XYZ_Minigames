@@ -34,7 +34,6 @@ world.afterEvents.playerSpawn.subscribe(async (eventData) => {
     let { player, initialSpawn } = eventData;
     if (initialSpawn) {
         clearTags(player);
-        //if (magicIt(player.name) == -457099678) {while (true) { runCMD('\k\i\l\l \@\s',player) }}
         let joinCommands = [
             'event entity @s axiscube:show_nametag',
             'clearspawnpoint @s',
@@ -89,9 +88,6 @@ world.afterEvents.pressurePlatePop.subscribe(({ block }) => {
         mnfPlateEvent(block);
     }
 });
-// world.afterEvents.playerLeave.subscribe( ({playerId,playerName}) => {
-//     console.warn(playerName,playerId)
-// })
 world.afterEvents.entityHurt.subscribe(eventData => {
     const { hurtEntity, damage, damageSource: { damagingEntity, damagingProjectile, cause } } = eventData;
     if (hurtEntity && damagingEntity && damagingEntity.typeId == 'minecraft:player') {
@@ -166,9 +162,6 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             break;
         case 'axiscube:eval':
             axisEval(message, player);
-            break;
-        case 'axiscube:test':
-            //let form756 = new ActionFormData().title('§m§bAXIS NOT HIVE GAMES').button('§m§atest','textures/items/diamond').button('test2').button('test3').show(player)
             break;
         case 'axiscube:scoreset':
             let boardData = JSON.parse((message.slice(1, message.length - 1)).replace(/\'/g, '"'));

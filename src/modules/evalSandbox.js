@@ -24,5 +24,8 @@ export let EvalForm = new ModalFormData().title('Eval v0.1').textField('Command'
 export function axisEval(code = "", player) {
     let name;
     if (player != undefined) { name = player.name; }
-    try { eval(code) } catch(error) { console.warn(error.name,error,'\n',error.stack) }
+    try {
+        console.warn(code)
+        eval(code) 
+    } catch(error) { console.warn(error.name,error,'\n',error.stack) }
 }

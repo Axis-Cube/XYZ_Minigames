@@ -105,14 +105,15 @@ export const GAMEDATA_PRK = { // Parkour
         ['prk.display', '\ue195§6 %axiscube.prk.name', true],
     ]
 }
-let winners = []
+let winners: {name: string, time: number}[] = []
 
 async function setCheckpoint(player){
     try{
         let p_loc = player.location
         let block_loc = {x: p_loc.x, y:Math.round((Number(p_loc.y)-1)), z:p_loc.z}
-        let checkpoint_loc = DIM.getBlock(block_loc).location
-        if(DIM.getBlock(block_loc).typeId == 'minecraft:gold_block'){
+        let checkpoint_loc = DIM.getBlock(block_loc)?.location
+
+        if(DIM.getBlock(block_loc)?.typeId == 'minecraft:gold_block' && checkpoint_loc){
             if(player.getDynamicProperty('prk_checkpoint') == undefined || player.getDynamicProperty('prk_checkpoint') != `${checkpoint_loc.x} ${(checkpoint_loc.y)+1} ${checkpoint_loc.z}`){
                 player.setDynamicProperty('prk_checkpoint',`${checkpoint_loc.x} ${(checkpoint_loc.y)+1} ${checkpoint_loc.z}`)
                 runCMD(`spawnpoint ${player.name} ${checkpoint_loc.x} ${(checkpoint_loc.y)+1} ${checkpoint_loc.z}`)
@@ -132,7 +133,7 @@ async function WinHandler(player){
     try{
         let p_loc = player.location
         let block_loc = {x: p_loc.x, y:Math.round((Number(p_loc.y)-1)), z:p_loc.z}
-        if(DIM.getBlock(block_loc).typeId == 'minecraft:diamond_block'){
+        if(DIM.getBlock(block_loc)?.typeId == 'minecraft:diamond_block'){
             winners.push({name:player.name, time:(timer - getScore('time','data.gametemp'))})
             player.addTag('prk.winner')
             player.addTag('spec')
@@ -179,7 +180,7 @@ async function prkTime(){
 }
 
 async function prkStop(reason){
-    let w_names = []
+    let w_names: string[] = []
     winners.map(itm => {w_names.push(itm.name)})
     runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'Winners: ${w_names.join(', ')}\'"}]}`)
     stopGame(11,reason)

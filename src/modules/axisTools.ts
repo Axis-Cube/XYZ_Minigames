@@ -51,7 +51,7 @@ export function nerdMessage(name) {
     }, 40*6 )
 }
 
-export function getTargetByScore(score=0,objectiveId='data',ifNothing=undefined) {
+export function getTargetByScore(score=0,objectiveId='data',ifNothing: object | string | undefined=undefined) {
     const oB: any = world.scoreboard.getObjective(objectiveId)
     for (let trg of [...oB.getParticipants()]) {
         if (oB.getScore(trg) === score) {
@@ -112,7 +112,7 @@ export function shuffle(array) {
 export function getItemAmounts(player, items) {
     const inv = player.getComponent('inventory')?.container;
     if (!inv) return;
-    const counts = {};
+    const counts: any = {};
     for (let id of items) {
       counts[id] = 0;
     }
@@ -147,14 +147,14 @@ export async function rawtext(text,name: string | Player ='@a',type='text',color
     await tellraw(`{"rawtext":[{"text":"§${color}"},{"${type}":"${text}"}]}`,name)
 }
 
-export function actionbar(text,name='@a',color='r') {
+export function actionbar(text,name: any='@a',color='r') {
     runCMD(`title @s actionbar §${color}${text}`,name)
 }
 
 /**
  * @param {import("@minecraft/server").RawMessage} rawtext
 */
-export async function tellraw(rawtext,name: string | Player ='@a',type=undefined) {
+export async function tellraw(rawtext,name: string | Player ='@a',type: any = undefined) {
     if (typeof rawtext == 'object') rawtext = JSON.stringify(rawtext)
     if (type == undefined)  { await runCMD(`tellraw @s ${rawtext}`,name,true)} 
     else if (type == 'actionbar' || type == 'act')  { await runCMD(`titleraw @s actionbar${rawtext}`,name,true)} 

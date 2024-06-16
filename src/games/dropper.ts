@@ -1,6 +1,6 @@
 //Ready for Release
 import { COPYRIGHT, DIM, SYM } from "../const";
-import { system, world } from "@minecraft/server";
+import { Player, system, world } from "@minecraft/server";
 import {randomPlayerIcon, runCMD, runCMDs, shuffle, vector3ToArray3} from "../modules/axisTools";
 import { getGameArena, startTimer, stopGame } from "./main";
 import { GAMEDATA } from "./gamedata";
@@ -120,14 +120,14 @@ export const GAMEDATA_DRP = { // Dropper
     ]
 }
 
-let random_stages = []
-let winner_list = []
-function drp_main(max_stages = 3){
+let random_stages: number[] = []
+let winner_list: {name: string, target:Player}[] = []
+async function drp_main(max_stages = 3){
     random_stages = Object.keys(GAMEDATA[7].loc[getGameArena()].stages).sort().map(Number)
     random_stages = shuffle(random_stages)
     random_stages = random_stages.slice(0,max_stages)
     games_log.put('[DRP] Arenas: '+random_stages)
-    runCMDs([
+    await runCMDs([
         `structure load drop_${random_stages[0]} 1547 120 485`,
         `structure load drop_${random_stages[1]} 1547 120 490`,
         `structure load drop_${random_stages[2]} 1547 120 495`
@@ -181,7 +181,7 @@ async function nextRound(player){
             `tellraw @a {"rawtext":[{"translate":"axiscube.games.player_arrived","with":["${player.nameTag}"]}]}`,
         ],player)
         winner_list.push({name: player.name, target:player})
-        games_log.put(winner_list)
+        games_log.put(JSON.stringify(winner_list))
     }
     player.setDynamicProperty('drp_stage',stage_num)
     runCMD(`scoreboard players set ${player.nameTag} drp.display ${random_stages.indexOf(stage_num)+1}`)

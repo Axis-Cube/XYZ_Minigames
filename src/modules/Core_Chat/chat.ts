@@ -15,7 +15,7 @@ export function sendChatMessage(messageData) {
     if(COMMAND_PREFIXES.includes(messageData.message[0])){
         messageData.cancel = true
         let tempArgs = messageData.message.slice(1).split(" ")
-        let args = []
+        let args: any = []
         for(let i=0; i<=tempArgs.length; i++){
             args.push(tempArgs[i])
         }
@@ -35,15 +35,15 @@ export function sendChatMessage(messageData) {
         //Выполнение для каждого эмодзи
         for(let i in find_emojis){
             //Получение названия эмодзи
-            let temp = find_emojis[i][0]
+            let temp: any  = find_emojis[i][0]
             temp = temp.replaceAll(":", "")
             //Проверка куплен ли эмодзи, при этом получение id эмодзи через getEmojiItembyValue(table, value)
             if (!CHAT_CODES_AV[temp] || [...getPurchasedItems(`${player.name}`)].includes(Number(getEmojiItembyValue(STORE_ITEMS, temp)))){
                 try{
                     //Попытка заменить сообщение
-                    finalMessage = finalMessage.replaceAll(`:${[temp]}:`, CHAT_CODES[[temp]])
+                    finalMessage = finalMessage.replaceAll(`:${[temp]}:`, CHAT_CODES[temp])
                 }catch{}
-            } else if(Number(getEmojiItembyValue(temp) == -1)){
+            } else if(Number(getEmojiItembyValue(STORE_ITEMS, temp) == -1)){
                 //Действия если эмодзи не найден
                 //finalMessage = finalMessage.replaceAll(`:${[temp]}:`, CHAT_CODES[[temp]])
                 if (!messaged) {
