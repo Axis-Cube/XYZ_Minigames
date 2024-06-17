@@ -1,4 +1,4 @@
-import { EntityComponentTypes, EntityInventoryComponent, GameMode, ItemStack, Player, system, world } from "@minecraft/server";
+import { EnchantmentTypes, EntityComponentTypes, EntityInventoryComponent, GameMode, ItemStack, Player, system, world } from "@minecraft/server";
 //CONSTANTS
 import { DB_A, map_id } from "./const";
 //MODULES
@@ -228,7 +228,7 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
 system.runInterval(() => {
     runCMD('effect @e[type=axiscube:dummy] invisibility 99999 0 true');
 });
-export const ITEMS = {
+export const ITEMS: any = {
     'axiscube:menu': {
         on_click: (player) => { openJSON('mainmenu', player); },
     },

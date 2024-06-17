@@ -576,7 +576,7 @@ async function pvpRemoveKit(t,name) {
         return false
     }
     dbRemoveRecord(t,DB_NAME)
-    let newsets = []
+    let newsets: any = []
     for (let i of pvpsets) {
         if (i != t) { newsets.push(i) }
     }
@@ -587,7 +587,7 @@ async function pvpRemoveKit(t,name) {
     return true
 }
 
-export async function pvpAddSet(player,obj) {
+export async function pvpAddSet(player,obj?: any) {
     let name = player.name
     if (obj) {
         obj.author = `${obj.author}, ${name}`
@@ -661,6 +661,8 @@ export function pvpCreateKit(player) {
         form.button(`${kitTemp.name}\n%axiscube.pvp.kitset.templates.author: ${kitTemp.author}`,kitTemp.icon)
     }
     form.show(player).then(async gg => {
+        if(!gg.selection){return;}
+
         if (gg.selection == 0) {
             if (checkPerm(player.name,'pvp_create')) {
                 pvpAddSet(player)
@@ -680,7 +682,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     .title('%axiscube.pvp.kitset.edit')
     .textField('%axiscube.pvp.kitset.export.kitname',`${player.name}'s Kit`,obj.name)
     // HEAD
-    let headArmorArr = []
+    let headArmorArr: string[] = []
     let headC = 0
     for (let item in PVP_KITSUIT.armor.head) {
         let rawName = PVP_KITSUIT.armor.head[item]
@@ -691,7 +693,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('\n%itemGroup.name.helmet',headArmorArr,obj.suit.armor.head)
 
     // PLATE
-    let chestArmorArr = []
+    let chestArmorArr: string[] = []
     let chestC = 0
     for (let item in PVP_KITSUIT.armor.chest) {
         let rawName = PVP_KITSUIT.armor.chest[item]
@@ -702,7 +704,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('%itemGroup.name.chestplate',chestArmorArr,obj.suit.armor.chest)
 
     // LEGS
-    let legsArmorArr = []
+    let legsArmorArr: string[] = []
     let legsC = 0
     for (let item in PVP_KITSUIT.armor.legs) {
         let rawName = PVP_KITSUIT.armor.legs[item]
@@ -713,7 +715,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('%itemGroup.name.leggings',legsArmorArr,obj.suit.armor.legs)
     
     // BOOTS
-    let feetArmorArr = []
+    let feetArmorArr: string[] = []
     let feetC = 0
     for (let item in PVP_KITSUIT.armor.feet) {
         let rawName = PVP_KITSUIT.armor.feet[item]
@@ -724,7 +726,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('%itemGroup.name.boots',feetArmorArr,obj.suit.armor.legs)
 
     // SWORD
-    let swordArr = []
+    let swordArr: string[] = []
     let swordC = 0
     for (let item in PVP_KITSUIT.weapon.sword) {
         let rawName = PVP_KITSUIT.weapon.sword[item]
@@ -735,7 +737,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('%itemGroup.name.sword',swordArr,obj.suit.weapon.sword)
 
     // MISC
-    let miscArr = []
+    let miscArr: string[] = []
     let miscC = 0
     for (let item in PVP_KITSUIT.weapon.misc) {
         let rawName = PVP_KITSUIT.weapon.misc[item]
@@ -746,7 +748,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('%axiscube.itemGroups.name.misc',miscArr,obj.suit.weapon.misc)
 
     // AXE
-    let axeArr = []
+    let axeArr: string[] = []
     let axeC = 0
     for (let item in PVP_KITSUIT.weapon.axe) {
         let rawName = PVP_KITSUIT.weapon.axe[item]
@@ -757,7 +759,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.dropdown('%itemGroup.name.axe',axeArr,obj.suit.weapon.axe)
     
     // BOW
-    let bowArr = []
+    let bowArr: string[] = []
     let bowC = 0
     for (let item in PVP_KITSUIT.weapon.bow) {
         let rawName = PVP_KITSUIT.weapon.bow[item]
@@ -771,7 +773,7 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     // Lefthand
     form.slider(`\n${PVP_ICONS.offhand.totem_of_undying[0]} %item.totem.name`,0,5,1,obj.suit.offhand.totem_of_undying)
     form.toggle(`${PVP_ICONS.offhand.shield[0]} %item.shield.name`,Boolean(obj.suit.offhand.shield))
-    let leftItArr = []
+    let leftItArr: string[] = []
     let leftItC = 0
     for (let item in PVP_KITSUIT.offhand.in_slot) {
         let rawName = PVP_KITSUIT.offhand.in_slot[item]
@@ -786,6 +788,8 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
     form.slider(`\n${PVP_ICONS.meal.enchanted_golden_apple[0]} %item.appleEnchanted.name`,0,8,1,obj.suit.meal.enchanted_golden_apple)
 
     form.show(player).then(async gg => { if (!gg.canceled) {
+        if(!gg.formValues){return;}
+
         let [ sName, dHead, dChest, dLegs, dFeet, dSword, dMisc, dAxe, dBow, dArrow, dTotem, dShield, dLefthand, dCarrot, dApple, dEnapple ] = gg.formValues
         obj.name = cutName(sName,player.name)
         obj.suit.armor.head = dHead
@@ -932,6 +936,8 @@ export async function pvpExportForm(player,t=0) {
     .textField('%axiscube.pvp.kitset.export.kitname',`${player.name}'s Kit`,generated.name)
     .textField('%axiscube.pvp.kitset.templates.author',player.name,generated.author)
     .show(player).then(gg => { if (!gg.canceled) {
+        if(!gg.formValues){return;}
+
         generated.author = gg.formValues[1]
         generated.name = gg.formValues[0]
         const form2 = new ModalFormData()
@@ -1045,33 +1051,37 @@ export async function pvpKiller(killer,prey) {
 }
 
 export async function pvpSettingGame(player) {
-    
-    const Tiers1 = ['%options.off','%options.on']
-    const Tiers3 = ['%options.off','%enchantment.level.1','%enchantment.level.2','%enchantment.level.3']
+    try{
+        const Tiers1 = ['%options.off','%options.on']
+        const Tiers3 = ['%options.off','%enchantment.level.1','%enchantment.level.2','%enchantment.level.3']
 
-    const settingsRegen = getScore('pvp.regen','settings')
-    const settingsEnchLoyalty = getScore('pvp.ench.loyalty','settings')
-    const settingsEnchInfinity = getScore('pvp.ench.infinity','settings')
-    const settingsDifficulty = getScore('pvp.difficulty','settings')
-    const settingsNametag = getScore('pvp.nametag','settings')
-    const settingsFalldamage = getScore('pvp.falldamage','settings')
+        const settingsRegen = getScore('pvp.regen','settings')
+        const settingsEnchLoyalty = getScore('pvp.ench.loyalty','settings')
+        const settingsEnchInfinity = getScore('pvp.ench.infinity','settings')
+        const settingsDifficulty = getScore('pvp.difficulty','settings')
+        const settingsNametag = getScore('pvp.nametag','settings')
+        const settingsFalldamage = getScore('pvp.falldamage','settings')
 
-    const form = new ModalFormData()
-    .title('%axiscube.settings.game')
-    .toggle('%axiscube.settings.pvp.regen',Boolean(settingsRegen))
-    .toggle('%axiscube.settings.nametag',Boolean(settingsNametag))
-    .toggle('%axiscube.settings.falldamage',Boolean(settingsFalldamage))
-    .dropdown(`%options.difficulty`,MINECRAFT_DIFFICULTIES_NAME,settingsDifficulty)
-    .dropdown(`\n${PVP_ICONS.weapon.sword[7][0]} %enchantment.tridentLoyalty`,Tiers3,settingsEnchLoyalty)
-    .dropdown(`\n${PVP_ICONS.weapon.bow[1][0]} %enchantment.arrowInfinite`,Tiers1,settingsEnchInfinity)
+        const form = new ModalFormData()
+        .title('%axiscube.settings.game')
+        .toggle('%axiscube.settings.pvp.regen',Boolean(settingsRegen))
+        .toggle('%axiscube.settings.nametag',Boolean(settingsNametag))
+        .toggle('%axiscube.settings.falldamage',Boolean(settingsFalldamage))
+        .dropdown(`%options.difficulty`,MINECRAFT_DIFFICULTIES_NAME,settingsDifficulty)
+        .dropdown(`\n${PVP_ICONS.weapon.misc[1][0]} %enchantment.tridentLoyalty`,Tiers3,settingsEnchLoyalty)
+        .dropdown(`\n${PVP_ICONS.weapon.bow[1][0]} %enchantment.arrowInfinite`,Tiers1,settingsEnchInfinity)
 
-    form.show(player).then(gg => { if (!gg.canceled) {
-        let [ setRegen, setNametag, setFalldamaage,setDifficulty , setEnchLoyalty, setEnchInfinity ] = gg.formValues
-        edScore('pvp.regen','settings',setRegen ? 1 : 0)
-        edScore('pvp.nametag','settings',setNametag ? 1 : 0)
-        edScore('pvp.falldamage','settings',setFalldamaage ? 1 : 0)
-        edScore('pvp.difficulty','settings',setDifficulty)
-        edScore('pvp.ench.loyalty','settings',setEnchLoyalty)
-        edScore('pvp.ench.infinity','settings',setEnchInfinity)
-    }})
+        form.show(player).then(gg => { if (!gg.canceled) {
+            if(!gg.formValues){return}
+
+            let [ setRegen, setNametag, setFalldamaage,setDifficulty , setEnchLoyalty, setEnchInfinity ] = gg.formValues
+
+            edScore('pvp.regen','settings',setRegen ? 1 : 0)
+            edScore('pvp.nametag','settings',setNametag ? 1 : 0)
+            edScore('pvp.falldamage','settings',setFalldamaage ? 1 : 0)
+            edScore('pvp.difficulty','settings',setDifficulty)
+            edScore('pvp.ench.loyalty','settings',setEnchLoyalty)
+            edScore('pvp.ench.infinity','settings',setEnchInfinity)
+        }})
+    }catch(e){console.warn(e, e.stack)}
 }

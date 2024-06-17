@@ -1,4 +1,4 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType } from "@minecraft/server"
+import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType, EnchantmentTypes, ItemEnchantableComponent } from "@minecraft/server"
 import { COPYRIGHT, DIM, SYM } from "../../const"
 import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, setblock, sleep, tellraw } from "../../modules/axisTools"
 import { GAMEDATA } from "../gamedata"
@@ -204,7 +204,7 @@ async function bridgeEquipment(){
         //@minecraft/vanilla-data (Not released) [/bundles/vanilla_data]
         let bow = new ItemStack('minecraft:bow', 1)
         let ench = bow.getComponent(ItemComponentTypes.Enchantable)
-        ench?.addEnchantment({ type: MinecraftEnchantmentTypes.Power, level: 5 });
+        ench?.addEnchantment({ type: new EnchantmentType("power"), level: 5 });
 
 
 
@@ -257,7 +257,7 @@ async function bridgeOtherIterations(){
             }}
     }catch(e){console.warn(e)}
 }
-let arrow_give =0;
+let arrow_give = 0;
 async function bridgeBegin(){
     let arn = getGameArena()
     const red_team = teams_info[arn].red
@@ -307,7 +307,7 @@ let info = 0
 
 async function information(){
     info = system.runInterval(()=>{
-        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${points}]}`)
+        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${points}\'}]}`)
     },10)
     MT_GAMES.register(info)
 }

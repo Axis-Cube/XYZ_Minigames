@@ -137,7 +137,7 @@ export async function playsound(sound,player: Entity | string='@a',volume=1,pitc
     await runCMD(`playsound ${sound} @s ~~~ ${volume} ${pitch}`,player)
 }
 
-export function setblock(x,y,z,id){
+export function setblock(x: string | number, y: string | number, z: string | number, id: string | number){
     runCMD(`setblock ${x} ${y} ${z} ${id}`)
 }
 

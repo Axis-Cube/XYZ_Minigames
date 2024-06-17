@@ -5,7 +5,6 @@ import { TEAMS4, getPlayerTeam, teamArray, teamCheck } from "./category_team"
 import { Block, BlockPermutation, Dimension, Player, system, world, EquipmentSlot, ItemStack, EntityComponentTypes} from "@minecraft/server"
 import { GAMEDATA } from "./gamedata"
 import { getGameArena, stopGame } from "./main"
-import { DataBase } from "../modules/database"
 import { haveVoidMessage, knockVoidMessage } from "../tunes/killMessage"
 import { editPlayerGamedata, eliminatePlayerMessage, getPlayerGamedata } from "../tunes/profile"
 import { dbGetRecord, dbSetRecord } from "../modules/cheesebase"
@@ -17,7 +16,7 @@ export const GAMEDATA_BW = { // BW
         0: true
     },
     namespace: 'bw',
-    min_players: 1,
+    min_players: 2,
     tags: [
         'bw',
         'bw.member',
