@@ -8,6 +8,7 @@ import { addMoney, getMoney } from "./bank"
 import { GM_CHALLANGES, formGameChallenges } from "../games/chooser"
 import { GAMEDATA } from "../games/gamedata"
 import { dbGetPlayerRecord, dbSetPlayerRecord } from "../modules/cheesebase"
+import { dev_log } from "modules/Logger/logger_env"
 
 const DB_S = '$'
 export const STORE_COLOR = '§5'
@@ -55,100 +56,12 @@ export const STORE_ITEMS = {
     36: { type: 'soundmsg', localData: 'random.orb', price: -1, linked: 35, uid: '-6faf497c' },
 }
 
-export function isOwned(id,name) {
-    return ( [...getPurchasedItems(name)].map(String).indexOf(`${id}`) != -1)
-}
+//FORMS
 
-export function getPrice(id,compact=false,name) {
-    let price = getRawPrice(id)
-    if (name && isOwned(id,name)) {
-        return compact ? ' §q(%store.owned)' : '\n§q[%store.owned]'
-    } else if (price == -1) {
-        return compact ? ` ${STORE_COLOR}[%axiscube.store.price.set]` : `\n${STORE_COLOR}[%axiscube.store.price.set]`
-    } else if (price == -2) {
-        return compact ? ' §4[%axiscube.store.price.unvaliable]' : '\n§4[%axiscube.store.price.unvaliable]'
-    } else if (price == -3) {
-        return compact ? ' §t[%axiscube.store.price.challenge]' : '\n§t[%axiscube.store.price.challenge]'
-    } else if (price == 0) {
-        return compact ? ' §q(%store.free)' : '\n§q[%store.free]'
-    } else {
-        return compact ? ` ${STORE_COLOR}(${price}${SYM})` : `${STORE_COLOR}\n${price}${SYM}`
-    }
-}
 
-export function getRawPrice(id) {
-    let item = STORE_ITEMS[id]
-    if (item.price == -1 || item.price == -2 || item.price == -3) return item.price
-    if (item.uid == magicIt(`${id}${item.price*Math.E}`).toString(16)) {
-        return item.price
-    }
-    return -2
-}
-
-export async function editItems(name,obj) {
-    await dbSetPlayerRecord(name,DB_S,obj)
-}
-
-export async function addItem(name,id) {
-    if (typeof id == 'string') id = Number(id)
-    let purchased = getPurchasedItems(name)
-    if (isOwned(id,name)) return
-    purchased.push(Number(id))
-    let ss = getSsData(name)
-    ss[id.toString(36)] = generateTransferCode(id,name)
-    //if (id == 11) { console.warn(typeof id, id.toString(36),ss[id.toString(36)],generateTransferCode(id,name)) }
-
-    if (STORE_ITEMS[id].type == 'setpack') {
-        for (let i of STORE_ITEMS[id].include) {
-            if (!isOwned(i,name)) {
-                purchased.push(Number(i))
-                ss[i.toString(36)] = generateTransferCode(i,name)
-            }
-        }
-    }
-    await editSsData(name,ss)
-    await editItems(name,purchased)
-}
-
-export function getSsData(name) {
-    return dbGetPlayerRecord(name,`${DB_S}${DB_S}`,{})
-}
-
-export function editSsData(name,obj) {
-    return dbSetPlayerRecord(name,`${DB_S}${DB_S}`,obj)
-}
-
-export function formShowCategories(player) {
-    //runCMD('stopsound @s random.click',player)
-    playsound('random.enderchestopen',player)
-    const form = new ActionFormData()
-    .title(`${STORE_COLOR}%axiscube.store`)
-    .body(`${STORE_COLOR_LIGHT}%axiscube.store.category.choice`)
-    .button(`${STORE_COLOR_LIGHT}%gui.back`,ICONS.back)
-    form.button(`${STORE_COLOR_LIGHT}%axiscube.store.purchased.title (${getPurchasedItems(player.name).length})`,ICONS.store)
-    form.button(`${STORE_COLOR_LIGHT}%axiscube.store.transfer`,ICONS.import)
-    for (let cat of CATEGORIES) {
-        form.button(`${STORE_COLOR}%axiscube.store.${cat}.s`,`textures/ui/icons/store/${cat}`)
-    }
-    form.show(player).then(gg => {
-        if (gg.canceled) {
-            //runCMD('stopsound @s random.click',player)
-            playsound('random.enderchestclosed',player)
-            return
-        } else {
-            if (gg.selection == 0) {formProfile(player); playsound('random.enderchestclosed',player); return }
-            else if (gg.selection == 1) {formPurchasedItems(player); playsound('block.end_portal_frame.fill',player);return }
-            else if (gg.selection == 2) { formItemsTransfer(player); return }
-            //runCMD('stopsound @s random.click',player)
-            formShowOffersByCategory(player,CATEGORIES[Number(gg.selection)-3])
-            playsound('block.end_portal_frame.fill',player)
-        }
-        
-    })
-}
-
+//FIXED
 export function formItemsTransfer(player) {
-    let purchased = []
+    let purchased: number[] = []
     let hiddenItems = false
     for (let cat of CATEGORIES) {
         for (let it of getPurchasedItemsByCategory(player.name,cat,false)) {
@@ -179,18 +92,19 @@ export function formItemsTransfer(player) {
                 placeProductButton(i,form2,false,player.name)
             }
             form2.show(player).then(gl => { if (!gl.canceled) {
-                if (gl.selection == 0) {
-                    const form3 = new ModalFormData()
-                    .title('%axiscube.store.transfer.export')
-                    .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'x.y.z@abcd',generatePowerTransferCode(player.name))
-                    .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
-                } else {
-                    let selected = purchased[Number(gl.selection-1)]
-                    const form3 = new ModalFormData()
-                    .title('%axiscube.store.transfer.export')
-                    .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'z@xxxxxx',`${selected.toString(36)}@${generateTransferCode(selected,player.name)}`)
-                    .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
-                }
+                    if (gl.selection == 0) {   
+                        const form3 = new ModalFormData()
+                        .title('%axiscube.store.transfer.export')
+                        .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'x.y.z@abcd',String(generatePowerTransferCode(player.name)))
+                        .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
+                    } else {
+                        if(!gl.selection){return;}
+                        let selected: number = purchased[Number(gl.selection-1)]
+                        const form3 = new ModalFormData()
+                        .title('%axiscube.store.transfer.export')
+                        .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'z@xxxxxx',`${selected.toString(36)}@${generateTransferCode(selected,player.name)}`)
+                        .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
+                    }
             }})
         } else if (gg.selection == 2) {
             formImportItem(player)
@@ -198,46 +112,17 @@ export function formItemsTransfer(player) {
     }})
 }
 
-function generateTransferCode(id=0,name='Axisander') {
-    return magicIt(`${name.toLowerCase()}_${id}`).toString(36)
-}
-
-function generatePowerTransferCode(name='Axisander',items) {
-    if (items == undefined) {
-        let str1 = ''
-        let secSum = 0
-        for (let cat of CATEGORIES) {
-            for (let it of getPurchasedItemsByCategory(name,cat,false)) {
-                if (STORE_ITEMS[it].price != -1) {
-                    str1 = `${str1}.${it.toString(36)}`
-                    secSum = secSum + magicIt(`${name.toLowerCase()}_${it}`)
-                }
-            }
-        }
-        return `${str1.slice(1)}@${secSum.toString(36)}`
-    } else {
-        let secSum = 0
-        for (let it of items) {
-            it = parseInt(it,36)
-            if (STORE_ITEMS[it] && STORE_ITEMS[it].price != -1) {
-                secSum = secSum + magicIt(`${name.toLowerCase()}_${it}`)
-            } else if (STORE_ITEMS[it] == undefined) {
-                return 0
-            }
-        }
-        return secSum.toString(36)
-    }
-}
-
-function formImportItem(player,comment='',tcode='') {
+function formImportItem(player, comment='', tcode='') {
     const form = new ModalFormData()
     .title('%axiscube.store.transfer.import')
     .textField(`${comment}%axiscube.store.transfer.import`,'y@xxxxxx OR x.y.z@abcd',tcode)
     .show(player).then(gg => { if (!gg.canceled) {
-        let code = gg.formValues[0].split('@')
+        if(!gg.formValues){return;}
+
+        let code = String(gg.formValues[0]).split('@')
         let id = parseInt(code[0],36)
-        if (gg.formValues[0].split('.').length == 1) {
-            if (STORE_ITEMS[id] == undefined) { formImportItem(player,'%axiscube.store.transfer.import.error.version\n\n§r',gg.formValues[0]); return }
+        if (String(gg.formValues[0]).split('.').length == 1) {
+            if (STORE_ITEMS[id] == undefined) { formImportItem(player,'%axiscube.store.transfer.import.error.version\n\n§r',String(gg.formValues[0])); return }
             let key = code[1]
             if (key == generateTransferCode(id,player.name)) {
                 const form2 = new ActionFormData()
@@ -250,20 +135,20 @@ function formImportItem(player,comment='',tcode='') {
                     formPurchasedItems(player,'§a%axiscube.store.transfer.import.confirm.suc\n')
                 }})
             } else {
-                formImportItem(player,'%axiscube.store.transfer.import.error\n\n§r',gg.formValues[0])
+                formImportItem(player,'%axiscube.store.transfer.import.error\n\n§r',String(gg.formValues[0]))
             }
         } else {
             // let code = gg.formValues[0].split('@')
             let purc = code[0].split('.')
-            let items = []
+            let items: number[] = []
             for (let i of purc) {
                 let id = parseInt(i,36)
                 items.push(id)
                 if (STORE_ITEMS[id] == undefined) {
-                    formImportItem(player,'%axiscube.store.transfer.import.error.version\n\n§r',gg.formValues[0]);
+                    formImportItem(player,'%axiscube.store.transfer.import.error.version\n\n§r',String(gg.formValues[0]));
                     return
                 } else if (STORE_ITEMS[id].price == -1) {
-                    formImportItem(player,'%axiscube.store.transfer.import.error\n\n§r',gg.formValues[0]);
+                    formImportItem(player,'%axiscube.store.transfer.import.error\n\n§r',String(gg.formValues[0]));
                     return
                 }
             }
@@ -282,35 +167,13 @@ function formImportItem(player,comment='',tcode='') {
                     formPurchasedItems(player,'§a%axiscube.store.transfer.import.confirm.suc\n')
                 }})
             } else {
-                formImportItem(player,'%axiscube.store.transfer.import.error\n\n§r',gg.formValues[0])
+                formImportItem(player,'%axiscube.store.transfer.import.error\n\n§r',String(gg.formValues[0]))
             }
         }
     }})
 }
 
-export function placeProductButton(id,form,showPrice=true,name) {
-    switch (STORE_ITEMS[id].type) {
-        case 'killmsg':
-            form.button(showPrice ? {rawtext:[{text:`§r`},{translate:`axiscube.kill.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR_LIGHT}${KILL_MESSAGES_SAMPLE_PREYNAME[STORE_ITEMS[id].localData]}`,`${STORE_COLOR}${name}`]},{text:getPrice(id,true,name)}]} : {rawtext:[{text:`§r`},{translate:`axiscube.kill.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR_LIGHT}${KILL_MESSAGES_SAMPLE_PREYNAME[STORE_ITEMS[id].localData]}`,`${STORE_COLOR}${name}`]}]})
-        break;
-        case 'setpack':
-            form.button(showPrice ? `%axiscube.store.product.${STORE_ITEMS[id].namespace}${getPrice(id,false,name)}` : `%axiscube.store.product.${STORE_ITEMS[id].namespace}`,`textures/ui/icons/store/products/${STORE_ITEMS[id].namespace}`)
-        break;
-        case 'colorname':
-            form.button(showPrice ? `${STORE_ITEMS[id].localData}${name}§r${STORE_COLOR}${getPrice(id,false,name)}` : `${STORE_ITEMS[id].localData}${name}`)
-        break;
-        case 'emoji':
-            form.button(showPrice ? `:${STORE_ITEMS[id].localData}: - ${CHAT_CODES[STORE_ITEMS[id].localData]}${getPrice(id,false,name)}` : `:${STORE_ITEMS[id].localData}: - ${CHAT_CODES[STORE_ITEMS[id].localData]}`)
-        break;
-        case 'soundmsg':
-            form.button(showPrice ? `%axiscube.store.soundmsg.b §l${SOUNDMSG[STORE_ITEMS[id].localData][0]}§r${getPrice(id,false,name)}` : `%axiscube.store.soundmsg.b §l${SOUNDMSG[STORE_ITEMS[id].localData][0]}`)
-        break;
-        case 'elmsg':
-            form.button(showPrice ? {rawtext:[{text:`§r`},{translate:`axiscube.games.eliminated.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR}${name}`]},{text:getPrice(id,true,name)}]} : {rawtext:[{text:`§r`},{translate:`axiscube.games.eliminated.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR}${name}`]}]})
-        break;
-    }
-}
-
+//FIX ME
 export function formItemInfo(itemId,player) {
     const item = STORE_ITEMS[itemId]
     item.price = getRawPrice(itemId)
@@ -319,7 +182,7 @@ export function formItemInfo(itemId,player) {
     const form = new ActionFormData()
         .title(`${STORE_COLOR}%axiscube.store.product_info`)
     if (item.type == 'setpack') {
-        let text = {rawtext:[
+        let text: any = {rawtext:[
             {text: `\n${STORE_COLOR_LIGHT}`},
             {translate: `axiscube.store.product.${item.namespace}`},
             {text: '§r\n\n'},
@@ -356,7 +219,7 @@ export function formItemInfo(itemId,player) {
     /////////////////////////////////
     } else if (item.type == 'emoji'){
         try{
-            let text = {rawtext:[
+            let text: any = {rawtext:[
                 {text: `\n${STORE_COLOR_LIGHT}`},
                 {translate: `axiscube.store.product_info.emoji`,with:[`${CHAT_CODES[item.localData]} (:${item.localData}:)`]}, //Getting emoji by localdata
                 {text: '§r\n\n'},
@@ -388,7 +251,7 @@ export function formItemInfo(itemId,player) {
         }catch(e){console.warn(e.stack)}
     //////////////////////////////////
     } else if (item.type == 'colorname' || item.type == 'killmsg' || item.type == 'soundmsg' || item.type == 'elmsg') {
-        let text = {}
+        let text: any = {}
         if (item.type == 'colorname') {
             text = {rawtext:[
                 {text: `\n${STORE_COLOR_LIGHT}`},
@@ -483,7 +346,7 @@ export function formItemInfo(itemId,player) {
                 
             }
         } else {
-            if (item.type == 'setpack' && gg.selection >= 2) {
+            if (item.type == 'setpack' && Number(gg.selection) >= 2) {
                 formItemInfo(item.include[Number(gg.selection)-2],player)
             } else {
                 formItemInfo(item.linkeds[Number(gg.selection)-1],player)
@@ -519,6 +382,8 @@ export function formPurchasedItems(player,comment='',sort='date_newest') {
         }
         
         form.show(player).then(gg => {
+            if(!gg.selection){return;}
+
             if (gg.canceled) {
                 //runCMD('stopsound @s random.click',player)
                 playsound('random.enderchestclosed',player)
@@ -538,10 +403,39 @@ export function formPurchasedItems(player,comment='',sort='date_newest') {
         })
 }
 
+export function formShowCategories(player) {
+    //runCMD('stopsound @s random.click',player)
+    playsound('random.enderchestopen',player)
+    const form = new ActionFormData()
+    .title(`${STORE_COLOR}%axiscube.store`)
+    .body(`${STORE_COLOR_LIGHT}%axiscube.store.category.choice`)
+    .button(`${STORE_COLOR_LIGHT}%gui.back`,ICONS.back)
+    form.button(`${STORE_COLOR_LIGHT}%axiscube.store.purchased.title (${getPurchasedItems(player.name).length})`,ICONS.store)
+    form.button(`${STORE_COLOR_LIGHT}%axiscube.store.transfer`,ICONS.import)
+    for (let cat of CATEGORIES) {
+        form.button(`${STORE_COLOR}%axiscube.store.${cat}.s`,`textures/ui/icons/store/${cat}`)
+    }
+    form.show(player).then(gg => {
+        if (gg.canceled) {
+            //runCMD('stopsound @s random.click',player)
+            playsound('random.enderchestclosed',player)
+            return
+        } else {
+            if (gg.selection == 0) {formProfile(player); playsound('random.enderchestclosed',player); return }
+            else if (gg.selection == 1) {formPurchasedItems(player); playsound('block.end_portal_frame.fill',player);return }
+            else if (gg.selection == 2) { formItemsTransfer(player); return }
+            //runCMD('stopsound @s random.click',player)
+            formShowOffersByCategory(player,CATEGORIES[Number(gg.selection)-3])
+            playsound('block.end_portal_frame.fill',player)
+        }
+        
+    })
+}
+
 export function formShowOffersByCategory(player,category,fromStrore=true) {
     const name = player.name
     const offers = getItemsByCategory(category)
-    const offersToPurchase = []
+    const offersToPurchase: string[] = []
 
     if (!fromStrore) playsound('random.enderchestopen',player)
     const form = new ActionFormData()
@@ -571,9 +465,154 @@ export function formShowOffersByCategory(player,category,fromStrore=true) {
     })
 }
 
+//END OF FORMS
+
+
+
+export function getPrice(id,compact=false,name) {
+    let price = getRawPrice(id)
+    if (name && isOwned(id,name)) {
+        return compact ? ' §q(%store.owned)' : '\n§q[%store.owned]'
+    } else if (price == -1) {
+        return compact ? ` ${STORE_COLOR}[%axiscube.store.price.set]` : `\n${STORE_COLOR}[%axiscube.store.price.set]`
+    } else if (price == -2) {
+        return compact ? ' §4[%axiscube.store.price.unvaliable]' : '\n§4[%axiscube.store.price.unvaliable]'
+    } else if (price == -3) {
+        return compact ? ' §t[%axiscube.store.price.challenge]' : '\n§t[%axiscube.store.price.challenge]'
+    } else if (price == 0) {
+        return compact ? ' §q(%store.free)' : '\n§q[%store.free]'
+    } else {
+        return compact ? ` ${STORE_COLOR}(${price}${SYM})` : `${STORE_COLOR}\n${price}${SYM}`
+    }
+}
+
+export function getRawPrice(id) {
+    let item = STORE_ITEMS[id]
+    if (item.price == -1 || item.price == -2 || item.price == -3) return item.price
+    if (item.uid == magicIt(`${id}${item.price*Math.E}`).toString(16)) {
+        return item.price
+    }
+    return -2
+}
+
+export async function editItems(name,obj) {
+    await dbSetPlayerRecord(name,DB_S,obj)
+}
+
+/**
+ * 
+ * @param {string} name Player Name
+ * @param {string | number} id Item id (Store Item Id)
+ * @returns 
+ */
+export async function addItem(name,id) {
+    if (typeof id == 'string') id = Number(id)
+    let purchased: number[] = getPurchasedItems(name)
+    if (isOwned(id,name)) return
+    purchased.push(Number(id))
+    let ss = getSsData(name)
+    ss[id.toString(36)] = generateTransferCode(id,name)
+    //if (id == 11) { console.warn(typeof id, id.toString(36),ss[id.toString(36)],generateTransferCode(id,name)) }
+
+    if (STORE_ITEMS[id].type == 'setpack') {
+        for (let i of STORE_ITEMS[id].include) {
+            if (!isOwned(i,name)) {
+                purchased.push(Number(i))
+                ss[i.toString(36)] = generateTransferCode(i,name)
+            }
+        }
+    }
+    await editSsData(name,ss)
+    await editItems(name,purchased)
+}
+
+export function getSsData(name) {
+    return dbGetPlayerRecord(name,`${DB_S}${DB_S}`,{})
+}
+
+export function editSsData(name,obj) {
+    return dbSetPlayerRecord(name,`${DB_S}${DB_S}`,obj)
+}
+
+
+
+function generateTransferCode(id=0,name='Axisander') {
+    return magicIt(`${name.toLowerCase()}_${id}`).toString(36)
+}
+
+function generatePowerTransferCode(name='Axisander',items: (number | string)[] = []) {
+    try{
+        if (items.length == 0) {
+            let str1 = ''
+            let secSum = 0
+            for (let cat of CATEGORIES) {
+                for (let it of getPurchasedItemsByCategory(name,cat,false) as number[]) {
+                    if (STORE_ITEMS[it].price != -1) {
+                        str1 = `${str1}.${it.toString(36)}`
+                        console.warn(str1)
+                        secSum = secSum + magicIt(`${name.toLowerCase()}_${it}`)
+                    }
+                }
+            }
+            return `${str1.slice(1)}@${secSum.toString(36)}`
+        } else {
+            let secSum = 0
+            for (let it of items as string[]) {
+
+                let parsedIt = parseInt(it,36)
+
+                if (STORE_ITEMS[parsedIt] && STORE_ITEMS[parsedIt].price != -1) {
+                    secSum = secSum + magicIt(`${name.toLowerCase()}_${parsedIt}`)
+                } else if (STORE_ITEMS[parsedIt] == undefined) {
+                    return 0
+                }
+            }
+            return secSum.toString(36)
+        }
+    }catch(e){dev_log.put(e)}
+}
+
+export function placeProductButton(id,form,showPrice=true,name) {
+    switch (STORE_ITEMS[id].type) {
+        case 'killmsg':
+            form.button(showPrice ? {rawtext:[{text:`§r`},{translate:`axiscube.kill.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR_LIGHT}${KILL_MESSAGES_SAMPLE_PREYNAME[STORE_ITEMS[id].localData]}`,`${STORE_COLOR}${name}`]},{text:getPrice(id,true,name)}]} : {rawtext:[{text:`§r`},{translate:`axiscube.kill.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR_LIGHT}${KILL_MESSAGES_SAMPLE_PREYNAME[STORE_ITEMS[id].localData]}`,`${STORE_COLOR}${name}`]}]})
+        break;
+        case 'setpack':
+            form.button(showPrice ? `%axiscube.store.product.${STORE_ITEMS[id].namespace}${getPrice(id,false,name)}` : `%axiscube.store.product.${STORE_ITEMS[id].namespace}`,`textures/ui/icons/store/products/${STORE_ITEMS[id].namespace}`)
+        break;
+        case 'colorname':
+            form.button(showPrice ? `${STORE_ITEMS[id].localData}${name}§r${STORE_COLOR}${getPrice(id,false,name)}` : `${STORE_ITEMS[id].localData}${name}`)
+        break;
+        case 'emoji':
+            form.button(showPrice ? `:${STORE_ITEMS[id].localData}: - ${CHAT_CODES[STORE_ITEMS[id].localData]}${getPrice(id,false,name)}` : `:${STORE_ITEMS[id].localData}: - ${CHAT_CODES[STORE_ITEMS[id].localData]}`)
+        break;
+        case 'soundmsg':
+            form.button(showPrice ? `%axiscube.store.soundmsg.b §l${SOUNDMSG[STORE_ITEMS[id].localData][0]}§r${getPrice(id,false,name)}` : `%axiscube.store.soundmsg.b §l${SOUNDMSG[STORE_ITEMS[id].localData][0]}`)
+        break;
+        case 'elmsg':
+            form.button(showPrice ? {rawtext:[{text:`§r`},{translate:`axiscube.games.eliminated.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR}${name}`]},{text:getPrice(id,true,name)}]} : {rawtext:[{text:`§r`},{translate:`axiscube.games.eliminated.t${STORE_ITEMS[id].localData}`,with:[`${STORE_COLOR}${name}`]}]})
+        break;
+    }
+}
+
+
+
+//BOOKMARK
+
+//Check Purchased Items
+
+export function isOwned(id,name) {
+    return ( [...getPurchasedItems(name)].map(String).indexOf(`${id}`) != -1)
+}
+
+/**
+ * 
+ * @param {string} name Player Name
+ * @returns {number[]} Array of purchased items
+ */
 export function getPurchasedItems(name) {
     let items = dbGetPlayerRecord(name,DB_S,DB_DEFAULT)
-    let final = []
+    let final: number[] = []
     for (let i of items) {
         if (generateTransferCode(i,name) == getSsData(name)[i.toString(36)]) {final.push(i)}
     }
@@ -582,7 +621,7 @@ export function getPurchasedItems(name) {
 
 export function getPurchasedItemsByCategory(name,category,returnLocalID=false) {
     let playerItems = getPurchasedItems(name)
-    let final = []
+    let final: any = []
     for (let i of playerItems) { if (STORE_ITEMS[i].type == category) {
         if (returnLocalID) {
             final.push(STORE_ITEMS[i].localData)
@@ -594,7 +633,7 @@ export function getPurchasedItemsByCategory(name,category,returnLocalID=false) {
 }
 
 export function getItemsByCategory(category) {
-    let categoryItems = []
+    let categoryItems: string[] = []
     for (let i in STORE_ITEMS) {
         if (STORE_ITEMS[i].type === category) {
             categoryItems.push(i)

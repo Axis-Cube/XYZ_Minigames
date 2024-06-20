@@ -4,8 +4,9 @@ import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, 
 import { GAMEDATA } from "../gamedata"
 import { forceGameRestart, getGameArena, startGame, startTimer, stopGame } from "../main"
 import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
-import { MT_GAMES } from "../../modules/MultiTasking/instances"
+import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
 import { MinecraftEnchantmentTypes } from "../../bundles/vanilla_data"
+import { axisInfo } from "modules/axisInfo"
 
 export const GAMEDATA_FW_FRONTLINE = { // fw_frontline    
     id: 10,
@@ -49,11 +50,11 @@ export const GAMEDATA_FW_FRONTLINE = { // fw_frontline
     },
     ends: {
         team_blue_win: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"TEAM BLUE WIN"},{"text":"+100${SYM}"}]}}]}`,
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"BLUE TEAM"},{"text":"+100${SYM}"}]}}]}`,
             cmd : [{'type':'money','sum': 150, 'target': '@a[tag=team.blue]'}]
         },
         team_red_win: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"TEAM RED WIN"},{"text":"+100${SYM}"}]}}]}`,
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"RED TEAM"},{"text":"+100${SYM}"}]}}]}`,
             cmd : [{'type':'money','sum': 150, 'target': '@a[tag=team.red]'}]
         },
         no_time: {
@@ -270,7 +271,13 @@ async function bridgeBegin(){
     runCMD(`tp @a[tag=team.red] ${red_spawn.x} ${red_spawn.y} ${red_spawn.z} facing ${red_team.focus}`)
 
 
-    information()
+    let tmp_id = system.runInterval(()=>{
+        axisInfo.replace(points)
+    },10)
+    MT_INFO.register(tmp_id)
+
+    //let system.runInterval(() => {
+
     bridgeOtherIterations()
     bridgeEquipment()
 
@@ -303,14 +310,19 @@ async function bridgeTick(){
         }
     }
 }
-let info = 0
 
-async function information(){
-    info = system.runInterval(()=>{
-        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${points}\'}]}`)
-    },10)
-    MT_GAMES.register(info)
-}
+
+
+//let info = 0
+//
+//async function information(){
+//    
+//
+//    info = system.runInterval(()=>{
+//        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${points}\'}]}`)
+//    },10)
+//    MT_GAMES.register(info)
+//}
 
 async function expansionHandler(player){
     let arn = getGameArena()
@@ -343,7 +355,8 @@ async function bridgeStop() {
     } catch { }
     try {
         MT_GAMES.kill()
-    } catch (e) { console.warn(e, info) }
-    runCMD(`title @a title ud0""`)
+        axisInfo.erase()
+    } catch (e) { console.warn(e) }
+    
 
 }

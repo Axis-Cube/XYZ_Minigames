@@ -2,9 +2,10 @@ import { EntityInventoryComponent, ItemStack, system, world } from "@minecraft/s
 import { COPYRIGHT, DIM, SYM, upgradeArmor, upgradeItems, upgradesBlocked } from "../const";
 import { edScore, getScore, getSlotsByItemName, playsound, randomPlayerIcon, runCMD, runCMDs, safeZone, safeZoneDamage } from "../modules/axisTools";
 import { startTimer, stopGame } from "./main";
-import { MT_GAMES } from "../modules/MultiTasking/instances";
+import { MT_GAMES, MT_INFO } from "../modules/MultiTasking/instances";
 import { chests } from "./hg_chests";
 import { games_log } from "../modules/Logger/logger_env";
+import { axisInfo } from "modules/axisInfo";
 
 export const GAMEDATA_HG = { // Hunger Games
     id: 12,
@@ -165,7 +166,16 @@ async function hgTime(){
             }
         },20)
         MT_GAMES.register(timers)
-        information()
+
+        let tmp_id = system.runInterval(()=>{
+            let chests_update = getScore('chests_update', 'data.gametemp')
+            let zone_shrink = getScore('zone_shrink', 'data.gametemp')
+
+            axisInfo.replace(String(`\ue101 Chests Update: ${((chests_update == -1)?"Updating":chests_update)}\n\ue135 Zone Shrink: ${(zone_shrink == -1)?"Updating":zone_shrink}`))
+        },10)
+
+        MT_INFO.register(tmp_id)
+
     }catch(e){console.warn(e)}
 }
 
@@ -210,23 +220,10 @@ async function getNextUpgrade(material, type){
         return upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]+'_'+type
     }
 }
-
-let info;
-async function information(){
-    info = system.runInterval(()=>{
-        let chests_update = getScore('chests_update', 'data.gametemp')
-        let zone_shrink = getScore('zone_shrink', 'data.gametemp')
-
-        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${"\ue101 Chests Update: "+ ((chests_update == -1)?"Updating":chests_update) }\n${"\ue135 Zone Shrink: "+ ((zone_shrink == -1)?"Updating":zone_shrink) }\'"}]}`)
-        //runCMD(`titleraw @a[tag=red] title {"rawtext":[{"text":"ud0\'${"\ue127".repeat(getScore('fw_br_red','data.gametemp'))}\'"}]}`)
-    },10)
-    MT_GAMES.register(info)
-}
-
 export async function upgradeItem(player){
     let inv = await player.getComponent(EntityInventoryComponent.componentId)
     let container = inv.container
-    let slot = player.selectedSlot
+    let slot = player.selectedSlotIndex
     try{
         //console.log(container.getItem(0), slot)
         let item = container.getItem(slot)?.typeId;
@@ -257,20 +254,20 @@ export async function upgradeItem(player){
         playsound('block.false_permissions', player)
         switch(e.message){
             case '12_0':
-                console.log('This item Blocked and can not be upgraded')
+                games_log.put('[HG][upgradeItem] This item Blocked and can not be upgraded')
             break;
             case '12_1':
-                console.log('Item Id is Not defined')
+                games_log.put('[HG][upgradeItem] Item Id is Not defined')
             break;
             case '12_2':
-                console.log('You need tho items with Identical Id')
+                games_log.put('[HG][upgradeItem] You need two items with Identical Id')
             break;
             case '12_3':
-                console.log('Undefined Item In container')
+                games_log.put('[HG][upgradeItem] Undefined Item In container')
             break;
             default:
-                console.log('Undefined error')
-                console.log(e.stack, e.message)
+                games_log.put('[HG][upgradeItem] Undefined error')
+                console.warn(e.stack, e.message)
             break;
         }
     }

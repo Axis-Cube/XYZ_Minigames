@@ -23,7 +23,7 @@ export function killMessage(killer,prey,projectile) {
     let currentSettings = getPlayerSettings(killer.name)
     let messageType = currentSettings.sel.killmsg
     if (messageType == -1) {
-        let purc = getPurchasedItemsByCategory(killer.name,'killmsg',true)
+        let purc: number[] = getPurchasedItemsByCategory(killer.name,'killmsg',true)
         purc.push(0)
         messageType = shuffle(purc)[0]
     }
@@ -41,7 +41,7 @@ export function knockVoidMessage(killer,prey) {
     let currentSettings = getPlayerSettings(killer.name)
     let messageType = currentSettings.sel.killmsg
     if (messageType == -1) {
-        let purc = getPurchasedItemsByCategory(killer.name,'killmsg',true)
+        let purc: number[] = getPurchasedItemsByCategory(killer.name,'killmsg',true)
         purc.push(0)
         messageType = shuffle(purc)[0]
     }
@@ -79,6 +79,8 @@ export function playerKillmsgList(player,showBackButton=true) {
         form.button({rawtext:[{text:`${currentSettings.sel.killmsg == item ? '\ue124 ' : ''}§r`},{translate:`axiscube.kill.t${item}`,with:[KILL_MESSAGES_SAMPLE_PREYNAME[item],`§q${player.nameTag}`]}]})
     }
     form.show(player).then(async gg => {
+        if(!gg.selection){return;}
+
         if ((gg.selection == 0 && !showBackButton) || gg.selection == 1 && showBackButton) {
             formShowOffersByCategory(player,'killmsg',false)
         } else if (showBackButton && gg.selection == 0) {

@@ -4,7 +4,8 @@ import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, 
 import { GAMEDATA } from "../gamedata"
 import { getGameArena, startGame, startTimer, stopGame } from "../main"
 import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
-import { MT_GAMES } from "../../modules/MultiTasking/instances"
+import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
+import { axisInfo } from "modules/axisInfo"
 
 export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5    
     id: 9,
@@ -224,7 +225,12 @@ async function bridgeBegin(){
     runCMD(`tp @a[tag=team.blue] ${blue_spawn.x} ${blue_spawn.y} ${blue_spawn.z} facing ${blue_team.focus}`)
     runCMD(`tp @a[tag=team.red] ${red_spawn.x} ${red_spawn.y} ${red_spawn.z} facing ${red_team.focus}`)
 
-    information()
+    let tmp_id = system.runInterval(()=>{
+        axisInfo.replace(String("§4Red: "+"\ue125".repeat(points-getScore('fw_br_blue','data.gametemp'))+"\ue12e".repeat(getScore('fw_br_blue','data.gametemp'))+"\n"+"§9Blu: "+"\ue127".repeat(points-getScore('fw_br_red','data.gametemp'))+"\ue12e".repeat(getScore('fw_br_red','data.gametemp'))))
+    },10)
+
+    MT_INFO.register(tmp_id)
+
     bridgeOtherIterations()
     bridgeEquipment()
     runCMD(`gamemode a @a[tag=!spec]`)
@@ -249,15 +255,6 @@ async function bridgeTick(){
             else if(red_team == 0 && blue_team != 0){await WinHandle('blue')}
         }
     }
-}
-let info = 0
-
-async function information(){
-    info = system.runInterval(()=>{
-        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${"§4Red: "+"\ue125".repeat(points-getScore('fw_br_blue','data.gametemp'))+"\ue12e".repeat(getScore('fw_br_blue','data.gametemp'))+"\n"+"§9Blu: "+"\ue127".repeat(points-getScore('fw_br_red','data.gametemp'))+"\ue12e".repeat(getScore('fw_br_red','data.gametemp'))}\'"}]}`)
-        //runCMD(`titleraw @a[tag=red] title {"rawtext":[{"text":"ud0\'${"\ue127".repeat(getScore('fw_br_red','data.gametemp'))}\'"}]}`)
-    },10)
-    MT_GAMES.register(info)
 }
 
 async function HoleHandlers(color, player){
@@ -329,6 +326,6 @@ async function bridgeDeath(player){
 async function bridgeStop(){
     try{
         MT_GAMES.kill()
-    }catch(e){console.warn(e,info)}
-    runCMD(`title @a title ud0""`)
+        axisInfo.erase()
+    }catch(e){console.warn(e)}
 }

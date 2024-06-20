@@ -175,7 +175,7 @@ export const GM_CHALLANGES = {
 }
 
 export function getGameChallenges(id) {
-    let ch = []
+    let ch: string[] = []
     for (let i in GM_CHALLANGES) {
         if (GM_CHALLANGES[i].game == id) ch.push(i)
     }
@@ -188,7 +188,7 @@ export function formGameChallenges(player,id) {
     const form = new ActionFormData()
     .title({rawtext:[{translate:'axiscube.challenge',with:{rawtext:[{translate:chl.name}]}}]})
     
-    let btext = {rawtext:[
+    let btext: any = {rawtext:[
         {translate:chl.body},
         {text:'\n\n'},
         {translate:'axiscube.challenge.for',with:{rawtext:[{translate:`axiscube.${GAMEDATA[chl.game].namespace}.name`}]}},
@@ -329,7 +329,7 @@ export async function formGameChooser(player,type=1,disableCheck=false) {
                     }
                 } else if (gg.selection == 1+challs.length) {
                     openJSON('gamesel',player)
-                } else if (gg.selection < 1+challs.length) {
+                } else if (gg.selection && gg.selection < 1+challs.length) {
                     formGameChallenges(player,challs[gg.selection-1])
                 }
             })

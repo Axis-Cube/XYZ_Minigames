@@ -14,7 +14,6 @@ Process('Init');
 try {runCMDs([`inputpermission set @a movement enabled`]);}catch {}
 
 
-
 console.warn('Hello map!');
 
 

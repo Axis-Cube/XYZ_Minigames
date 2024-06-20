@@ -6,6 +6,7 @@ import { getGame } from "../games/main";
 import { DB_A, DIM, map_id } from "../const";
 import { command_log } from "./Logger/logger_env";
 import { dbGetPlayerRecord } from "./cheesebase";
+import { MT_GAMES } from "./MultiTasking/instances";
 
 interface loc3{
     x:number,
