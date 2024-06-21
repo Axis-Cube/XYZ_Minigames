@@ -292,6 +292,18 @@ const HNS_TAUNTS = [
         reward: 25,
     },
     {
+        name: '%axiscube.hns.taunt.name.growl',
+        icons: '',
+        eval: (player) => {
+            runCMDs([
+                'particle minecraft:trial_spawner_detection_ominous ~~-1~',
+                'playsound mob.enderdragon.growl @a ~~~',
+                ],player)
+                },
+                cooldown: 15,
+                reward: 15,
+    },
+    {
         name: '%axiscube.hns.taunt.name.brewer',
             icons: '',
             eval: (player) => {
