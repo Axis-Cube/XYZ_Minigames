@@ -45,6 +45,20 @@ export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5
 
             red_hole: [[3057, 3, 1006],[3053, 1, 1010]],
             blue_hole: [[2984, 3, 1010],[2980, 1, 1006]]
+        },
+        1: { //Spaceships by MiauMiez 3004 52 630
+            gameplay: false,
+            spawn: { type: 'range', value: [ [ 3008, 3002 ], [ 54, 54 ], [ 633, 627 ] ] },
+            newplayer: '3005 54 630',
+
+            cleardata: {
+                1: [ { x: 3064, y: 0, z:664 }, { x: 2946, y: 0, z:591 } ],
+            },
+            level_low: 0,
+            level_high: 52,
+
+            red_hole: [[3039, 14, 632],[3035, 12, 628]],
+            blue_hole: [[2976, 14, 632],[2972, 12, 628]] 
         }
     },
     ends: {
@@ -90,22 +104,43 @@ export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5
 
 
 const teams_info = {
-    'blue': {
-        spawn: {x:2994,y:8.5,z:1008},
-        focus: "3055 6 1008",
-        armor: {
-            head: new ItemStack('axiscube:blue_leather_helmet'),
-            chest: new ItemStack('axiscube:blue_leather_chestplate')
+    0: {
+        'blue': {
+            spawn: {x:2994,y:8.5,z:1008},
+            focus: "3055 6 1008",
+            armor: {
+                head: new ItemStack('axiscube:blue_leather_helmet'),
+                chest: new ItemStack('axiscube:blue_leather_chestplate')
+            },
         },
+        'red': {
+            spawn: {x:3043,y:8.5,z:1008},
+            focus: "2982 6 1008",
+            armor: {
+                head: new ItemStack('axiscube:red_leather_helmet'),
+                chest: new ItemStack('axiscube:red_leather_chestplate')
+            }
+        }
     },
-    'red': {
-        spawn: {x:3043,y:8.5,z:1008},
-        focus: "2982 6 1008",
-        armor: {
-            head: new ItemStack('axiscube:red_leather_helmet'),
-            chest: new ItemStack('axiscube:red_leather_chestplate')
+    1: {
+        'blue': { //2987 21 630
+            spawn: {x:2987,y:22.5,z:630},
+            focus: "3037 20 630",
+            armor: {
+                head: new ItemStack('axiscube:blue_leather_helmet'),
+                chest: new ItemStack('axiscube:blue_leather_chestplate')
+            },
+        },
+        'red': {  //3024 21 630
+            spawn: {x:3024,y:22.5,z:630},
+            focus: "2974 20 630",
+            armor: {
+                head: new ItemStack('axiscube:red_leather_helmet'),
+                chest: new ItemStack('axiscube:red_leather_chestplate')
+            }
         }
     }
+
 }
 const BRIDGE_BLOCKS = [
     'blue_concrete',
@@ -119,9 +154,9 @@ const BRIDGE_TEAMSCORES = {
 
 export async function bridgeClear(){
     try{
-        const clearData = GAMEDATA[9].loc[getGameArena()].cleardata
-        const levelLow = GAMEDATA[9].loc[getGameArena()].level_low
-        const levelHigh = GAMEDATA[9].loc[getGameArena()].level_high
+        const clearData = GAMEDATA[9].loc[Number(getGameArena())].cleardata
+        const levelLow = GAMEDATA[9].loc[Number(getGameArena())].level_low
+        const levelHigh = GAMEDATA[9].loc[Number(getGameArena())].level_high
 
         
         for(let d = 1; d<=Object.keys(clearData).length; d++){
@@ -171,8 +206,8 @@ async function bridgeEquipment(){
             if (!player.hasTag('spec')) {
                 const equipment = player.getComponent('equippable')
                 if(hasTag(player, 'team.blue')){
-                    equipment?.setEquipment(EquipmentSlot.Head, teams_info['blue'].armor.head);
-                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info['blue'].armor.chest)
+                    equipment?.setEquipment(EquipmentSlot.Head, teams_info[Number(getGameArena())]['blue'].armor.head);
+                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info[Number(getGameArena())]['blue'].armor.chest)
 
                     runCMDs([
                         `give @s iron_sword`,
@@ -183,8 +218,8 @@ async function bridgeEquipment(){
                     ],player)
                 }
                 else if(hasTag(player, 'team.red')){
-                    equipment?.setEquipment(EquipmentSlot.Head, teams_info['red'].armor.head);
-                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info['red'].armor.chest)
+                    equipment?.setEquipment(EquipmentSlot.Head, teams_info[Number(getGameArena())]['red'].armor.head);
+                    equipment?.setEquipment(EquipmentSlot.Chest, teams_info[Number(getGameArena())]['red'].armor.chest)
 
                     runCMDs([
                         `give @s iron_sword`,
@@ -202,8 +237,8 @@ async function bridgeOtherIterations(){
     try{
         for (const player of [...world.getPlayers()]) {
             if (!player.hasTag('spec')) {
-                const red_spawn = teams_info.red.spawn
-                const blue_spawn = teams_info.blue.spawn
+                const red_spawn = teams_info[Number(getGameArena())].red.spawn
+                const blue_spawn = teams_info[Number(getGameArena())].blue.spawn
                 if(hasTag(player, 'team.blue')){
                     runCMD(`spawnpoint @s ${blue_spawn.x} ${blue_spawn.y} ${blue_spawn.z}`,player)
                     
@@ -216,9 +251,8 @@ async function bridgeOtherIterations(){
 }
 
 async function bridgeBegin(){
-
-    const red_team = teams_info.red
-    const blue_team = teams_info.blue
+    const red_team = teams_info[Number(getGameArena())].red
+    const blue_team = teams_info[Number(getGameArena())].blue
 
     const blue_spawn = blue_team.spawn
     const red_spawn = red_team.spawn
@@ -244,8 +278,8 @@ async function bridgeTick(){
     for (const player of [...world.getPlayers()]) {
 
         if (!player.hasTag('spec')) {
-            const isInRedHole = isPlayerinArea(GAMEDATA[9].loc[getGameArena()].red_hole[0], GAMEDATA[9].loc[getGameArena()].red_hole[1], player)
-            const isInBlueHole = isPlayerinArea(GAMEDATA[9].loc[getGameArena()].blue_hole[0], GAMEDATA[9].loc[getGameArena()].blue_hole[1], player)
+            const isInRedHole = isPlayerinArea(GAMEDATA[9].loc[Number(getGameArena())].red_hole[0], GAMEDATA[9].loc[Number(getGameArena())].red_hole[1], player)
+            const isInBlueHole = isPlayerinArea(GAMEDATA[9].loc[Number(getGameArena())].blue_hole[0], GAMEDATA[9].loc[Number(getGameArena())].blue_hole[1], player)
             const blue_team = getScore('fw_br_blue','data.gametemp')
             const red_team = getScore('fw_br_red','data.gametemp')
             if(isInBlueHole){HoleHandlers('blue',player)}
@@ -261,18 +295,18 @@ async function HoleHandlers(color, player){
     if(hasTag(player,'team.blue') && color == 'red'){
         let score = getScore('fw_br_red','data.gametemp')
         edScore('fw_br_red','data.gametemp', score-1)
-        player.teleport(teams_info['blue'].spawn)
+        player.teleport(teams_info[Number(getGameArena())]['blue'].spawn)
         //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info.blue.focus}`) //Red hole
+        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].blue.focus}`) //Red hole
         playsound('random.levelup', '@a[tag=team.blue]',0.5,0.5)
         playsound('ambient.weather.thunder', '@a[tag=team.red]',0.5,0.5)
 
     }else if(hasTag(player,'team.red') && color == 'blue'){
         let score = getScore('fw_br_blue','data.gametemp')
         edScore('fw_br_blue','data.gametemp', score-1)
-        player.teleport(teams_info['red'].spawn)
+        player.teleport(teams_info[Number(getGameArena())]['red'].spawn)
         //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info.red.focus}`) //Blue hole
+        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].red.focus}`) //Blue hole
         playsound('random.levelup', '@a[tag=team.red]',0.5,0.5)
         playsound('ambient.weather.thunder', '@a[tag=team.blue]',0.5,0.5)
     }//Other
@@ -280,17 +314,17 @@ async function HoleHandlers(color, player){
     else if(hasTag(player,'team.red') && color == 'red'){
         let score = getScore('fw_br_red','data.gametemp')
         edScore('fw_br_red','data.gametemp', score-1)
-        player.teleport(teams_info['red'].spawn)
+        player.teleport(teams_info[Number(getGameArena())]['red'].spawn)
         //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info.blue.focus}`) //Red hole
+        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].blue.focus}`) //Red hole
         playsound('random.levelup', '@a[tag=team.blue]',0.5,0.5)
         playsound('ambient.weather.thunder', '@a[tag=team.red]',0.5,0.5)
     }else if(hasTag(player,'team.blue') && color == 'blue'){
         let score = getScore('fw_br_blue','data.gametemp')
         edScore('fw_br_blue','data.gametemp', score-1)
-        player.teleport(teams_info['blue'].spawn)
+        player.teleport(teams_info[Number(getGameArena())]['blue'].spawn)
         //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info.red.focus}`) //Blue hole
+        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].red.focus}`) //Blue hole
         playsound('random.levelup', '@a[tag=team.red]',0.5,0.5)
         playsound('ambient.weather.thunder', '@a[tag=team.blue]',0.5,0.5)
     }
@@ -318,7 +352,7 @@ async function bridgeDeath(player){
         playsound('random.click',player)
         runCMD(`titleraw @s actionbar {"rawtext":[{"text":"§r"},{"translate":"axiscube.bw.dead.respawn","with":["${0}"]}]}`,player)
         runCMD(`gamemode a @s`,player)
-        player.teleport(teams_info[getPlayerTeam(player)].spawn)
+        player.teleport(teams_info[Number(getGameArena())][getPlayerTeam(player)].spawn)
     },80)
     
 }

@@ -122,8 +122,17 @@ const GM_FORM = {
         {
             "name": "%axiscube.flagw_bridges.name",
             "body": "%axiscube.flagw_bridges.d",
-            "ui_type": "default",
-            "for_start": 9
+            "ui_type": "stack",
+            "for_start": 9,
+            "forms": [
+                {
+                    "type": "other",
+                    "value": ["arn","data"],
+                    "body": "%axiscube.form.games.diff",
+                    "keys": ["Bamboo", "Spaceships"],
+                    "images": [ "textures/items/barrier", "textures/items/barrier"]
+                }
+            ]
         },
         {
             "name": "%axiscube.flagw_frontl.name",
