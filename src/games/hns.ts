@@ -292,7 +292,7 @@ const HNS_TAUNTS = [
         reward: 25,
     },
     {
-        name: 'super saiyan',
+        name: '%axiscube.hns.taunt.name.growl',
         icons: '',
         eval: (player) => {
             runCMDs([
@@ -300,8 +300,8 @@ const HNS_TAUNTS = [
                 'playsound mob.enderdragon.growl @a ~~~',
                 ],player)
                 },
-                cooldown: 10,
-                reward: 5,
+                cooldown: 15,
+                reward: 15,
     },
     {
         name: '%axiscube.hns.taunt.name.brewer',
