@@ -209,7 +209,8 @@ const PVP_KITSUIT = {
             'stick',
             'fire_charge',
             'fishing_rod',
-            'blaze_rod'
+            'blaze_rod',
+            'wind_charge'
             ],
         axe: [
             'air',
@@ -218,7 +219,8 @@ const PVP_KITSUIT = {
             'iron_axe',
             'golden_axe',
             'diamond_axe',
-            'netherite_axe'
+            'netherite_axe',
+            'mace'
         ],
         bow: [
             'air',
@@ -299,7 +301,8 @@ const PVP_ICONS = {
             2: ['\ue18a','textures/items/stick'],
             3: ['\ue1ce','textures/items/fire_charge'],
             4: ['\ue1dd','textures/items/fishing_rod'],
-            5: ['\ue1de','textures/items/blaze_rod']
+            5: ['\ue1de','textures/items/blaze_rod'],
+            6: ['\ue1db','textures/items/wind_charge']
         },
         axe: {
             0: ['\ue1c7','textures/ui/icons/items/air_axe'],
@@ -308,7 +311,8 @@ const PVP_ICONS = {
             3: ['\ue1ca','textures/items/iron_axe'],
             4: ['\ue1cb','textures/items/gold_axe'],
             5: ['\ue1cc','textures/items/diamond_axe'],
-            6: ['\ue1cd','textures/items/netherite_axe']
+            6: ['\ue1cd','textures/items/netherite_axe'],
+            7: ['\ue1dc','textures/items/mace'],
         },
         bow: {
             0: ['\ue17e','textures/ui/icons/items/air_bow'],
@@ -506,7 +510,7 @@ export async function pvpSetkit(player='@a',t=getPVPselectedSet()) {
     let itemSword = PVP_KITSUIT.weapon.sword[obj.weapon.sword]
     await runCMD(`replaceitem entity @s slot.hotbar 0 ${itemSword} 1`,player)
     // MISC
-    let itemMisc = PVP_KITSUIT.weapon.misc[obj.weapon.sword]
+    let itemMisc = PVP_KITSUIT.weapon.misc[obj.weapon.misc]
     await runCMD(`replaceitem entity @s slot.hotbar 2 ${itemMisc} 1`,player) 
     // AXE
     let itemAxe = PVP_KITSUIT.weapon.axe[obj.weapon.axe]
