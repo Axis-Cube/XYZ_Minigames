@@ -292,6 +292,18 @@ const HNS_TAUNTS = [
         reward: 25,
     },
     {
+        name: 'super saiyan',
+        icons: '',
+        eval: (player) => {
+            runCMDs([
+                'particle minecraft:trial_spawner_detection_ominous ~~-1~',
+                'playsound mob.enderdragon.growl @a ~~~',
+                ],player)
+                },
+                cooldown: 10,
+                reward: 5,
+    },
+    {
         name: '%axiscube.hns.taunt.name.brewer',
             icons: '',
             eval: (player) => {
