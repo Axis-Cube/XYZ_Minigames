@@ -1015,7 +1015,7 @@ const bwShopData = {
             } }
         },
         {
-            id: 'iron_chestplate',
+            id: 'iron_chestplate (%enchantment.protection)',
             price: 6,
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
@@ -1035,6 +1035,17 @@ const bwShopData = {
             price: 4,
             material: 'gold_ingot',
             buy: { type: 'eval', value: (player) => {
+                bwEquipmentCheck(player,'minecraft:iron_boots',EquipmentSlot.Feet)
+            } }
+        },
+        {
+            id: '%howtoplay.armor (%tile.chain.name)',
+            price: 20,
+            material: 'gold_ingot',
+            buy: { type: 'eval', value: (player) => {
+                bwEquipmentCheck(player,'minecraft:iron_helmet',EquipmentSlot.Head)
+                bwEquipmentCheck(player,'minecraft:iron_chestplate (%enchantment.protection)',EquipmentSlot.Chest)
+                bwEquipmentCheck(player,'minecraft:iron_leggings',EquipmentSlot.Legs)
                 bwEquipmentCheck(player,'minecraft:iron_boots',EquipmentSlot.Feet)
             } }
         },
