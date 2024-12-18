@@ -1,9 +1,12 @@
 {
-    "format_version": "1.16.100",
+    "format_version": "1.20.20",
     "minecraft:item": {
         "description": {
             "identifier": "axiscube:green_leather_helmet",
-            "category": "equipment"
+            "menu_category": {
+                "category": "equipment",
+                "group": "itemGroup.name.helmet"
+            }
         },
         "components": {
             "minecraft:max_stack_size": 1,
@@ -18,19 +21,11 @@
                     "max": 100
                 }
             },
-            "minecraft:armor":{
+            "minecraft:wearable": {
+                "slot": "slot.armor.head",
                 "protection": 2
             },
-            "minecraft:wearable": {
-                "slot": "slot.armor.head"
-            },
-            "minecraft:creative_category": {
-                "parent": "itemGroup.name.helmet"
-            },
-            "minecraft:icon": {
-                "texture": "green_hat"
-            },
-            "minecraft:render_offsets": "helmets",
+            "minecraft:icon": "green_hat",
             "minecraft:display_name": {
                 "value": "LEATHER_HELMET_HEAD_GREEN"
             }

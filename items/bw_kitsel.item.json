@@ -1,17 +1,17 @@
 {
-    "format_version": "1.16.100",
+    "format_version": "1.20.20",
     "minecraft:item": {
       "description": {
         "identifier": "axiscube:bw_kitsel",
-        "category": "Items"
+        "menu_category": {
+          "category": "items"
+        }
       },
       "components": {
         "minecraft:hand_equipped": false,
         "minecraft:max_stack_size": 64,
-        "minecraft:foil": false,
-        "minecraft:icon": {
-          "texture": "bw_kitsel"
-        },
+        "minecraft:glint": false,
+        "minecraft:icon": "bw_kitsel",
         "minecraft:cooldown": {
           "category": "bw_kitsel",
           "duration": 1

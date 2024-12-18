@@ -13,7 +13,7 @@ if (getScore(config_map_info.file, 'data.plugins') != 0) {
         break;
 
         case 2:
-          runCMD(`title @a title ud0"§4DO NOT DESTRIBUTE!!! DEV_BUILD§r"`)
+          runCMD(`title @a title ud0"§4DO NOT DISTRIBUTE!!! DEV_BUILD§r"`)
         break;
         default:
           runCMD(`title @a title ud0"§4X§2Y§1Z §4M§6I§eN§aI §bG§3A§aM§5E§dS §r${VERSION}"`)

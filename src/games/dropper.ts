@@ -17,7 +17,7 @@ export const GAMEDATA_DRP = { // Dropper
     ],
     loc: {
         0: { 
-            gameplay: false,//1542.52 120.00 492.65
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 1539 , 1545 ], [ 120, 120 ], [ 487, 498 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: { type: 'range', value: [ [ 1539 , 1545 ], [ 120, 120 ], [ 487, 498 ] ] },
@@ -74,8 +74,8 @@ export const GAMEDATA_DRP = { // Dropper
     },
     ends: {
         no_time: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_time","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"},{"text":`+80${SYM}`}]}}]},
-            cmd: [{'type':'money','sum': 80, 'target': '@a[tag=drp.winner]'}]
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_time","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"}]}}]},
+            cmd: [{'type':'money','sum': 50, 'target': '@a[tag=drp.winner]'}]
         },
         no_players: {
             msg: {"rawtext":[{"translate":"axiscube.games.game_over.drp.no_players","with":{"rawtext":[{"selector":"@a[tag=drp.winner]"}]}}]},
@@ -108,7 +108,7 @@ export const GAMEDATA_DRP = { // Dropper
         'scoreboard players set "§1" drp.display -8',
         {type:'scoreset',value: 1, objective: 'drp.display'},
         'scoreboard players set "§2" drp.display 999',
-        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.stages" drp.display 998`,
+        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.drp.scoreboard.stages" drp.display 998`,
     ],
     death_data: {},
     stop_commands: [
@@ -123,8 +123,7 @@ export const GAMEDATA_DRP = { // Dropper
 let random_stages: number[] = []
 let winner_list: {name: string, target:Player}[] = []
 async function drp_main(max_stages = 3){
-    random_stages = Object.keys(GAMEDATA[7].loc[getGameArena()].stages).sort().map(Number)
-    random_stages = shuffle(random_stages)
+    random_stages = shuffle(Object.keys(GAMEDATA[7].loc[getGameArena()].stages).sort().map(Number))
     random_stages = random_stages.slice(0,max_stages)
     games_log.put('[DRP] Arenas: '+random_stages)
     await runCMDs([
@@ -144,7 +143,7 @@ async function drpTick(){
             let stage = Number(player.getDynamicProperty('drp_stage'))
             if(GAMEDATA[7].loc[getGameArena()].stages[stage]==undefined){player.setDynamicProperty('drp_stage',random_stages[0])}
             if(player.isInWater && player.location.y <= GAMEDATA[7].loc[getGameArena()].stages[stage].win_y){await nextRound(player)}
-            if(player.location.y < GAMEDATA[7].loc[getGameArena()].stages[stage].safe_y && player.getVelocity().y >= 0 && player.isInWater==false){
+            if((player.location.y < GAMEDATA[7].loc[getGameArena()].stages[stage].safe_y && player.isOnGround && player.isInWater==false)){
                 player.kill()
             }
 
@@ -154,6 +153,7 @@ async function drpTick(){
 
     if(players_count == 0){
         games_log.put('[DRP] Winners: '+JSON.stringify(winner_list.reverse()))
+        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'Winners: ${[...winner_list.reverse().map(plr => plr.name)].join(', ')}\'"}]}`)
         stopGame(7,'no_players')
     }
 
@@ -163,8 +163,8 @@ function drpTime(){
     for (const player of [...world.getPlayers()]) {
         player.clearDynamicProperties()
         player.setDynamicProperty('drp_stage',random_stages[0])
-        runCMD(`tp ${player.name} ${GAMEDATA[7].loc[getGameArena()].stages[random_stages[0]].spawnpoint}`)
-        runCMD(`spawnpoint ${player.name} ${GAMEDATA[7].loc[getGameArena()].stages[random_stages[0]].spawnpoint}`)
+        runCMD(`tp "${player.name}" ${GAMEDATA[7].loc[getGameArena()].stages[random_stages[0]].spawnpoint}`)
+        runCMD(`spawnpoint "${player.name}" ${GAMEDATA[7].loc[getGameArena()].stages[random_stages[0]].spawnpoint}`)
     }
 }
 
@@ -184,9 +184,9 @@ async function nextRound(player){
         games_log.put(JSON.stringify(winner_list))
     }
     player.setDynamicProperty('drp_stage',stage_num)
-    runCMD(`scoreboard players set ${player.nameTag} drp.display ${random_stages.indexOf(stage_num)+1}`)
-    runCMD(`spawnpoint ${player.name} ${GAMEDATA[7].loc[getGameArena()].stages[stage_num].spawnpoint}`)
-    runCMD(`tp ${player.name} ${GAMEDATA[7].loc[getGameArena()].stages[stage_num].spawnpoint}`)
+    runCMD(`scoreboard players set "${player.nameTag}" drp.display ${random_stages.indexOf(stage_num)+1}`)
+    runCMD(`spawnpoint "${player.name}" ${GAMEDATA[7].loc[getGameArena()].stages[stage_num].spawnpoint}`)
+    runCMD(`tp "${player.name}" ${GAMEDATA[7].loc[getGameArena()].stages[stage_num].spawnpoint}`)
 }
 
 async function giveAwards(){
@@ -204,4 +204,5 @@ async function giveAwards(){
             break;
         }
     }
+    await system.runTimeout(()=>{}, 60)
 }

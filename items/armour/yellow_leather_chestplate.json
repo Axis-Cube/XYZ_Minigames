@@ -1,9 +1,12 @@
 {
-    "format_version": "1.16.100",
+    "format_version": "1.20.20",
     "minecraft:item": {
         "description": {
             "identifier": "axiscube:yellow_leather_chestplate",
-            "category": "equipment"
+            "menu_category": {
+                "category": "equipment",
+                "group": "itemGroup.name.chestplate"
+            }
         },
         "components": {
             "minecraft:max_stack_size": 1,
@@ -18,18 +21,11 @@
                     "max": 100
                 }
             },
-            "minecraft:armor":{
+            "minecraft:wearable": {
+                "slot": "slot.armor.chest",
                 "protection": 2
             },
-            "minecraft:wearable": {
-                "slot": "slot.armor.chest"
-            },
-            "minecraft:creative_category": {
-                "parent": "itemGroup.name.chestplate"
-            },
-            "minecraft:icon": {
-                "texture": "yellow_chestplate"
-            },
+            "minecraft:icon": "yellow_chestplate",
             "minecraft:display_name": {
                 "value": "LEATHER_CHESTPLATE_BODY_YELLOW"
             }

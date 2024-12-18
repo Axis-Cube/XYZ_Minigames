@@ -10,7 +10,7 @@ import { axisInfo } from "modules/axisInfo"
 export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5    
     id: 9,
     namespace: 'fw_bridges',
-    min_players: 1,
+    min_players: 2,
     tags: [
         'fw_bridges',
         'fw_bridges.member',
@@ -63,11 +63,11 @@ export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5
     },
     ends: {
         team_blue_win: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"TEAM BLUE WIN"},{"text":"+100${SYM}"}]}}]}`,
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"BLUE"},{"text":"+100${SYM}"}]}}]}`,
             cmd : [{'type':'money','sum': 150, 'target': '@a[tag=team.blue]'}]
         },
         team_red_win: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"TEAM RED WIN"},{"text":"+100${SYM}"}]}}]}`,
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"RED"},{"text":"+100${SYM}"}]}}]}`,
             cmd : [{'type':'money','sum': 150, 'target': '@a[tag=team.red]'}]
         },
         no_time: {

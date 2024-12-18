@@ -1,28 +1,11 @@
 {
-	"format_version": "1.16.100",
+	"format_version": "1.20.20",
 	"minecraft:block": {
 		"description": {
 			"identifier": "axiscube:hns_cobblestone"
 		},
-		
 		"components": {
-			"minecraft:explosion_resistance": 100000,
-			"minecraft:destroy_time": 0,
-			"minecraft:on_interact": {
-				"event": "axiscube:interact",
-				"target": "self"
-			}
-		},
-		
-		"events": {
-			"axiscube:interact": {
-				"run_command": {
-					"command": [
-						"setblock ~ ~ ~ air destroy"
-					],
-					"target": "self"
-				}
-			}
+			"minecraft:destructible_by_mining": false
 		}
 	}
 }

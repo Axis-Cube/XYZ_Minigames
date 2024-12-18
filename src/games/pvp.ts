@@ -14,7 +14,7 @@ export const GAMEDATA_PVP = { // PVP
         1: true
     },
     namespace: 'pvp',
-    min_players: 1,
+    min_players: 2,
     tags: [
         'pvp',
         'pvp.member',
@@ -207,7 +207,7 @@ const PVP_KITSUIT = {
             'air',
             'trident',
             'stick',
-            'fire_charge',
+            'mcxyz:fireball',
             'fishing_rod',
             'blaze_rod',
             'wind_charge'
@@ -592,21 +592,23 @@ async function pvpRemoveKit(t,name) {
 }
 
 export async function pvpAddSet(player,obj?: any) {
-    let name = player.name
-    if (obj) {
-        obj.author = `${obj.author}, ${name}`
-    } else {
-        obj = PVP_VOIDSET
-        obj.author = name
-        obj.name = `${name}\`s Kit`
-    }
-    let pvpsets = getPVPsetsList()
-    let newId = pvpsets.length+1
-    pvpsets.push(newId)
-    editPVPsetsList(pvpsets)
-    await pvpImportKit(obj,newId)
-    playsound('armor.equip_iron',player)
-    pvpEditKitset(player,newId,obj)
+    try{
+        let name = player.name
+        if (obj) {
+            obj.author = `${obj.author}, ${name}`
+        } else {
+            obj = PVP_VOIDSET
+            obj.author = name
+            obj.name = `${name}\`s Kit`
+        }
+        let pvpsets = getPVPsetsList()
+        let newId = pvpsets.length+1
+        pvpsets.push(newId)
+        editPVPsetsList(pvpsets)
+        await pvpImportKit(obj,newId)
+        playsound('armor.equip_iron',player)
+        pvpEditKitset(player,newId,obj)
+    }catch(e){console.log(`[PVP][KITS] Error: ${e} ${e.stack}`)}
 }
 
 function pvpIconKit(obj) {
@@ -666,7 +668,6 @@ export function pvpCreateKit(player) {
     }
     form.show(player).then(async gg => {
         if(!gg.selection){return;}
-
         if (gg.selection == 0) {
             if (checkPerm(player.name,'pvp_create')) {
                 pvpAddSet(player)

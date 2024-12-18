@@ -1,7 +1,7 @@
 import { ActionFormData, MessageFormData, } from "@minecraft/server-ui"; // Непосредственно создание форм
 import { plugins_log } from "../Logger/logger_env.js";
 import { getScore, runCMD } from "../axisTools.js";
-import { pluginConfig } from "interfaces.js";
+import { pluginConfig, pluginsExec } from "interfaces.js";
 import { ICONS } from "../../const.js";
 //Plugins
 import { config_admin_panel } from "./plugins/admin_panel/config";
@@ -62,7 +62,7 @@ export class Core_Plugins {
     }
 }
 
-export function Process(action, param = 'Empty') {
+export function Exec(action: pluginsExec, param = 'Empty') {
     switch (action) {
         //Initialize function
         case 'Init':
@@ -71,7 +71,7 @@ export function Process(action, param = 'Empty') {
             let map_prefix = new Core_Plugins('map_prefix').register(2, config_map_prefix, packui_map_prefix);
         break;
 
-        case 'getNames':
+        case 'LoadedNames':
             //Getting names of loaded plugins
             runCMD(`say ${LPN}`);
         break;

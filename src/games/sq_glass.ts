@@ -1,6 +1,6 @@
 import { COPYRIGHT, DIM, SYM } from "../const";
 import { GameMode, PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
-import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt} from "../modules/axisTools";
+import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt, enchancedRandom} from "../modules/axisTools";
 import { GAMEDATA } from "./gamedata";
 import { forceGameRestart, getGameArena, startTimer, stopGame } from "./main";
 import { completeChallenge } from "./chooser";
@@ -124,7 +124,7 @@ export const GAMEDATA_GLS = { // Glass
     },
     stop_commands: [ ],
     boards: [
-        ['gls.display', '\ue195§6 %axiscube.gls.name', true],
+        ['gls.display', '\ue1a6§6 %axiscube.gls.name', true],
     ]
 }
 
@@ -162,11 +162,15 @@ async function gls_main(){
     
     runCMD(`fill ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_to} barrier`)
     loose_area = []
+    normal_area = []
 
     //Push Loose cords
-    for(let i=1; i<GAMEDATA[6].loc[getGameArena()].stage_count+1;i++){
-        loose_area.push(GAMEDATA[6].loc[getGameArena()].stages[i][randomInt(0,1)])
-    }
+    let random = enchancedRandom(GAMEDATA[6].loc[getGameArena()].stage_count)
+    random.forEach((num, index) => {
+        let negativeInt = (num == 0)?1:0
+        loose_area.push(GAMEDATA[6].loc[getGameArena()].stages[index+1][num])
+        normal_area.push(GAMEDATA[6].loc[getGameArena()].stages[index+1][negativeInt])
+    })
 
     for (const player of [...world.getPlayers()]) {
         player.clearDynamicProperties()
@@ -185,6 +189,7 @@ function glsTime(){
 }
 
 let loose_area: any[] = []
+let normal_area: any[] = []
 
 function glsTick(){
     let countNoWins = 0
@@ -232,6 +237,9 @@ function glsTick(){
                 if(isPlayerinArea([area_x_1,player_y,area_z_1],[area_x_2,player_y,area_z_2],player)){
                     runCMD(`fill ${area_x_1} ${platform_y} ${area_z_1} ${area_x_2} ${platform_y} ${area_z_2} air destroy`)
                 }
+                if(isPlayerinArea([normal_area[el][0][0],player_y,normal_area[el][0][1]],[normal_area[el][1][0],player_y,normal_area[el][1][1]],player)){
+                    runCMD(`fill ${area_x_1} ${platform_y} ${area_z_1} ${area_x_2} ${platform_y} ${area_z_2} air destroy`)
+                }
             }
         }
         if (!player.hasTag('spec')) {
@@ -252,9 +260,20 @@ function glsTick(){
         }
         //console.warn()
     }
-    if ((diff != 3 && countNoWins == 0) || (diff == 3 && countMembers == 0 && countWins > 0)) {
-        stopGame(6,'no_players')
-    } else if (diff = 3 && countMembers == 0) {
-        stopGame(6,'no_players_h')
+
+    if(!(countMembers > 0)){
+        switch (diff){
+            case 3: // Hardcore
+                if(countWins > 0){
+                    stopGame(6, 'no_players_h')
+                }
+                else{
+                    stopGame(6, 'no_players_h')
+                }
+            break;
+            default:
+                stopGame(6, 'no_players')
+            break;
+        }
     }
 }

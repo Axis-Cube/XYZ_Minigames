@@ -1,4 +1,4 @@
-import { Player, world, system, GameMode, Entity } from "@minecraft/server";
+import { Player, world, system, GameMode, Entity, Vector3 } from "@minecraft/server";
 import { axisEval } from "./evalSandbox";
 import { scoreboardTeamcolor } from "../games/category_team";
 import { GAMEDATA } from "../games/gamedata";
@@ -7,13 +7,6 @@ import { DB_A, DIM, map_id } from "../const";
 import { command_log } from "./Logger/logger_env";
 import { dbGetPlayerRecord } from "./cheesebase";
 import { MT_GAMES } from "./MultiTasking/instances";
-
-interface loc3{
-    x:number,
-    y:number,
-    z:number
-}
-
 
 /**
  * Gets the Gamemode of a player
@@ -134,13 +127,9 @@ export function placeError(player,errorCode='unknown',errorDetails: any = []) {
 
 export function randomInt(min=1, max=2) { return Math.floor(Math.random() * (max - min + 1) + min) }
 
-export async function playsound(sound,player: Entity | string='@a',volume=1,pitch=1) {
-    await runCMD(`playsound ${sound} @s ~~~ ${volume} ${pitch}`,player)
-}
+export async function playsound(sound,player: Entity | string='@a',volume=1,pitch=1) { await runCMD(`playsound ${sound} @s ~~~ ${volume} ${pitch}`,player) }
 
-export function setblock(x: string | number, y: string | number, z: string | number, id: string | number){
-    runCMD(`setblock ${x} ${y} ${z} ${id}`)
-}
+export function setblock(x: string | number, y: string | number, z: string | number, id: string | number){ runCMD(`setblock ${x} ${y} ${z} ${id}`) }
 
 export async function rawtext(text,name: string | Player ='@a',type='text',color='r') {
     if (type == 'tr') type = 'translate'
@@ -148,9 +137,7 @@ export async function rawtext(text,name: string | Player ='@a',type='text',color
     await tellraw(`{"rawtext":[{"text":"§${color}"},{"${type}":"${text}"}]}`,name)
 }
 
-export function actionbar(text,name: any='@a',color='r') {
-    runCMD(`title @s actionbar §${color}${text}`,name)
-}
+export function actionbar(text,name: any='@a',color='r') { runCMD(`title @s actionbar §${color}${text}`,name) }
 
 /**
  * @param {import("@minecraft/server").RawMessage} rawtext
@@ -161,9 +148,7 @@ export async function tellraw(rawtext,name: string | Player ='@a',type: any = un
     else if (type == 'actionbar' || type == 'act')  { await runCMD(`titleraw @s actionbar${rawtext}`,name,true)} 
 }
 
-export function hasTag(source, tag){
-    return source.getTags().indexOf(tag) != -1
-  }
+export function hasTag(source: any, tag:string){ return source.getTags().indexOf(tag) != -1 }
 
 /**
  * @param {String} command
@@ -204,13 +189,15 @@ export function randomPlayerIcon() {
 export async function powerTP(pos:any='0 10 0',player:any='@a',target='@s', action='tp') {
     if (typeof pos === 'string') {
         if (action == 'pos') return pos
-        await runCMD(`${action} ${target} ${pos}`,player)
+            await runCMD(`${action} ${target} ${pos}`,player)
         return
     } else if (pos === false) {
         return
     } else if (typeof pos === 'object') {
         switch (pos.type) {
             case 'range':
+                let rPos = `${randomInt(pos.value[0][0],pos.value[0][1])} ${randomInt(pos.value[1][0],pos.value[1][1])} ${randomInt(pos.value[2][0],pos.value[2][1])}`
+                if (action == 'pos'){return rPos}
                 if (player === '@a') {
                     for (const playerT of world.getPlayers()) {
                         let rPos = `${randomInt(pos.value[0][0],pos.value[0][1])} ${randomInt(pos.value[1][0],pos.value[1][1])} ${randomInt(pos.value[2][0],pos.value[2][1])}`
@@ -218,9 +205,7 @@ export async function powerTP(pos:any='0 10 0',player:any='@a',target='@s', acti
                     }
                     return
                 }
-                let rPos = `${randomInt(pos.value[0][0],pos.value[0][1])} ${randomInt(pos.value[1][0],pos.value[1][1])} ${randomInt(pos.value[2][0],pos.value[2][1])}`
-                if (action == 'pos') return rPos
-                await runCMD(`${action} ${target} ${rPos}`,player)
+                    await runCMD(`${action} ${target} ${rPos}`,player)
             return;
             case 'arr':
                 if (player === '@a') {
@@ -335,7 +320,7 @@ export async function runCMDs(commands, source: any = undefined, needLog = false
                     scoreboardTeamcolor(thisCommand.score,thisCommand.objective,GAMEDATA[getGame()].team_data.teams)
                 break;
                 case 'money':
-                    runCMD(`scriptevent axiscube:eval addMoney(name,${thisCommand.sum},${thisCommand.slient})`,target)
+                    runCMD(`scriptevent axiscube:eval addMoney(name,${thisCommand.sum},${thisCommand.silent})`,target)
                 break;
                 case 'scoreset':
                     if (thisCommand.value == '') thisCommand.value = "''"
@@ -358,9 +343,7 @@ export async function runCMDs(commands, source: any = undefined, needLog = false
 * @param {number} startAt
 * @returns {number[]}
 */
-function ObjRange(size:number , startAt = 0) {
-    return [...Array(size).keys()].map(i => i + startAt);
-}
+function ObjRange(size:number , startAt = 0) { return [...Array(size).keys()].map(i => i + startAt); }
 
 /**
 * If player in area returns true
@@ -404,25 +387,17 @@ export function isPlayerinArea(x1:number[] = [0,0,0],x2:number[] = [0,0,0],playe
 
 }
 
-export function sleep(tick:number = 1) {
-    return new Promise<void>((resolve) => system.runTimeout(() => resolve(), tick));
-  }
+export function sleep(tick:number = 1) { return new Promise<void>((resolve) => system.runTimeout(() => resolve(), tick)); }
 
 /**
-
 * @returns {import("@minecraft/server").Vector3}
 */
-export function array3ToVector3(array3) {
-    return {x:array3[0],y:array3[1],z:array3[2]}
-}
+export function array3ToVector3(array3) { return {x:array3[0],y:array3[1],z:array3[2]} }
 
 /**
-
 * @returns {import("@minecraft/server").Vector3}
 */
-export function vector3ToArray3(vector3) {
-    return [vector3.x,vector3.y,vector3.z]
-}
+export function vector3ToArray3(vector3) { return [vector3.x,vector3.y,vector3.z] }
 
 /**
 * Get value by key in json
@@ -431,9 +406,7 @@ export function vector3ToArray3(vector3) {
 * @param {String} value
 * @returns {String}
 */
-export function getKeyByValue(object, value) {
-    return Object.keys(object).find(key => object[key] === value);
-}
+export function getKeyByValue(object, value) { return Object.keys(object).find(key => object[key] === value); }
 
 export function getSlotsByItemName(inv, typeId){
     let inv_size = inv.inventorySize
@@ -460,8 +433,8 @@ export function getSlotsByItemName(inv, typeId){
 * @returns {null}
 * @example if (getGamemode(player) == "creative") return;
 */
-export async function safeZone(loc3: loc3, radius: number = 100, numPoints: number = 20, miny: number= loc3.y, step: number= 10){
-    const points: Array<loc3> = [];
+export async function safeZone(loc3: Vector3, radius: number = 100, numPoints: number = 20, miny: number= loc3.y, step: number= 10){
+    const points: Vector3[] = [];
 
     for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * 2 * Math.PI; // Calculate the angle for each particle
@@ -506,7 +479,6 @@ export function safeZoneDamage(loc3, radius) {
             if(player?.getDynamicProperty('last_zone_damage') && (Date.now().valueOf() - Number(player?.getDynamicProperty('last_zone_damage')) >= 5000)){
                 player?.setDynamicProperty('last_zone_damage', Date.now())
                 player?.applyDamage(5)
-                console.warn(`${player.nameTag} Not in zone`);
             }else if (!player?.getDynamicProperty('last_zone_damage')){
                 player?.setDynamicProperty('last_zone_damage', Date.now())
             }
@@ -515,29 +487,8 @@ export function safeZoneDamage(loc3, radius) {
 }
 
 
-export const cryptWithSalt = (salt, text) => {
-    const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
-    const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
-    const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
-  
-    return text
-      .split("")
-      .map(textToChars)
-      .map(applySaltToChar)
-      .map(byteHex)
-      .join("");
-  };
-  
-export const decryptWithSalt = (salt, encoded) => {
-    const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
-    const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
-    return encoded
-        .match(/.{1,2}/g)
-        .map((hex) => parseInt(hex, 16))
-        .map(applySaltToChar)
-        .map((charCode) => String.fromCharCode(charCode))
-        .join("");
-};
+export const cryptWithSalt = (salt, text) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return text .split("") .map(textToChars) .map(applySaltToChar) .map(byteHex) .join(""); };
+export const decryptWithSalt = (salt, encoded) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return encoded .match(/.{1,2}/g) .map((hex) => parseInt(hex, 16)) .map(applySaltToChar) .map((charCode) => String.fromCharCode(charCode)) .join(""); };
 
 /**
 * Update MapID
@@ -553,11 +504,7 @@ export const updateMapID = ()=>{edScore('map_id','settings',randomInt(10000,9999
 * @returns {String}
 */
 export const shortNick = async (nick) => { let short_nick: string[] = []
-
-    for(let i=0;i<nick.length;i++){
-        if(i%2==0&&nick[i]!=' '){short_nick.push(nick[i])}
-    }
-
+    for(let i=0;i<nick.length;i++){ if(i%2==0&&nick[i]!=' '){short_nick.push(nick[i])}; }
     return short_nick.join('')
 }
 
@@ -568,8 +515,26 @@ export const shortNick = async (nick) => { let short_nick: string[] = []
 * @returns {Boolean}
 */
 export async function isAdmin(player){
-        let short_nick = await shortNick(player.name)
-        //await dbSetPlayerRecord(short_nick,DB_A,{'0':cryptWithSalt(map_id.toString(), short_nick)})
-        let flag = dbGetPlayerRecord(short_nick,DB_A)[0]
-        if(flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick){return true}else{return false}
+    let short_nick = await shortNick(player.name)
+    let flag = dbGetPlayerRecord(short_nick,DB_A)[0]
+    if(flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick){return true}else{return false}
+}
+
+
+/**
+ * Улучшенный рандом для 0 и 1
+ * @param {number} n Количество рандомных чисел в массиве
+ * @returns {number[]}
+ * @example enchancedRandom(7) -> [0,1,1,0,0,1,0]
+ */
+export function enchancedRandom(n: number): number[]{
+    let numS: string = ""
+    let answer: number[] = []
+    while(numS.length < n){
+        numS = numS + Math.random().toString().replace('0.', '')
+    }
+    if(numS.length > n){numS = numS.slice(0,n)}
+    [...numS].forEach(char => {if(Number(char) < 5){answer.push(0)}else{answer.push(1)}})
+
+    return answer
 }

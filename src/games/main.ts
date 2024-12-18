@@ -85,13 +85,13 @@ export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
  * @returns {void}
  */
 export async function startGame( id, player, arn = getGameArena() ) {
-    const thisGame = GAMEDATA[id]
-    if (!checkPerm(player.name,'start')) { rawtext('axiscube.perm.denied.start',player.name,'translate','c'); return }
-    if (getGame() != 0) { rawtext('axiscube.games.startgame.already',player,'translate'); return }
+    const thisGame = GAMEDATA[id] //Получение манифеста игры
+    if (!checkPerm(player.name,'start')) { rawtext('axiscube.perm.denied.start',player.name,'translate','c'); return }//Проверка наличия прав на старт игры
+    if (getGame() != 0) { rawtext('axiscube.games.startgame.already',player,'translate'); return }//Проверка на то, не запущена ли игра
     if (thisGame.min_players > [...world.getPlayers()].length && getScore('testrun', 'settings') != 2) {
         tellraw(`{"rawtext":[{"translate":"axiscube.games.startgame.no_players","with":{"rawtext":[{"translate":"axiscube.${thisGame.namespace}.name"},{"text":"${thisGame.min_players}"}]}}]}`)
         return
-    }
+    }//Проверка мин. кол-ва игроков
     if (thisGame.reset_player_color != undefined && thisGame.reset_player_color[getGameType()] == true) {
         for (const playerT of world.getPlayers()) {
             playerT.nameTag = playerT.name;
@@ -185,23 +185,6 @@ system.runInterval(() => {
     const gameID = getGame();
     if (getGameStage() == 1) {
         GAMEDATA[gameID].time.tick_function()
-        // switch(gameID) {
-        //     case 1:
-        //         hnsTick();
-        //     break;
-        //     case 2:
-        //         blockpTick();
-        //     break;
-        //     case 3:
-        //         pvpTick()
-        //     break;
-        //     case 4:
-        //         mnfTick()
-        //     break;
-        //     case 5:
-        //         bwTick()
-        //     break;
-        // };
     };
 },5);
 
@@ -291,9 +274,9 @@ export async function clearTags(player: Player | string='@a') {
  * @param {string} finishType - Finish type
  * @returns {void}
  */
-export async function stopGame(id=getGame(),finishType='slient',finishVariables:any = undefined) {
+export async function stopGame(id=getGame(),finishType='silent',finishVariables:any = undefined) {
     try{
-        if (getGame() == 0 && finishType != 'slient') return
+        if (getGame() == 0 && finishType != 'silent') return
         await edScore('mg','data');
         await edScore('stg','data');
         await edScore('arn','data');
@@ -301,7 +284,7 @@ export async function stopGame(id=getGame(),finishType='slient',finishVariables:
         for (const player of world.getPlayers()) {
             player.nameTag = `${getPlayerColor(player.name)}${player.name}§r`;
         };
-        if (finishType != 'slient') {
+        if (finishType != 'silent') {
             playsound('axiscube.gameover')
             let message = GAMEDATA[id].ends[finishType].msg
             if (finishVariables != undefined) {
@@ -331,7 +314,7 @@ export async function stopGame(id=getGame(),finishType='slient',finishVariables:
         await clearTags();
         await runCMDs(GAMEDATA[id].stop_commands);
         await runCMDs(GAMEDATA[0].start_commands);
-        if (finishType = 'slient') {
+        if (finishType = 'silent') {
             setTickTimeout(() => { runCMD(`tp @a ${GAMEDATA[0].loc[0].spawn}`); runCMD('gamemode a @a') },20);
         } else {
             setTickTimeout(() => { runCMD(`tp @a ${GAMEDATA[0].loc[0].spawn}`); runCMD('gamemode a @a') },60);

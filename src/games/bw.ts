@@ -2,7 +2,7 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { actionbar, array3ToVector3, edScore, getGamemode, getItemAmounts, getScore, hasTag, nameToPlayer, playsound, rawtext, runCMD, runCMDs, setTickTimeout, sleep, tellraw, vector3ToArray3 } from "../modules/axisTools"
 import { COPYRIGHT, DATABASE_IDS, DIM, ICONS, MINECRAFT_PICKAXES, SYM } from "../const"
 import { TEAMS4, getPlayerTeam, teamArray, teamCheck } from "./category_team"
-import { Block, BlockPermutation, Dimension, Player, system, world, EquipmentSlot, ItemStack, EntityComponentTypes} from "@minecraft/server"
+import { Block, BlockPermutation, Dimension, Player, system, world, EquipmentSlot, ItemStack, EntityComponentTypes, EntityEquippableComponent} from "@minecraft/server"
 import { GAMEDATA } from "./gamedata"
 import { getGameArena, stopGame } from "./main"
 import { haveVoidMessage, knockVoidMessage } from "../tunes/killMessage"
@@ -423,7 +423,6 @@ export async function bwClear(){
         for(let d = 1; d<=Object.keys(clearData).length; d++){
             if (clearData.hasOwnProperty(d)){
                 for(const block of BW_BLOCKS){
-                    console.warn(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`)
                     runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`, undefined,true)
                 }
             }
@@ -789,8 +788,8 @@ export function bwBlockBreak(player,block,brokenBlockPermutation) {
         //runCMD(`kill @e[type=item,x=${block.location.x},y=${block.location.y},z=${block.location.z},r=2]`)
         player.dimension.getBlock(block.location).setPermutation(brokenBlockPermutation)
     } else if (getGamemode(player) != 'creative') {
-        const equipment = player.getComponent("minecraft:equipment_inventory")
-        const mainhand = equipment.getEquipment(EquipmentSlot.Mainhand).typeId.split(':')[1]
+        const equipment = player.getComponent("minecraft:equipment_inventory") as EntityEquippableComponent
+        const mainhand = equipment.getEquipment(EquipmentSlot.Mainhand)?.typeId.replace("minecraft:", "")
         const blockId = brokenBlockPermutation.type.id.split(':')[1]
         if (BW_BLOCKS_DROPC[blockId] === true || BW_BLOCKS_DROPC[blockId].includes(mainhand)) {
             DIM.spawnItem(new ItemStack(brokenBlockPermutation.type.id,1),block.location)
@@ -847,7 +846,7 @@ export async function bwEquipmentCheck(player, id='minecraft:leather_helmet', sl
             }
         }
 
-        runCMD(`give ${player.name} ${id}`)
+        runCMD(`give "${player.name}" ${id}`)
         //console.warn(`[EQ] ${id} < ${element}`)
     }catch(e){
         //console.error(e, e.stack)

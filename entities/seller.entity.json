@@ -1,5 +1,5 @@
 {
-	"format_version": "1.19.60",
+	"format_version": "1.20.20",
 	"minecraft:entity": {
 		"description": {
 			"identifier": "axiscube:bw_seller",
@@ -50,7 +50,7 @@
 		},
 		"events": {
 			"mcxyz:shop": {
-				"run_command": {
+				"queue_command": {
 					"command": [
 						"execute as @s at @s run scriptevent axiscube:eval formBWshop(player)"
 					],

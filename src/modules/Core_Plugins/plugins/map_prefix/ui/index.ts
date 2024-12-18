@@ -12,7 +12,7 @@ function containsUnicode(str) {
 
 let FORM = new ModalFormData()
     .title('Prefixes')
-    .toggle('Enabled')
+    .toggle('Enabled', true)
 
 function main(response, source){
     let [toggle] = response.formValues;

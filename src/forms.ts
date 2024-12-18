@@ -18,7 +18,7 @@ export const FORMS: any = {
             {
                 button_name: "%axiscube.testrun",
                 icon: ICONS.console,
-                visible: getScore('testrun', 'settings') == 1,
+                visible: getScore('testrun', 'settings') >= 1,
                 on_click: [{ "type": "eval", "value": "formTestRun(player)" }]
             },
             {

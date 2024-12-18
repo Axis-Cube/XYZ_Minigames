@@ -502,7 +502,8 @@ export async function hnsTick() {
                     `tellraw @s {"rawtext":[{"translate":"axiscube.hns.block_list"}]}`,
                     { type: 'armor', elements: {1:'netherite_helmet',3:'netherite_leggings',4:'netherite_boots'}, target: '@s[tag=hns.pvptime]' },
                 ]
-                await runCMD(`replaceitem entity @s slot.hotbar 0 iron_sword 1 0 {"minecraft:item_lock":{ "mode": "lock_in_slot" },"minecraft:can_destroy":{"blocks":["axiscube:hns_tnt","axiscube:hns_anvil","axiscube:hns_coal_ore","axiscube:hns_crafting_table","axiscube:hns_furnace","axiscube:hns_gold_ore","axiscube:hns_decorated_pot"]}}`,player)
+                //await runCMD(`replaceitem entity @s slot.hotbar 0 iron_sword 1 0 {"minecraft:item_lock":{ "mode": "lock_in_slot" },"minecraft:can_destroy":{"blocks":["axiscube:hns_tnt","axiscube:hns_anvil","axiscube:hns_coal_ore","axiscube:hns_crafting_table","axiscube:hns_furnace","axiscube:hns_gold_ore","axiscube:hns_decorated_pot"]}}`,player)
+                await runCMD(`replaceitem entity @s slot.hotbar 0 iron_sword 1 0 {"minecraft:item_lock":{ "mode": "lock_in_slot" }}`,player)
                 await runCMDs(commands,player)
                 player.nameTag = `\ue191 ${player.nameTag}`
                 for (const playerT of world.getPlayers()) {

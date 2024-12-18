@@ -1,5 +1,5 @@
 //@ts-nocheck 
-//import { placePlatform, placePodushkaBezopasnosti } from "../games/blockp";
+//import { placePlatform, placeAirBag } from "../games/blockp";
 import { formMapSettings } from "tunes/mapSettings";
 import { formGameChooser } from "../games/chooser";
 import { formTestRun } from "../tunes/testrun";

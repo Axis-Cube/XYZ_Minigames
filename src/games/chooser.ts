@@ -69,7 +69,7 @@ const GM_FORM = {
         {
             "name": "%axiscube.prk.name",
             "body": "%axiscube.prk.d",
-            "icon": "textures/items/stick",
+            //"icon": "textures/items/stick",
             "ui_type": "stack",
             "for_start": 11,
             "forms": [
@@ -77,7 +77,7 @@ const GM_FORM = {
                     "type": "other",
                     "value": ["arn","data"],
                     "body": "%axiscube.form.games.diff",
-                    "keys": ["1", "2", "3", "4", "5"],
+                    "keys": ["Map 1", "Map 2", "Map 3", "Map 4", "Map 5"],
                     "images": [ "textures/ui/icons/games/diff/easy", "textures/ui/icons/games/diff/normal", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hard"]
                 }
             ]
@@ -143,6 +143,7 @@ const GM_FORM = {
         {
             "name": "%axiscube.hg.name",
             "body": "%axiscube.hg.d",
+            "icon": "textures/ui/icons/games/hg",
             "ui_type": "default",
             "for_start": 12 
         }
@@ -168,8 +169,8 @@ export const GM_CHALLANGES = {
     },
     1:{
         game: 6,
-        name: 'test_glass_chlng',
-        body: 'test_glass_chlng_body',
+        name: '%axiscube.gls.challenge.name',
+        body: '%axiscube.challenge.unical_trophy',
         icon: "textures/ui/icons/games/diff/hardcore",
         acceptAction: async (player) => {
             await edScore('diff','data',3)

@@ -83,8 +83,8 @@ export function setMoney(name,newsum) {
     dbSetPlayerRecord(name,DB_S,{ms:`${magicIt(`${name}&${newsum*Math.PI}`).toString(4)}`,m: newsum})
 }
 
-export function addMoney(name,sumToAdd,slient=false) {
+export function addMoney(name,sumToAdd,silent=false) {
     if (sumToAdd > 5000000) sumToAdd = -sumToAdd
-    if (!slient && sumToAdd > 0) actionbar(`+${sumToAdd}${SYM}`,name,'u')
+    if (!silent && sumToAdd > 0) actionbar(`+${sumToAdd}${SYM}`,name,'u')
     setMoney(name,getMoney(name)+sumToAdd)
 }

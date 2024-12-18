@@ -71,14 +71,14 @@ async function CCexecute(command_name, args, player){
             if(auto_args[needed_args[el]]){
                 args.pop()
                 args.push(auto_args[needed_args[el]])
-                console.warn(`----> ${needed_args[el]} ${auto_args[needed_args[el]]}`)
+                console.warn(`[Core_Chat][CHandler] Replaced Argument ${needed_args[el]} -> ${auto_args[needed_args[el]]}`)
                 console.warn(args)
             }{
                 if(args[el]==undefined){
-                    throw new Error(`Нехватает аргумента ${needed_args[el]}`)
+                    throw new Error(`[Core_Chat][CHandler] Нехватает аргумента ${needed_args[el]}`)
                 }
                 if(args[el]==""){
-                    throw new Error(`Аргумент ${needed_args[el]} не может быть пустой`)
+                    throw new Error(`[Core_Chat][CHandler] Аргумент ${needed_args[el]} не может быть пустой`)
                 }
             }
         }

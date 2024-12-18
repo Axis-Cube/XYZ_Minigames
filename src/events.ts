@@ -20,12 +20,14 @@ import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGa
 import { formBeginGameConfirm, formCancelGameConfirm } from "./games/chooser";
 import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "./games/bw";
 import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "./games/mnf";
-import { loadChests, upgradeItem } from "./games/hg";
+import { loadChests/*, upgradeItem*/ } from "./games/hg";
 import { formTeamsel } from "./games/category_team";
 import { pvpImportForm2 } from "./games/pvp";
 import { prkCheckpointTp } from "./games/prk";
 import { chests } from "./games/hg_chests";
 import { GAMEDATA } from "./games/gamedata";
+
+
 
 async function sleep(n) {
     system.runTimeout(() => { Promise.resolve(0); }, n);
@@ -47,7 +49,7 @@ world.afterEvents.playerSpawn.subscribe(async (eventData) => {
             `tp @s ${GAMEDATA[0].loc[0].spawn}`
         ];
         if ([...world.getPlayers()].length <= 1) {
-            await stopGame(undefined, 'slient');
+            await stopGame(undefined, 'silent');
         }
         else {
             playsound('random.orb', '@a', 1, 1);
@@ -82,6 +84,8 @@ world.afterEvents.playerSpawn.subscribe(async (eventData) => {
 world.afterEvents.pressurePlatePush.subscribe(({ block, source }) => {
     if (getGame() == 4 && source.typeId === 'minecraft:player') {
         mnfCheckPoint(block, source);
+    } else if (getGame() == 0 && source.typeId === 'minecraft:player') {
+        source.applyKnockback(source.getViewDirection().x,source.getViewDirection().z,5,3)
     }
 });
 world.afterEvents.pressurePlatePop.subscribe(({ block }) => {
@@ -309,6 +313,7 @@ world.beforeEvents.itemUse.subscribe((itemData) => {
         }
     });
 });
+
 world.afterEvents.playerPlaceBlock.subscribe(({ block, player, dimension }) => {
     switch (getGame()) {
         case 5:
@@ -359,8 +364,14 @@ world.afterEvents.playerInteractWithBlock.subscribe(e => {
     let player = e.player;
     switch (block) {
         case 'axiscube:hg_upgrade':
-            upgradeItem(player);
+            //console.warn('1')
+            //upgradeItem(player);
             break;
+        default:
+            if (block.includes('hns')) {
+                e.block.setType('minecraft:air')
+            }
+        break;
     }
 });
 system.runInterval(async () => {
@@ -371,7 +382,7 @@ system.runInterval(async () => {
         let flag = dbGetPlayerRecord(short_nick, DB_A)[0];
         if (flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick) { }
         else {
-            runCMD(`gamemode a ${player.name} `);
+            runCMD(`gamemode a`);
             console.warn('Not Admin');
         }
     }

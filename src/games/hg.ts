@@ -179,13 +179,10 @@ async function hgTime(){
     }catch(e){console.warn(e)}
 }
 
-async function hgStop(msg){
-    stopGame(12, msg)
-}
-
 async function onStop(){
     games_log.put(`[HG] onStop commands executed §2sucessfully§r`)
     await MT_GAMES.kill()
+    await axisInfo.erase()
     runCMDs([
         `inputpermission set @a movement enabled`,
         'gamerule naturalregeneration true',
@@ -209,8 +206,60 @@ export async function loadChests(chests, info=0) {
         if(info == 1){
             runCMD(`title @a actionbar \ue115 Game Loaded!`)
         }
-        console.warn('Chests loaded!')
+        console.log('[HG][Core] Chests loaded!')
     }catch(e){console.warn(e)}
+}
+
+export async function upgradeItem(player) {
+    let inv = await player.getComponent(EntityInventoryComponent.componentId)
+    let container = inv!.container
+    let slot = player.selectedSlotIndex
+    try {
+        let item = container!.getItem(slot)?.typeId;
+        if (item === undefined) {
+            item = player.getDynamicProperty('hg:lst')?.toString()
+        }
+        let item_properties = {
+            type: item!.split('_')[1],
+            material: item!.split('_')[0]
+        }
+        //Errors block
+        if (upgradesBlocked.includes(item_properties.type)) { throw new Error('12_0') }
+        if (item_properties.type == undefined) { throw new Error('12_1') }
+        //
+
+        let slotswithitem = getSlotsByItemName(inv, item)
+        if (slotswithitem.length >= 2) {
+            let next_update: string | undefined = await getNextUpgrade(item_properties.material, item_properties.type)
+            if (next_update == undefined) { return; }
+            let new_item = new ItemStack(next_update, 1)
+
+            container!.setItem(slotswithitem[0], undefined)
+            container!.setItem(slotswithitem[1], undefined)
+            container!.setItem(slot, new_item)
+            playsound('armor.equip_chain', player)
+        } else { throw new Error('12_2') }
+    } catch (e) {
+        playsound('block.false_permissions', player)
+        switch (e.message) {
+            case '12_0':
+                games_log.put('[HG][upgradeItem] This item Blocked and can not be upgraded')
+                break;
+            case '12_1':
+                games_log.put('[HG][upgradeItem] Item Id is Not defined')
+                break;
+            case '12_2':
+                games_log.put('[HG][upgradeItem] You need two items with Identical Id')
+                break;
+            case '12_3':
+                games_log.put('[HG][upgradeItem] Undefined Item In container')
+                break;
+            default:
+                games_log.put('[HG][upgradeItem] Undefined error')
+                console.warn(e.stack, e.message)
+                break;
+        }
+    }
 }
 
 async function getNextUpgrade(material, type){
@@ -219,57 +268,4 @@ async function getNextUpgrade(material, type){
     }else if( upgradeArmor.material.indexOf(material) != -1 && Number(upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]) != 0){
         return upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]+'_'+type
     }
-}
-export async function upgradeItem(player){
-    let inv = await player.getComponent(EntityInventoryComponent.componentId)
-    let container = inv.container
-    let slot = player.selectedSlotIndex
-    try{
-        //console.log(container.getItem(0), slot)
-        let item = container.getItem(slot)?.typeId;
-        if(item === undefined){
-            item = player.getDynamicProperty('hg:lst')
-        }
-        let item_properties = {
-            type: item.split('_')[1],
-            material: item.split('_')[0]
-        }
-        //Errors block
-        if(upgradesBlocked.includes(item_properties.type)){throw new Error('12_0')}
-        if(item_properties.type == undefined){throw new Error('12_1')}
-        //
-        
-        let slotswithitem = getSlotsByItemName(inv, item)
-        if(slotswithitem.length >= 2){
-            let next_update: string | undefined = await getNextUpgrade(item_properties.material, item_properties.type)
-            if(next_update == undefined){return;}
-            let new_item = new ItemStack(next_update, 1)
-
-            container.setItem(slotswithitem[0], undefined)
-            container.setItem(slotswithitem[1], undefined)
-            container.setItem(slot, new_item)
-            playsound('armor.equip_chain', player)
-        }else{throw new Error('12_2')}
-    }catch(e){
-        playsound('block.false_permissions', player)
-        switch(e.message){
-            case '12_0':
-                games_log.put('[HG][upgradeItem] This item Blocked and can not be upgraded')
-            break;
-            case '12_1':
-                games_log.put('[HG][upgradeItem] Item Id is Not defined')
-            break;
-            case '12_2':
-                games_log.put('[HG][upgradeItem] You need two items with Identical Id')
-            break;
-            case '12_3':
-                games_log.put('[HG][upgradeItem] Undefined Item In container')
-            break;
-            default:
-                games_log.put('[HG][upgradeItem] Undefined error')
-                console.warn(e.stack, e.message)
-            break;
-        }
-    }
-
 }

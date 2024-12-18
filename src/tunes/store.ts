@@ -534,8 +534,6 @@ export function editSsData(name,obj) {
     return dbSetPlayerRecord(name,`${DB_S}${DB_S}`,obj)
 }
 
-
-
 function generateTransferCode(id=0,name='Axisander') {
     return magicIt(`${name.toLowerCase()}_${id}`).toString(36)
 }

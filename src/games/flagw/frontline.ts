@@ -1,4 +1,4 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType, EnchantmentTypes, ItemEnchantableComponent } from "@minecraft/server"
+import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType, EnchantmentTypes, ItemEnchantableComponent, ProjectileHitEntityAfterEvent, Player, EntityEquippableComponent } from "@minecraft/server"
 import { COPYRIGHT, DIM, SYM } from "../../const"
 import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, setblock, sleep, tellraw } from "../../modules/axisTools"
 import { GAMEDATA } from "../gamedata"
@@ -7,6 +7,8 @@ import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
 import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
 import { MinecraftEnchantmentTypes } from "../../bundles/vanilla_data"
 import { axisInfo } from "modules/axisInfo"
+
+let ArrowHurtEvent;
 
 export const GAMEDATA_FW_FRONTLINE = { // fw_frontline    
     id: 10,
@@ -50,11 +52,11 @@ export const GAMEDATA_FW_FRONTLINE = { // fw_frontline
     },
     ends: {
         team_blue_win: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"BLUE TEAM"},{"text":"+100${SYM}"}]}}]}`,
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"BLUE"},{"text":"+100${SYM}"}]}}]}`,
             cmd : [{'type':'money','sum': 150, 'target': '@a[tag=team.blue]'}]
         },
         team_red_win: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"RED TEAM"},{"text":"+100${SYM}"}]}}]}`,
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"RED"},{"text":"+100${SYM}"}]}}]}`,
             cmd : [{'type':'money','sum': 150, 'target': '@a[tag=team.red]'}]
         },
         no_time: {
@@ -68,21 +70,21 @@ export const GAMEDATA_FW_FRONTLINE = { // fw_frontline
     },
     time: {
         value: 500,
-        tick_function: bridgeTick,
+        tick_function: frontlineTick,
         xp: true,
         events: {}
     },
     start_commands: [
-        () => {bridgePrepair()},
+        () => {frontlinePrepair()},
         { type: 'lockslot', slot: 1, item: 'axiscube:begin_game' },
         { type: 'lockslot', slot: 9, item: 'axiscube:cancel_game' },
         { type: 'lockslot', slot: 5, item: 'axiscube:team_selection' },
     ],
-    begin_commands: bridgeBegin,
+    begin_commands: frontlineBegin,
     death_data: {
         death_commands: expansionHandler
     },
-    stop_commands: bridgeStop,
+    stop_commands: frontlineStop,
     boards: [
         ['fw_frontline.display', '\ue190§c %axiscube.fw_frontline.name', true],
     ]
@@ -115,17 +117,17 @@ const teams_info = {
         }
     }
 }
-const BRIDGE_BLOCKS = [
+const FRONTLINE_BLOCKS = [
     'minecraft:blue_concrete',
     'minecraft:red_concrete'
 ]
 
-const BRIDGE_TEAMSCORES = {
+const FRONTLINE_TEAMSCORES = {
     'red': 'red_command',
     'blue': 'blue_command'
 }
 
-export async function bridgeClear(){
+export async function frontlineClear(){
     try{
         const clearData = GAMEDATA[10].loc[getGameArena()].cleardata
         const levelLow = GAMEDATA[10].loc[getGameArena()].level_low
@@ -142,7 +144,7 @@ export async function bridgeClear(){
         for(let y = levelLow-1; y<=levelHigh;y+=2){
             for(let d = 1; d<=Object.keys(clearData).length; d++){
                 if (clearData.hasOwnProperty(d)){
-                    for(const block of BRIDGE_BLOCKS){
+                    for(const block of FRONTLINE_BLOCKS){
                         await sleep(2)
                         runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y+2} ${clearData[d][1].z} air replace ${block}`, undefined,true)
                     }
@@ -155,20 +157,19 @@ export async function bridgeClear(){
 
 let points //start territory - end territory x
 let projHitBlock
-async function bridgePrepair(){
+async function frontlinePrepair(){
     projHitBlock = world.afterEvents.projectileHitBlock.subscribe(ev => {
         try{
             let x = Math.trunc(ev.location.x)
             let y = Math.trunc(ev.location.y)
             let z = Math.trunc(ev.location.z)
             ev.projectile.remove()
-            console.warn(BRIDGE_BLOCKS.indexOf(ev.getBlockHit().block.typeId))
-            switch(BRIDGE_BLOCKS.indexOf(ev.getBlockHit().block.typeId)){
+            switch(FRONTLINE_BLOCKS.indexOf(ev.getBlockHit().block.typeId)){
                 case -1:
                 break;
                 default:
-                    setblock(x,y,z,'air')
-                    runCMD(`say ${x},${y},${z},'air'`)
+                    runCMD(`fill ${x-1} ${y-1} ${z-1} ${x+1} ${y+1} ${z+1} air replace blue_concrete`, undefined,true)
+                    runCMD(`fill ${x-1} ${y-1} ${z-1} ${x+1} ${y+1} ${z+1} air replace red_concrete`, undefined,true)
                 break;
             }
         }catch{}
@@ -180,7 +181,7 @@ async function bridgePrepair(){
     edScore(COPYRIGHT,'fw_frontline.display',0)
     for (let i in teams) {
         const team = teams[i]
-        edScore(`${BRIDGE_TEAMSCORES[team]}`,'fw_frontline.display',(Number(i)+1)*2)
+        edScore(`${FRONTLINE_TEAMSCORES[team]}`,'fw_frontline.display',(Number(i)+1)*2)
         edScore(`§${i}`,'fw_frontline.display',(Number(i)+1)*2-1)
     }
 
@@ -189,7 +190,7 @@ async function bridgePrepair(){
         system.runTimeout(()=>{
             runCMD(`fill ${teams_info[arn].red.base} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].red.start_red_x} ${teams_info[arn].floor_y} 2069 red_concrete_powder replace blue_concrete_powder`,undefined,true) //red team
             runCMD(`fill ${teams_info[arn].blue.base} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.start_blue_x} ${teams_info[arn].floor_y} 2069 blue_concrete_powder replace red_concrete_powder`,undefined,true)
-            bridgeClear()
+            frontlineClear()
         },70)
     }catch(e){console.warn(e)}
 
@@ -203,18 +204,13 @@ async function bridgeEquipment(){
 
         //Enchantments
         //@minecraft/vanilla-data (Not released) [/bundles/vanilla_data]
-        let bow = new ItemStack('minecraft:bow', 1)
-        let ench = bow.getComponent(ItemComponentTypes.Enchantable)
-        ench?.addEnchantment({ type: new EnchantmentType("power"), level: 5 });
 
-
-
-        for (const player of [...world.getPlayers()]) {
+        for (const player of [...world.getPlayers()] as Player[]) {
             if (!player.hasTag('spec')) {
-                const equipment = player.getComponent('equippable')
-                let inventory = player.getComponent(EntityInventoryComponent.componentId)
+                const equipment = player.getComponent('equippable') as EntityEquippableComponent;
+                let inventory = player.getComponent(EntityInventoryComponent.componentId) as EntityInventoryComponent;
                 if (inventory && inventory.container) {
-                    inventory.container.addItem(bow)
+                    inventory.container.addItem(new ItemStack("minecraft:bow"))
                 }
                 if(hasTag(player, 'team.blue')){
                     equipment?.setEquipment(EquipmentSlot.Head, teams_info[arn].blue.armor.head);
@@ -258,8 +254,8 @@ async function bridgeOtherIterations(){
             }}
     }catch(e){console.warn(e)}
 }
-let arrow_give = 0;
-async function bridgeBegin(){
+let ItemsGiveProcess = 0;
+async function frontlineBegin(){
     let arn = getGameArena()
     const red_team = teams_info[arn].red
     const blue_team = teams_info[arn].blue
@@ -286,13 +282,21 @@ async function bridgeBegin(){
         runCMD(`gamerule pvp true`)
     },100)
 
-    arrow_give = system.runInterval(()=>{
+    ArrowHurtEvent = world.afterEvents.projectileHitEntity.subscribe(ev => {
+        if((hasTag(ev.source, "team.blue") != hasTag(ev.getEntityHit().entity, "team.blue")) || (hasTag(ev.source, "team.red") != hasTag(ev.getEntityHit().entity, "team.red") )){
+            ev.getEntityHit().entity?.kill()
+        }
+    })
+
+    ItemsGiveProcess = system.runInterval(()=>{
         runCMD(`give @a arrow`)
-    },40)
-    MT_GAMES.register(arrow_give)
+        runCMD(`give @a[tag=team.red] red_concrete 3 0 {"minecraft:can_place_on":{"blocks":["red_concrete_powder", "red_concrete"]}}`)
+        runCMD(`give @a[tag=team.blue] blue_concrete 3 0 {"minecraft:can_place_on":{"blocks":["blue_concrete_powder", "blue_concrete"]}}`)
+    },100)
+    MT_GAMES.register(ItemsGiveProcess)
 }
 
-async function bridgeTick(){
+async function frontlineTick(){
     for (const player of [...world.getPlayers()]) {
         if (!player.hasTag('spec')) {
             if(getPlayerTeam(player)=='red'){
@@ -311,31 +315,23 @@ async function bridgeTick(){
     }
 }
 
-
-
-//let info = 0
-//
-//async function information(){
-//    
-//
-//    info = system.runInterval(()=>{
-//        runCMD(`titleraw @a title {"rawtext":[{"text":"ud0\'${points}\'}]}`)
-//    },10)
-//    MT_GAMES.register(info)
-//}
-
 async function expansionHandler(player){
+    let playersRed = world.getPlayers({"tags": ["team.red"]}).length
+    let playersBlue = world.getPlayers({"tags": ["team.blue"]}).length
+
+    let expansionModifierRed = Math.floor(6/playersRed) + 1
+    let expansionModifierBlue = Math.floor(6/playersBlue) + 1
+
     let arn = getGameArena()
     let command = getPlayerTeam(player)
     let pre_points = points
     if(command == 'red'){
-        points += 4
+        points += expansionModifierBlue
         runCMD(`fill ${teams_info[arn].blue.base-points} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.base-pre_points} ${teams_info[arn].floor_y} 2069 blue_concrete_powder replace red_concrete_powder`,undefined,true)
     }
     else{
-        points -= 4
+        points -= expansionModifierRed
         runCMD(`fill ${teams_info[arn].blue.base-points} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.base-pre_points} ${teams_info[arn].floor_y} 2069 red_concrete_powder replace blue_concrete_powder`,undefined,true)
-        //runCMD(`fill ${teams_info[arn].red.start_red_x+points-4} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].red.start_red_x+points} ${teams_info[arn].floor_y} 2069 red_concrete_powder`,undefined,true)
     }
 }
 
@@ -343,18 +339,13 @@ async function WinHandle(command){
     stopGame(10, `team_${command}_win`)
 }
 
-async function bridgeDeath(player){
-    runCMD('gamemode spectator',player)
-    runCMD(`gamemode a @s`,player)
-    
-}
-
-async function bridgeStop() {
+async function frontlineStop() {
     try {
         world.afterEvents.projectileHitBlock.unsubscribe(projHitBlock)
     } catch { }
     try {
         MT_GAMES.kill()
+        world.afterEvents.projectileHitEntity.unsubscribe(ArrowHurtEvent)
         axisInfo.erase()
     } catch (e) { console.warn(e) }
     

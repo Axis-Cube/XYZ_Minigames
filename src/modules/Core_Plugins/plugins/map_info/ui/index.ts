@@ -5,7 +5,7 @@ import { edScore, getScore, runCMD } from "../../../../axisTools.js";
 
 let FORM = new ModalFormData()
     .title('Map_info')
-    .toggle('Enabled')
+    .toggle('Enabled', true)
 
 function main(response, source){
     let [toggle] = response.formValues;

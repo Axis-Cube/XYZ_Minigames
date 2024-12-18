@@ -27,11 +27,10 @@ export class Logger{
         let currentdate = new Date()
         let correction = getScore('time_correction', 'settings')
         this.log.push(`[${currentdate.getHours() + correction + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds()}] `+content)
-        console.log(`[${currentdate.getHours() + correction + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds()}] `+content)
     }
 
 
-    load( t: Player, next: string = '' ){
+    load(t, next: string = '' ){
         try{
             let next_page = next
             let content: string[] = reverseArr(this.log)

@@ -5,6 +5,20 @@ import {
   } from "@minecraft/server-ui";
 import { load_log } from "../modules/Logger/logger";
 import { EvalForm, axisEval } from "../modules/evalSandbox";
+import { ICONS } from "const";
+
+//Permissions
+let scopes = {
+    'logs': 3,
+    'eval': 4,
+}
+
+let availability = {
+    'available': '',
+    'logs': ` §9[Need level ${scopes['logs']}]§r`,
+    'eval': ` §9[Need level ${scopes['eval']}]§r`
+}
+
 
 export const TESTERS = {
     "alexthecools260": 1,
@@ -48,19 +62,6 @@ export async function formTestRun(target) {
         else return 1
     }
 
-
-    //Permissions
-    let scopes = {
-        'logs': 3,
-        'eval': 4,
-    }
-
-    let availability = {
-        'available': '',
-        'logs': ` §9[Need level ${scopes['logs']}]§r`,
-        'eval': ` §9[Need level ${scopes['eval']}]§r`
-    }
-
     function check_perms(scope){
 
         if(level>=scopes[scope]){
@@ -77,7 +78,7 @@ export async function formTestRun(target) {
     form.body(bodyText)
     //form.button(`Unlimited emeralds ${ue_status[getScore('settings','tsrun_unlimit_em',true)]}`,'textures/items/emerald')
     form.button('%axiscube.testrun.logs' + check_perms('logs')[1], 'textures/items/spyglass')
-    form.button('%axiscube.testrun.eval' + check_perms('eval')[1], 'textures/items/spyglass')
+    form.button('%axiscube.testrun.eval' + check_perms('eval')[1], ICONS.console)
     form.button('%gui.close', 'textures/blocks/barrier')
     form.show(target).then(gg => {
         if (gg.canceled) return

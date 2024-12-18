@@ -3,16 +3,20 @@ export interface rawtextMessage{
     with: string[]
 }
 
+export enum pluginsExec{
+    INIT = 'Init',
+    LOADED_NAMES = "LoadedNames"
+}
+
 export interface pluginConfig{
     version: number[],
-    engine_version: number[],
+    engineVersion: number[],
     file: string,
     name: string,
     description: string,
     authors: string[],
     license: string,
     dependencies: string[],
-    protection_code: string | undefined,
     icon?: string
 }
 

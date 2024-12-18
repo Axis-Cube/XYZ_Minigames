@@ -41,43 +41,24 @@ export const GAMEDATA_MNF = { // Minefield
             winpos_from: [2541, 80, 2601],
             winpos_to: [2502, 72, 2597]
         },
-        1: { //Ready for 1.5
-            gameplay: false,
-            spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-            newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-            spawnpoint: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-
-            field_from: [2489, 56, 2513],
-            field_to: [2430, 56, 2565],
-            field_block: 'heavy_weighted_pressure_plate',
-
-            startpos: 2512,
-            startpos_type: 'z',
-
-            prestart_barrier_from: '2489 56 2512',
-            prestart_barrier_to: '2428 66 2512',
-
-            winpos_from: [2489,56,2569],
-            winpos_to: [2429,66,2567]
-        },
-        //2: {
+        //1: { //Ready for 1.5
         //    gameplay: false,
-        //    spawn: { type: 'range', value: [  ] },
-        //    newplayer: { type: 'range', value: [  ] },
-        //    spawnpoint: { type: 'range', value: [  ] },
-//
-        //    field_from: [],
-        //    field_to: [],
+        //    spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+        //    newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+        //    spawnpoint: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+
+        //    field_from: [2489, 56, 2513],
+        //    field_to: [2430, 56, 2565],
         //    field_block: 'heavy_weighted_pressure_plate',
-//
-        //    startpos: 0,
+
+        //    startpos: 2512,
         //    startpos_type: 'z',
-//
-        //    prestart_barrier_from: '',
-        //    prestart_barrier_to: '',
-//
-        //    winpos_from: [],
-        //    winpos_to: []
+
+        //    prestart_barrier_from: '2489 56 2512',
+        //    prestart_barrier_to: '2428 66 2512',
+
+        //    winpos_from: [2489,56,2569],
+        //    winpos_to: [2429,66,2567]
         //}
     },
     ends: {
@@ -381,24 +362,36 @@ export function mnfTick() {
             }
         }
         if (!player.hasTag('spec')) {
-            countNoWins = countNoWins + 1
+            countNoWins += 1
             runCMDs([
                 {type:'scoreset',value: `${Math.floor(player.location[GAMEDATA[4].loc[getGameArena()].startpos_type])-GAMEDATA[4].loc[getGameArena()].startpos}`, objective: 'mnf.display',action: 'set',target: player.name}
             ])
         }
         if (player.hasTag('mnf.member')) {
-            countMembers = countMembers + 1
+            countMembers += 1
         } else if (player.hasTag('mnf.winner')) {
-            countWins = countWins + 1
+            countWins += 1
         }
-        //console.warn()
     }
-    if ((diff != 3 && countNoWins == 0) || (diff == 3 && countMembers == 0 && countWins > 0)) {
-        field.destroy()
-        stopGame(4,'no_players')
-    } else if (diff = 3 && countMembers == 0) {
-        field.destroy()
-        stopGame(4,'no_players_h')
+    //Если сложность не хардкор и никто не выиграл // если хардкор и больше одного выигрыша
+
+    if(!(countMembers > 0)){
+        switch (diff){
+            case 3: // Hardcore
+                if(countWins > 0){
+                    field.destroy()
+                    stopGame(4, 'no_players_h')
+                }
+                else{
+                    field.destroy()
+                    stopGame(4, 'no_players_h')
+                }
+            break;
+            default:
+                field.destroy()
+                stopGame(4, 'no_players')
+            break;
+        }
     }
 }
 
@@ -513,10 +506,10 @@ export function mnDefuseForm(player,block) {
 //             const block = ev.block
             
 //                 if(block.permutation.getState("redstone_signal") == 1){
-//                     runCMD(`execute as ${player.name} at ${player.name} run particle minecraft:electric_spark_particle ${block.x} ${block.y+1} ${block.z}`);
-//                     runCMD(`execute as ${player.name} at ${player.name} run playsound mob.evocation_illager.cast_spell @a[r=2] ~~~ 0.3 3`)
+//                     runCMD(`execute as "${player.name}" at "${player.name}" run particle minecraft:electric_spark_particle ${block.x} ${block.y+1} ${block.z}`);
+//                     runCMD(`execute as "${player.name}" at "${player.name}" run playsound mob.evocation_illager.cast_spell @a[r=2] ~~~ 0.3 3`)
 //                     runCMD(`fill ${block.x} ${block.y} ${block.z} ${block.x} ${block.y} ${block.z} air replace heavy_weighted_pressure_plate`);
-//                     runCMD(`clear ${player.name} axiscube:mn_defuse 0 1`);
+//                     runCMD(`clear "${player.name}" axiscube:mn_defuse 0 1`);
 //                 }
 //         }catch(e){console.warn(e);}
 //     }
