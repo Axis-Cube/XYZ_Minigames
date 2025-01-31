@@ -1,11 +1,11 @@
 import { EntityInventoryComponent, ItemStack, system, world } from "@minecraft/server";
-import { COPYRIGHT, DIM, SYM, upgradeArmor, upgradeItems, upgradesBlocked } from "../const";
+import { COPYRIGHT, DIM, SYM, upgradeArmor, upgradeItems, upgradesBlocked } from "#root/const";
 import { edScore, getScore, getSlotsByItemName, playsound, randomPlayerIcon, runCMD, runCMDs, safeZone, safeZoneDamage } from "#modules/axisTools";
-import { startTimer, stopGame } from "./main";
+import { startTimer, stopGame } from "#modules/core/games/main";
 import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances";
 import { chests } from "./hg_chests";
 import { games_log } from "#modules/Logger/logger_env";
-import { axisInfo } from "modules/axisInfo";
+import { axisInfo } from "#modules/axisInfo";
 
 //#region Variables
 let zone;
@@ -223,9 +223,7 @@ export async function upgradeItem(player) {
     let slot = player.selectedSlotIndex
     try {
         let item = container!.getItem(slot)?.typeId;
-        if (item === undefined) {
-            item = player.getDynamicProperty('hg:lst')?.toString()
-        }
+        if(item == undefined){throw new Error("12_1")}
         let item_properties = {
             type: item!.split('_')[1],
             material: item!.split('_')[0]

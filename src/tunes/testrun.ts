@@ -5,7 +5,7 @@ import {
   } from "@minecraft/server-ui";
 import { load_log } from "#modules/Logger/logger";
 import { EvalForm, axisEval } from "#modules/evalSandbox";
-import { ICONS } from "const";
+import { ICONS } from "#root/const";
 
 //Permissions
 let scopes = {

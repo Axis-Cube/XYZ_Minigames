@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { getScore } from "modules/axisTools";
+import { getScore } from "#modules/axisTools";
 export const DB_A = '%';
 export const map_id = getScore('map_id', 'settings');
 export const SYM = '\ue131';

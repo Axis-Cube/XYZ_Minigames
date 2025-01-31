@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server"
-import { getGame } from "#games/main"
+import { getGame } from "#root/modules/core/games/main"
 import { getScore, runCMD } from "#modules/axisTools"
 import { config_map_info } from "./config"
 

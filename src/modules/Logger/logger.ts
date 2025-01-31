@@ -1,4 +1,4 @@
-import { getScore, runCMD, sleep } from "../axisTools";
+import { getScore, runCMD, sleep } from "#modules/axisTools";
 import { ActionFormData } from "@minecraft/server-ui";
 import * as log_env from './logger_env';
 

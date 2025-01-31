@@ -1,12 +1,12 @@
 import { world } from "@minecraft/server";
 import { actionbar, edScore, getScore, hasTag, onItemInteraction, playsound, randomInt, runCMD, runCMDs, shuffle, tellraw } from "#modules/axisTools";
 import isMoving from "#modules/playerMove";
-import { stopGame } from "./main";
+import { stopGame } from "#modules/core/games/main";
 import { openJSON } from "#modules/easyform";
 import { getPlayerColor } from "#tunes/profile";
 import { addMoney } from "#tunes/bank";
 import { ActionFormData } from "@minecraft/server-ui";
-import { COPYRIGHT, SCOLOR, SYM } from "../const";
+import { COPYRIGHT, SCOLOR, SYM } from "#root/const";
 import { axisEval } from "#modules/evalSandbox";
 
 //#region Constants

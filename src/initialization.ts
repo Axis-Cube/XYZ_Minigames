@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { upgradeItem } from "#games/hg"
+import { upgradeItem } from "#games/hg/game"
 import { prkCheckpointTp } from "#games/prk";
 import { runCMDs } from "#modules/axisTools";
 

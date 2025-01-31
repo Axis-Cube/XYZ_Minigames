@@ -1,8 +1,8 @@
 import { world } from "@minecraft/server"
 import { actionbar, edScore, playsound, runCMDs, setTickTimeout } from "#modules/axisTools"
 import { magicIt } from "#modules/playerNameTag"
-import { COPYRIGHT, MAP_NAME, SCOLOR, SYM } from "../const"
-import { getPlayerColor } from "./profile"
+import { COPYRIGHT, MAP_NAME, SCOLOR, SYM } from "#root/const"
+import { getPlayerColor } from "#tunes/profile"
 import { dbGetPlayerRecord, dbSetPlayerRecord } from "#modules/cheesebase"
 
 const DB_S = '^'

@@ -16,15 +16,15 @@ import { LPN } from "#root/modules/core/plugins/main";
 import { getPlayerColor } from "#tunes/profile";
 import { boardMoney } from "#tunes/bank";
 //GAMES
-import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGame, startGame, stopGame } from "#games/main";
-import { formBeginGameConfirm, formCancelGameConfirm } from "#games/chooser";
+import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGame, startGame, stopGame } from "#root/modules/core/games/main";
+import { formBeginGameConfirm, formCancelGameConfirm } from "#root/modules/core/games/chooser";
 import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "#games/bw";
 import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "#games/mnf";
-import { loadChests/*, upgradeItem*/ } from "#games/hg";
-import { formTeamsel } from "#games/category_team";
+import { loadChests/*, upgradeItem*/ } from "#games/hg/game";
+import { formTeamsel } from "#root/modules/core/games/category_team";
 import { pvpImportForm2 } from "#games/pvp";
-import { chests } from "#games/hg_chests";
-import { GAMEDATA } from "#games/gamedata";
+import { chests } from "#games/hg/hg_chests";
+import { GAMEDATA } from "#root/modules/core/games/gamedata";
 
 
 
@@ -225,7 +225,8 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
 });
 system.runInterval(() => {
     runCMD('effect @e[type=axiscube:dummy] invisibility 99999 0 true');
-});
+},200000);
+
 export const ITEMS: any = {
     'axiscube:menu': {
         on_click: (player) => { openJSON('mainmenu', player); },
@@ -362,33 +363,15 @@ world.afterEvents.playerInteractWithBlock.subscribe(e => {
         break;
     }
 });
-system.runInterval(async () => {
-    //updateMapID()
-    for (const player of [...world.getPlayers({ gameMode: GameMode.creative })]) {
-        let short_nick = await shortNick(player.name);
-        //await dbSetPlayerRecord(short_nick,DB_A,{'0':cryptWithSalt(map_id.toString(), short_nick)})
+
+world.afterEvents.playerGameModeChange.subscribe(async (e) => {
+    if(e.toGameMode == GameMode.creative){
+        let short_nick = await shortNick(e.player.name)
         let flag = dbGetPlayerRecord(short_nick, DB_A)[0];
         if (flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick) { }
         else {
-            runCMD(`gamemode a`);
+            runCMD(`gamemode a`, e.player);
             console.warn('Not Admin');
         }
     }
-    //runCMD(`say ${cryptWithSalt(map_id.toString(),'TMnrE')}`)
-}, 10);
-let last_item_in_hand = system.runInterval(() => {
-    for (const player of [...world.getPlayers()]) {
-        let inv = player.getComponent(EntityInventoryComponent.componentId);
-        let container = inv?.container;
-        let slot = player.selectedSlotIndex;
-        try {
-            //console.log(container.getItem(0), slot)
-            let item = container?.getItem(slot)?.typeId;
-            if (item != undefined) {
-                player.setDynamicProperty('hg:lst', item);
-            }
-        }
-        catch { }
-    }
-}, 5);
-MT_GAMES.register(last_item_in_hand);
+})

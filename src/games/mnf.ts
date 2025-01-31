@@ -1,11 +1,11 @@
 //FIELD ENGINE v0.2.5 by (AbstractScripts aka Lndrs_) License this so so. hmmm give 1000$ to us and unlock MIT license. Default license: idk
 import { colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "#modules/axisTools";
 import { system, world } from "@minecraft/server";
-import { GAMEDATA } from "./gamedata";
-import { getGame, getGameArena, startTimer, stopGame } from "./main";
-import { completeChallenge } from "./chooser";
+import { GAMEDATA } from "#modules/core/games/gamedata";
+import { getGame, getGameArena, startTimer, stopGame } from "#modules/core/games/main";
+import { completeChallenge } from "#modules/core/games/chooser";
 import { ModalFormData } from "@minecraft/server-ui";
-import { COPYRIGHT, DIM, SYM } from "../const";
+import { COPYRIGHT, DIM, SYM } from "#root/const";
 import { eliminatePlayerMessage } from "#tunes/profile";
 import { MT_GAMES } from "#modules/MultiTasking/instances";
 

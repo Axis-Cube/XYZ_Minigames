@@ -1,9 +1,9 @@
-import { COPYRIGHT, SYM } from "../const";
+import { COPYRIGHT, SYM } from "#root/const";
 import { GameMode, system, world } from "@minecraft/server";
 import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, enchancedRandom } from "#modules/axisTools";
-import { GAMEDATA } from "./gamedata";
-import { getGameArena, startTimer, stopGame } from "./main";
-import { completeChallenge } from "./chooser";
+import { GAMEDATA } from "#modules/core/games/gamedata";
+import { getGameArena, startTimer, stopGame } from "#modules/core/games/main";
+import { completeChallenge } from "#modules/core/games/chooser";
 import { eliminatePlayerMessage } from "tunes/profile";
 
 //#region Variables

@@ -1,8 +1,8 @@
 import { Player, world, system, GameMode, Entity, Vector3 } from "@minecraft/server";
 import { axisEval } from "#modules/evalSandbox";
-import { scoreboardTeamcolor } from "#games/category_team";
-import { GAMEDATA } from "#games/gamedata";
-import { getGame } from "#games/main";
+import { scoreboardTeamcolor } from "#root/modules/core/games/category_team";
+import { GAMEDATA } from "#root/modules/core/games/gamedata";
+import { getGame } from "#root/modules/core/games/main";
 import { DB_A, DIM, map_id } from "#root/const";
 import { command_log } from "#modules/Logger/logger_env";
 import { dbGetPlayerRecord } from "#modules/cheesebase";
@@ -486,8 +486,8 @@ export function safeZoneDamage(loc3, radius) {
 }
 
 
-export const cryptWithSalt = (salt, text) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return text .split("") .map(textToChars) .map(applySaltToChar) .map(byteHex) .join(""); };
-export const decryptWithSalt = (salt, encoded) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return encoded .match(/.{1,2}/g) .map((hex) => parseInt(hex, 16)) .map(applySaltToChar) .map((charCode) => String.fromCharCode(charCode)) .join(""); };
+export const cryptWithSalt = (salt, text) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return text.split("").map(textToChars).map(applySaltToChar).map(byteHex).join(""); };
+export const decryptWithSalt = (salt, encoded) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return encoded.match(/.{1,2}/g).map((hex) => parseInt(hex, 16)).map(applySaltToChar).map((charCode) => String.fromCharCode(charCode)).join(""); };
 
 /**
 * Update MapID

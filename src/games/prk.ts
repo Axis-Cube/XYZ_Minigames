@@ -1,8 +1,8 @@
 import { EntityComponentTypes, ItemStack, system, world } from "@minecraft/server";
-import { COPYRIGHT, DIM, SYM } from "../const";
+import { COPYRIGHT, DIM, SYM } from "#root/const";
 import { actionbar, getScore, playsound, randomPlayerIcon, runCMD } from "#modules/axisTools";
-import { beginGame, getGameArena, startTimer, stopGame } from "./main";
-import { GAMEDATA } from "./gamedata";
+import { beginGame, getGameArena, startTimer, stopGame } from "#modules/core/games/main";
+import { GAMEDATA } from "#modules/core/games/gamedata";
 
 //#region Variables
 let timer = 300

@@ -2,9 +2,9 @@ import {
     ActionFormData
 } from "@minecraft/server-ui"
 import { system } from "@minecraft/server"
-import { runCMD, rawtext, tellraw } from './axisTools'
-import { FORMS } from "../forms"
-import { axisEval } from "./evalSandbox"
+import { runCMD, rawtext, tellraw } from '#modules/axisTools'
+import { FORMS } from "#root/tunes/forms"
+import { axisEval } from "#modules/evalSandbox"
 
 export function actionsChain(chain,player) {
     let name = player.name

@@ -1,9 +1,9 @@
-import { COPYRIGHT, ICONS, MINECRAFT_DIFFICULTIES, MINECRAFT_DIFFICULTIES_NAME, SYM } from "../const"
+import { COPYRIGHT, ICONS, MINECRAFT_DIFFICULTIES, MINECRAFT_DIFFICULTIES_NAME, SYM } from "#root/const"
 import { edScore, getScore, hasTag, placeError, playsound, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "#modules/axisTools"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { getGameType, stopGame } from "./main"
+import { getGameType, stopGame } from "#modules/core/games/main"
 import { world } from "@minecraft/server"
-import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "./category_team"
+import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "#modules/core/games/category_team"
 import { checkPerm } from "#modules/perm"
 import { dbGetRecord, dbRemoveRecord, dbSetRecord } from "#modules/cheesebase"
 

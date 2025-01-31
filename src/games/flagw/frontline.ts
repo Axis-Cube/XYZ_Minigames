@@ -1,10 +1,10 @@
 import { EquipmentSlot, ItemStack, system, world, EntityInventoryComponent, Player, EntityEquippableComponent } from "@minecraft/server"
-import { COPYRIGHT, DIM, SYM } from "../../const"
-import { edScore, hasTag, runCMD, runCMDs, sleep } from "../../modules/axisTools"
-import { GAMEDATA } from "../gamedata"
-import { getGameArena, stopGame } from "../main"
-import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
-import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
+import { TEAMS2, getPlayerTeam, teamArray } from "#modules/core/games/category_team"
+import { edScore, hasTag, runCMD, runCMDs, sleep } from "#modules/axisTools"
+import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances"
+import { getGameArena, stopGame } from "#modules/core/games/main"
+import { GAMEDATA } from "#modules/core/games/gamedata"
+import { COPYRIGHT, DIM, SYM } from "#root/const"
 import { axisInfo } from "modules/axisInfo"
 
 //#region Variables
@@ -12,6 +12,7 @@ let points
 let projHitBlock
 let ItemsGiveProcess = 0;
 let ArrowHurtEvent;
+let arn = 0;
 //#endregion
 
 //#region Constants
@@ -168,15 +169,15 @@ async function frontlinePrepair(){
                 case -1:
                 break;
                 default:
-                    runCMD(`fill ${x-1} ${y-1} ${z-1} ${x+1} ${y+1} ${z+1} air replace blue_concrete`, undefined,true)
-                    runCMD(`fill ${x-1} ${y-1} ${z-1} ${x+1} ${y+1} ${z+1} air replace red_concrete`, undefined,true)
+                    runCMD(`fill ${x-1} ${y-1} ${z-1} ${x+1} ${y+1} ${z+1} air replace blue_concrete`, undefined, true)
+                    runCMD(`fill ${x-1} ${y-1} ${z-1} ${x+1} ${y+1} ${z+1} air replace red_concrete`, undefined, true)
                 break;
             }
         }catch{}
     })
     //Отсчет от синих
     points = 32
-    let arn = getGameArena()
+    arn = getGameArena()
     const teams = teamArray()
     edScore(COPYRIGHT,'fw_frontline.display',0)
     for (let i in teams) {
@@ -200,11 +201,6 @@ async function frontlinePrepair(){
 
 async function bridgeEquipment(){
     try{
-        let arn = getGameArena()
-
-        //Enchantments
-        //@minecraft/vanilla-data (Not released) [/bundles/vanilla_data]
-
         for (const player of [...world.getPlayers()] as Player[]) {
             if (!player.hasTag('spec')) {
                 const equipment = player.getComponent('equippable') as EntityEquippableComponent;
@@ -239,7 +235,6 @@ async function bridgeEquipment(){
 
 async function bridgeOtherIterations(){
     try{
-        let arn = getGameArena()
         for (const player of [...world.getPlayers()]) {
             if (!player.hasTag('spec')) {
                 const red_spawn = teams_info[arn].red.spawn
@@ -256,7 +251,6 @@ async function bridgeOtherIterations(){
 }
 
 async function frontlineBegin(){
-    let arn = getGameArena()
     const red_team = teams_info[arn].red
     const blue_team = teams_info[arn].blue
 
@@ -315,14 +309,13 @@ async function frontlineTick(){
     }
 }
 
-async function expansionHandler(player){
+async function expansionHandler(player, modifier=true){
     let playersRed = world.getPlayers({"tags": ["team.red"]}).length
     let playersBlue = world.getPlayers({"tags": ["team.blue"]}).length
 
-    let expansionModifierRed = Math.floor(6/playersRed) + 1
-    let expansionModifierBlue = Math.floor(6/playersBlue) + 1
+    let expansionModifierRed = (modifier)? (Math.floor(6/playersRed)) + 1 : 4
+    let expansionModifierBlue = (modifier)? (Math.floor(6/playersBlue)) + 1 : 4
 
-    let arn = getGameArena()
     let command = getPlayerTeam(player)
     let pre_points = points
     if(command == 'red'){

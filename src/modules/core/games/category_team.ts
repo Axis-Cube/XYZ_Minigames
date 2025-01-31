@@ -1,5 +1,5 @@
-import { ActionFormData } from "@minecraft/server-ui"
 import { edScore, hasTag, runCMD, tellraw } from "#modules/axisTools"
+import { ActionFormData } from "@minecraft/server-ui"
 import { world } from "@minecraft/server"
 
 //#region Constants

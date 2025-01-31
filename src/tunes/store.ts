@@ -1,14 +1,14 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { nerdMessage, playsound, rawtext, runCMD } from "#modules/axisTools"
 import { magicIt } from "#modules/playerNameTag"
-import { KILL_MESSAGES_SAMPLE_PREYNAME, playerKillmsgList } from "./killMessage"
-import { SYM, CHAT_CODES, ICONS, SCOLOR } from "../const"
-import { SOUNDMSG, formProfile, formSetSoundmsg, formSetcolor, playerElmsgList } from "./profile"
-import { addMoney, getMoney } from "./bank"
-import { GM_CHALLANGES, formGameChallenges } from "#games/chooser"
-import { GAMEDATA } from "#games/gamedata"
+import { KILL_MESSAGES_SAMPLE_PREYNAME, playerKillmsgList } from "#tunes/killMessage"
+import { SYM, CHAT_CODES, ICONS, SCOLOR } from "#root/const"
+import { SOUNDMSG, formProfile, formSetSoundmsg, formSetcolor, playerElmsgList } from "#tunes/profile"
+import { addMoney, getMoney } from "#tunes/bank"
+import { GM_CHALLANGES, formGameChallenges } from "#root/modules/core/games/chooser"
+import { GAMEDATA } from "#root/modules/core/games/gamedata"
 import { dbGetPlayerRecord, dbSetPlayerRecord } from "#modules/cheesebase"
-import { dev_log } from "modules/Logger/logger_env"
+import { dev_log } from "#modules/Logger/logger_env"
 
 const DB_S = '$'
 export const STORE_COLOR = '§5'

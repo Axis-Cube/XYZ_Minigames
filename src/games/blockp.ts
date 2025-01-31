@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { actionbar, colorPercent, edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "#modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "#games/main";
+import { getGameArena, startTimer, stopGame } from "#root/modules/core/games/main";
 import { COPYRIGHT, SYM } from "#root/const";
 import { eliminatePlayerMessage } from "#tunes/profile";
 import { axisEval } from "#modules/evalSandbox";
@@ -253,8 +253,6 @@ export async function blockpTick() {
 //#endregion
 
 //#region Events
-// EVENTS:
-
 export async function blockp5ticks() {
     const plateTime = getScore('plate.time', 'data.gametemp')
     const plateID = getScore('plate.id', 'data.gametemp')

@@ -1,23 +1,23 @@
 //@ts-nocheck
 //import { placePlatform, placeAirBag } from "#games/blockp";
-import { formMapSettings } from "tunes/mapSettings";
-import { formGameChooser } from "#games/chooser";
+import { formMapSettings } from "#tunes/mapSettings";
+import { formGameChooser } from "#root/modules/core/games/chooser";
 import { formTestRun } from "#tunes/testrun";
 import { formProfile } from "#tunes/profile";
-import { getGameArena, startTimer } from "#games/main";
+import { getGameArena, startTimer } from "#root/modules/core/games/main";
 import { pvpSetkit } from "#games/pvp";
 import { hnsDeath, unplaceBlock } from "#games/hns";
 import { addMoney } from "#tunes/bank";
 import { fieldPlace, mnfRemoveBarrier } from "#games/mnf";
 import { bwEquipmentCheck } from "#games/bw";
 
-import * as ax from "./axisTools";
+import * as ax from "#modules/axisTools";
 import { BlockPermutation, Player, world } from "@minecraft/server";
 import { bwClear, formBWshop, generateRes, getResInterval } from "#games/bw";
-import { GAMEDATA } from "#games/gamedata";
+import { GAMEDATA } from "#root/modules/core/games/gamedata";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { DIM } from "../const";
-import {runCMD, runCMDs} from "./axisTools";
+import { DIM } from "#root/const";
+import {runCMD, runCMDs} from "#modules/axisTools";
 
 
 export let EvalForm = new ModalFormData().title('Eval v0.1').textField('Command','Enter text...')

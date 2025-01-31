@@ -1,9 +1,9 @@
 //Ready for Release
-import { COPYRIGHT } from "../const";
+import { COPYRIGHT } from "#root/const";
 import { Player, system, world } from "@minecraft/server";
 import { randomPlayerIcon, runCMD, runCMDs, shuffle } from "#modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "./main";
-import { GAMEDATA } from "./gamedata";
+import { getGameArena, startTimer, stopGame } from "#modules/core/games/main";
+import { GAMEDATA } from "#modules/core/games/gamedata";
 import { games_log } from "#modules/Logger/logger_env";
 
 //#region Variables

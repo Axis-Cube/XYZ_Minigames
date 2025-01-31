@@ -1,10 +1,10 @@
 //Блоки иногда не пропадают там где надо, наверное из-за Math.round
 //Если diff 0 значит игра одиночная
 import { system, world } from "@minecraft/server"
-import { getGameArena, startTimer, stopGame } from "./main"
-import { GAMEDATA } from "./gamedata"
+import { getGameArena, startTimer, stopGame } from "#modules/core/games/main"
+import { GAMEDATA } from "#modules/core/games/gamedata"
 import { getScore, randomPlayerIcon, runCMDs } from "#modules/axisTools"
-import { COPYRIGHT, SYM } from "../const"
+import { COPYRIGHT, SYM } from "#root/const"
 import { games_log } from "#modules/Logger/logger_env"
 
 //#region Variables

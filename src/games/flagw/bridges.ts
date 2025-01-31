@@ -1,11 +1,11 @@
 import { edScore, getScore, hasTag, isPlayerinArea, playsound, runCMD, runCMDs, sleep } from "#modules/axisTools"
-import { getGameArena, stopGame } from "#games/main"
+import { getGameArena, stopGame } from "#root/modules/core/games/main"
 import { EquipmentSlot, ItemStack, system, world } from "@minecraft/server"
-import { TEAMS2, getPlayerTeam, teamArray } from "#games/category_team"
+import { TEAMS2, getPlayerTeam, teamArray } from "#root/modules/core/games/category_team"
 import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances"
 import { allBlocks, SYM } from "#root/const"
 import { axisInfo } from "#modules/axisInfo"
-import { GAMEDATA } from "#games/gamedata"
+import { GAMEDATA } from "#root/modules/core/games/gamedata"
 
 //#region Constants
 const teams_info = {

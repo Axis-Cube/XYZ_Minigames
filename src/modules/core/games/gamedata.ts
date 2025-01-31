@@ -1,17 +1,17 @@
-import { runCMD } from '../modules/axisTools';
-import { boardMoney } from '../tunes/bank';
-import { GAMEDATA_BW } from './bw';
-import { GAMEDATA_HNS } from './hns';
-import { GAMEDATA_MNF } from './mnf';
-import { GAMEDATA_PVP } from './pvp';
-import { GAMEDATA_GLS } from './sq_glass';
-import { GAMEDATA_DRP } from './dropper';
-import { GAMEDATA_BLOCKP } from './blockp';
-import { GAMEDATA_TNT } from './tntrun';
-import { GAMEDATA_FW_BRIDGES } from './flagw/bridges';
-import { GAMEDATA_FW_FRONTLINE } from './flagw/frontline';
-import { GAMEDATA_PRK } from './prk';
-import { GAMEDATA_HG } from './hg';
+import { runCMD } from '../../axisTools';
+import { GAMEDATA_FW_FRONTLINE } from '#games/flagw/frontline';
+import { GAMEDATA_FW_BRIDGES } from '#games/flagw/bridges';
+import { GAMEDATA_BLOCKP } from '#games/blockp';
+import { GAMEDATA_GLS } from '#games/sq_glass';
+import { GAMEDATA_DRP } from '#games/dropper';
+import { GAMEDATA_TNT } from '#games/tntrun';
+import { GAMEDATA_HNS } from '#games/hns';
+import { GAMEDATA_MNF } from '#games/mnf';
+import { GAMEDATA_PVP } from '#games/pvp';
+import { GAMEDATA_PRK } from '#games/prk';
+import { boardMoney } from '#tunes/bank';
+import { GAMEDATA_BW } from '#games/bw';
+import { GAMEDATA_HG } from '#games/hg/game';
 
 // GLOBAL
 

@@ -1,10 +1,10 @@
 import { Player, system, world } from '@minecraft/server';
-import { edScore, getScore, playsound, powerTP, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '../modules/axisTools';
-import { GAMEDATA } from './gamedata';
-import { killMessage } from '../tunes/killMessage';
-import { getPlayerColor } from '../tunes/profile';
-import { checkPerm, isManager, isTempManager } from '../modules/perm';
-import { games_log } from '../modules/Logger/logger_env';
+import { edScore, getScore, playsound, powerTP, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '#modules/axisTools';
+import { checkPerm, isManager, isTempManager } from '#modules/perm';
+import { GAMEDATA } from '#modules/core/games/gamedata';
+import { games_log } from '#modules/Logger/logger_env';
+import { killMessage } from '#tunes/killMessage';
+import { getPlayerColor } from '#tunes/profile';
 
 //#region Variables
 let GAMETAGS = [ 'spec', 'temp.killer', 'temp.prey', 'team.red', 'team.green', 'team.blue', 'team.yellow', 'team.purple', 'team.orange', 'team.pink', 'team.cyan', 'team.lime', 'team.black' ];
@@ -36,41 +36,6 @@ export function getGameStage() {
 export function getGameArena() {
     return getScore('arn','data');
 };
-export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
-    const thisGame = GAMEDATA[id]
-    if (thisGame.min_players > [...world.getPlayers()].length) {
-        tellraw(`{"rawtext":[{"translate":"axiscube.games.startgame.no_players","with":{"rawtext":[{"translate":"axiscube.${thisGame.namespace}.name"},{"text":"${thisGame.min_players}"}]}}]}`)
-        return
-    }
-    if (thisGame.reset_player_color != undefined && thisGame.reset_player_color[getGameType()] == true) {
-        for (const playerT of world.getPlayers()) {
-            playerT.nameTag = playerT.name;
-        };
-    }
-    await clearTags();
-    let commands = [
-        'clear @a',
-        `title @a title ud0""`,
-        `scoreboard players set mg data ${id}`,
-        `scoreboard players set diff data ${diff}`,
-        { type:'tp', value: thisGame.loc[arn].spawn },
-        { type:'tp', value: thisGame.loc[arn].spawnpoint, action: 'spawnpoint' },
-        'scoreboard objectives add data.gametemp dummy "data.gametemp"',
-        'scoreboard objectives remove lobby.display',
-        `scoreboard players set time data.gametemp ${thisGame.time.value}`,
-    ]
-    await runCMDs(commands)
-    if (thisGame.time.xp) {
-        await runCMD(`xp ${thisGame.time.value}l @a`)
-    }
-    for(let i in thisGame.boards) {
-        let thisBoard = thisGame.boards[i]
-        if (thisBoard[1] == undefined) { thisBoard[1] = thisBoard[0] }
-        await runCMD(`scoreboard objectives add ${thisBoard[0]} dummy "${thisBoard[1]}"`)
-        if (thisBoard[2] == true) { await runCMD(`scoreboard objectives setdisplay sidebar ${thisBoard[0]}`) }
-    }
-    await runCMDs(thisGame.start_commands)
-}
 
 /**
  * Starting game with specified id
@@ -81,7 +46,7 @@ export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
  */
 export async function startGame( id, player, arn = getGameArena() ) {
     const thisGame = GAMEDATA[id] //Получение манифеста игры
-    if (!checkPerm(player.name,'start')) { rawtext('axiscube.perm.denied.start',player.name,'translate','c'); return }//Проверка наличия прав на старт игры
+    if (!checkPerm(player.name,'start')) { rawtext('axiscube.perm.denied.start',player.name,'translate','c'); return } //Проверка наличия прав на старт игры
     if (getGame() != 0) { rawtext('axiscube.games.startgame.already',player,'translate'); return }//Проверка на то, не запущена ли игра
     if (thisGame.min_players > [...world.getPlayers()].length && getScore('testrun', 'settings') != 2) {
         tellraw(`{"rawtext":[{"translate":"axiscube.games.startgame.no_players","with":{"rawtext":[{"translate":"axiscube.${thisGame.namespace}.name"},{"text":"${thisGame.min_players}"}]}}]}`)
@@ -246,7 +211,6 @@ export async function beginGame( id=getGame(), arn=getGameArena() ) {
     if (getGameStage() == 1) return
     await runCMD('clear @a');
     await powerTP(GAMEDATA[id].loc[arn].gameplay,'@a')
-    
     await runCMDs(GAMEDATA[id].begin_commands);
     await edScore('stg','data',1);
 };

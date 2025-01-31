@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server"
-import { multitask_log } from "../Logger/logger_env";
+import { multitask_log } from "#modules/Logger/logger_env";
 
 export class MultiTasking{
     named_query: any;

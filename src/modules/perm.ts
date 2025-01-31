@@ -1,10 +1,10 @@
-import { nameToPlayer, rawtext, runCMD, tellraw } from "./axisTools"
+import { nameToPlayer, rawtext, runCMD, tellraw } from "#modules/axisTools"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { formPermLocalSettings, formPermSettings } from "#tunes/mapSettings"
-import { DATABASE_IDS, ICONS } from "../const"
+import { DATABASE_IDS, ICONS } from "#root/const"
 import { getPlayerColor } from "#tunes/profile"
 import { world } from "@minecraft/server"
-import { dbGetPlayerRecord, dbGetRecord, dbSetPlayerRecord, dbSetRecord } from "./cheesebase"
+import { dbGetPlayerRecord, dbGetRecord, dbSetPlayerRecord, dbSetRecord } from "#modules/cheesebase"
 import { rawtextMessage } from "interfaces"
 
 const PERM_DEF = ['\ue126 %axiscube.settings.perms.global.everyone','\ue12f %axiscube.settings.perms.global.mapmanager']

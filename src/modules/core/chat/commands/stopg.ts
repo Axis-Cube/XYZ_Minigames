@@ -1,4 +1,4 @@
-import { stopGame } from "#games/main"
+import { stopGame } from "#root/modules/core/games/main"
 import { runCMD } from "#modules/axisTools"
 import { CInterface } from "../CHandler"
 
