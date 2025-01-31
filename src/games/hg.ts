@@ -1,12 +1,18 @@
 import { EntityInventoryComponent, ItemStack, system, world } from "@minecraft/server";
 import { COPYRIGHT, DIM, SYM, upgradeArmor, upgradeItems, upgradesBlocked } from "../const";
-import { edScore, getScore, getSlotsByItemName, playsound, randomPlayerIcon, runCMD, runCMDs, safeZone, safeZoneDamage } from "../modules/axisTools";
+import { edScore, getScore, getSlotsByItemName, playsound, randomPlayerIcon, runCMD, runCMDs, safeZone, safeZoneDamage } from "#modules/axisTools";
 import { startTimer, stopGame } from "./main";
-import { MT_GAMES, MT_INFO } from "../modules/MultiTasking/instances";
+import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances";
 import { chests } from "./hg_chests";
-import { games_log } from "../modules/Logger/logger_env";
+import { games_log } from "#modules/Logger/logger_env";
 import { axisInfo } from "modules/axisInfo";
 
+//#region Variables
+let zone;
+let timers;
+//#endregion
+
+//#region Gamedata
 export const GAMEDATA_HG = { // Hunger Games
     id: 12,
     namespace: 'hg',
@@ -82,7 +88,9 @@ export const GAMEDATA_HG = { // Hunger Games
         ['hg.display', '\ue195§6 %axiscube.hg.name', true],
     ]
 }
-let zone;
+//#endregion
+
+//#region Functions
 async function hg_main(){
     await loadChests(chests, 1)
     startTimer(12)
@@ -124,7 +132,6 @@ async function hgTick(){
     }
 }
 
-let timers;
 async function hgTime(){
     runCMDs([
         `inputpermission set @a movement enabled`,
@@ -269,3 +276,4 @@ async function getNextUpgrade(material, type){
         return upgradeArmor.material[upgradeArmor.material.indexOf(material)+1]+'_'+type
     }
 }
+//#endregion

@@ -1,6 +1,7 @@
 import { world } from "@minecraft/server";
-import { upgradeItem } from "games/hg"
-import { runCMDs } from "modules/axisTools";
+import { upgradeItem } from "#games/hg"
+import { prkCheckpointTp } from "#games/prk";
+import { runCMDs } from "#modules/axisTools";
 
 world.beforeEvents.worldInitialize.subscribe((initEvent) => {
     initEvent.blockComponentRegistry.registerCustomComponent("axiscube:interact", {
@@ -44,6 +45,9 @@ world.beforeEvents.worldInitialize.subscribe((initEvent) => {
                         "effect @s slow_falling 3 0 true",
                         "clear @s[m=!c] mcxyz:levitation_item 0 1"
                     ], source)
+                break;
+                case "axiscube:back_to_checkpoint":
+                    prkCheckpointTp(source)
                 break;
                 default:
                 break;

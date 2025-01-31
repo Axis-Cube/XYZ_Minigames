@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server"
-import { getScore } from "../../../axisTools"
+import { getScore } from "#modules/axisTools"
 import { config_admin_panel } from "./config"
 
 if (getScore(config_admin_panel.file, 'data.plugins') != 0) {

@@ -1,10 +1,13 @@
+//#region Variables
 let directions = {
     WEST: "west",
     NORTH: "north",
     EAST: "east",
     SOUTH: "south"
 }
+//#endregion
 
+//#region Constantss
 export let chests = {
 "-2972 26 -2888": directions.NORTH,
 "-2960 21 -2889": directions.WEST,
@@ -115,6 +118,7 @@ export let chests = {
 "-2999 13 -3000": directions.EAST,
 "-3033 38 -2959": directions.NORTH
 }
+//#endregion
 
 
 

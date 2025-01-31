@@ -1,9 +1,9 @@
 import { world } from "@minecraft/server"
-import { actionbar, edScore, playsound, runCMDs, setTickTimeout } from "../modules/axisTools"
-import { magicIt } from "../modules/playerNameTag"
+import { actionbar, edScore, playsound, runCMDs, setTickTimeout } from "#modules/axisTools"
+import { magicIt } from "#modules/playerNameTag"
 import { COPYRIGHT, MAP_NAME, SCOLOR, SYM } from "../const"
 import { getPlayerColor } from "./profile"
-import { dbGetPlayerRecord, dbSetPlayerRecord } from "../modules/cheesebase"
+import { dbGetPlayerRecord, dbSetPlayerRecord } from "#modules/cheesebase"
 
 const DB_S = '^'
 
@@ -19,7 +19,6 @@ export async function boardMoney() {
     let players = getPlayerMoneyData()
     let leaders = Object.keys(players).sort(function(a,b){return players[a]-players[b]}).reverse()
     //let leaders = ["Lndrs2224", "Axisander", "MiauMiez"]
-    //let leaders = []
     let commands = [
         `scoreboard objectives add lobby.display dummy "${MAP_NAME}"`,
         'scoreboard objectives setdisplay sidebar lobby.display',

@@ -1,11 +1,17 @@
-import { COPYRIGHT, DIM, SYM } from "../const";
-import { GameMode, PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
-import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt, enchancedRandom} from "../modules/axisTools";
+import { COPYRIGHT, SYM } from "../const";
+import { GameMode, system, world } from "@minecraft/server";
+import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, enchancedRandom } from "#modules/axisTools";
 import { GAMEDATA } from "./gamedata";
-import { forceGameRestart, getGameArena, startTimer, stopGame } from "./main";
+import { getGameArena, startTimer, stopGame } from "./main";
 import { completeChallenge } from "./chooser";
 import { eliminatePlayerMessage } from "tunes/profile";
 
+//#region Variables
+let loose_area: any[] = []
+let normal_area: any[]
+//#endregion 
+
+//#region Gamedata
 export const GAMEDATA_GLS = { // Glass
     id: 6,
     namespace: 'gls',
@@ -127,9 +133,12 @@ export const GAMEDATA_GLS = { // Glass
         ['gls.display', '\ue1a6§6 %axiscube.gls.name', true],
     ]
 }
+//#endregion
 
-
-
+//#region Functions
+/**
+ * Generates the glass platforms for the game.
+ */
 async function gls_generate(){
     const f_block = GAMEDATA[6].loc[getGameArena()].field_block
     const platform_y = GAMEDATA[6].loc[getGameArena()].platforms_y
@@ -141,6 +150,9 @@ async function gls_generate(){
     }
 }
 
+/**
+ * Main function to initialize the game.
+ */
 async function gls_main(){
     let game_lives = 3
     switch(getScore('diff','data')){
@@ -183,14 +195,16 @@ async function gls_main(){
     startTimer(6)
 }
 
+/**
+ * Handles the time-based events for the game.
+ */
 function glsTime(){
     runCMD(`fill ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_to} air replace barrier`)
     //Add Barriers
 }
-
-let loose_area: any[] = []
-let normal_area: any[] = []
-
+/**
+ * Tick function to handle game logic on each tick.
+ */
 function glsTick(){
     let countNoWins = 0
     let countWins = 0
@@ -277,3 +291,5 @@ function glsTick(){
         }
     }
 }
+
+//#endregion

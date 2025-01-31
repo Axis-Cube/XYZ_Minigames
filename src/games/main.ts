@@ -1,12 +1,17 @@
 import { Player, system, world } from '@minecraft/server';
-import { edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '../modules/axisTools'
+import { edScore, getScore, playsound, powerTP, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '../modules/axisTools';
 import { GAMEDATA } from './gamedata';
 import { killMessage } from '../tunes/killMessage';
-//import { formTeamsel } from './category_team';
 import { getPlayerColor } from '../tunes/profile';
 import { checkPerm, isManager, isTempManager } from '../modules/perm';
 import { games_log } from '../modules/Logger/logger_env';
 
+//#region Variables
+let GAMETAGS = [ 'spec', 'temp.killer', 'temp.prey', 'team.red', 'team.green', 'team.blue', 'team.yellow', 'team.purple', 'team.orange', 'team.pink', 'team.cyan', 'team.lime', 'team.black' ];
+let GAMEBOARDS = [ 'data.gametemp' ];
+//#endregion
+
+//#region Functions
 /**
 * @returns {Number}
 */
@@ -31,16 +36,6 @@ export function getGameStage() {
 export function getGameArena() {
     return getScore('arn','data');
 };
-
-let GAMETAGS = [ 'spec', 'temp.killer', 'temp.prey', 'team.red', 'team.green', 'team.blue', 'team.yellow', 'team.purple', 'team.orange', 'team.pink', 'team.cyan', 'team.lime', 'team.black' ];
-for (let i in GAMEDATA) { GAMETAGS = GAMETAGS.concat(GAMEDATA[i].tags) };
-let GAMEBOARDS = [ 'data.gametemp' ];
-for (let i in GAMEDATA) {
-    for (let j in GAMEDATA[i].boards) {
-        GAMEBOARDS = GAMEBOARDS.concat(GAMEDATA[i].boards[j][0]);
-    };
-};
-
 export async function forceGameRestart(id=getGame(),arn=getGameArena(),diff=0){
     const thisGame = GAMEDATA[id]
     if (thisGame.min_players > [...world.getPlayers()].length) {
@@ -180,83 +175,6 @@ export async function startTimer(id=getGame()) {
         games_log.put(e)
     }
 }
-
-system.runInterval(() => {
-    const gameID = getGame();
-    if (getGameStage() == 1) {
-        GAMEDATA[gameID].time.tick_function()
-    };
-},5);
-
-system.runInterval(async () => {
-    if (getGameStage() == 1) {
-        const gameID = getGame();
-        const time = getScore('time','data.gametemp')
-        const time_sec = time % 60
-        const time_min = Math.floor(time/60)
-        if (!isNaN(time) && getScore('time','data.gametemp') > 0) {
-            await edScore('time','data.gametemp',1,'remove')
-            if (GAMEDATA[gameID].time.xp) {
-                await runCMD(`xp -1l @a`)
-            }
-            if (GAMEDATA[gameID].time.notify_times && GAMEDATA[gameID].time.notify_times.indexOf(time) != -1) {
-                playsound('random.click')
-                tellraw(`{"rawtext":[{"translate":"axiscube.games.time.point.s","with":["${time_min}"]}]}`)
-            }
-            if (GAMEDATA[gameID].time.actionbar_spec) {
-                if (time_min == 0) {
-                    await runCMD(`titleraw @a[tag=spec] actionbar {"rawtext":[{"translate":"axiscube.games.time.only_sec","with":["${time_sec}"]}]}`)
-                } else {
-                    await runCMD(`titleraw @a[tag=spec] actionbar {"rawtext":[{"translate":"axiscube.games.time","with":["${time_sec}","${time_min}"]}]}`)
-                }
-                
-            }
-            if (GAMEDATA[gameID].time.events && GAMEDATA[gameID].time.events[time] != undefined) {
-                await runCMDs(GAMEDATA[gameID].time.events[time])
-            }
-        } else {
-            if (gameID != 4) {
-                await stopGame(gameID,'no_time')
-            } else {
-                let winners = 0
-                for (let playerT of [...world.getPlayers()]) {
-                    if (playerT.hasTag('mnf.winner')) winners = winners + 1
-                }
-                if (winners == 0) {
-                    await stopGame(gameID,'no_time')
-                } else {
-                    await stopGame(gameID,'no_time_winners')
-                }
-            }
-        }
-    };
-    let countOps = 0
-    let countTrueOps = 0
-    for (let player of [...world.getPlayers()]) {
-        if (player.isOp() && !player.hasTag('perm.op')) {
-            runCMD('tag @s add perm.op',player)
-            rawtext('axiscube.perm.op.granted.auto',player,'tr')
-        }
-        if (isManager(player)) countOps = countOps + 1
-        if (isManager(player) && !isTempManager(player)) countTrueOps = countTrueOps + 1
-    }
-    if (countOps == 0) {
-        const newOp = [...world.getPlayers()][0]
-        runCMD('tag @s add perm.op.temp',newOp)
-        tellraw(`{"rawtext":[{"translate":"axiscube.perm.new_temp","with":["${getPlayerColor(newOp.name)}${newOp.name}"]}]}`)
-        rawtext('axiscube.perm.op.granted.temp',newOp,'tr')
-    } else if (countTrueOps < countOps && countTrueOps != 0) {
-        let tempOp = [...world.getPlayers()][0]
-        for (let player of [...world.getPlayers()]) {
-            if (isTempManager(player)) {tempOp = player}
-        }
-        runCMD('tag @s remove perm.op.temp',tempOp)
-        tellraw(`{"rawtext":[{"translate":"axiscube.perm.true_leader_comeback","with":["${getPlayerColor(tempOp.name)}${tempOp.name}"]}]}`)
-        rawtext('axiscube.perm.op.revoked.generic',tempOp,'tr')
-    }
-
-},20);
-
 /**
  * Clear game tags
  * @param {Player} player - Player Target
@@ -370,3 +288,92 @@ export async function knockToGame( player, id=getGame(), arn=getGameArena() ) {
         await powerTP(GAMEDATA[id].loc[arn].spawnpoint,player,'spawnpoint')
     }
 }
+//#endregion
+
+//#region Loops
+for (let i in GAMEDATA) { GAMETAGS = GAMETAGS.concat(GAMEDATA[i].tags) };
+
+for (let i in GAMEDATA) {
+    for (let j in GAMEDATA[i].boards) {
+        GAMEBOARDS = GAMEBOARDS.concat(GAMEDATA[i].boards[j][0]);
+    };
+};
+//#endregion
+
+//#region Intervals
+system.runInterval(() => {
+    const gameID = getGame();
+    if (getGameStage() == 1) {
+        GAMEDATA[gameID].time.tick_function()
+    };
+},5);
+
+system.runInterval(async () => {
+    if (getGameStage() == 1) {
+        const gameID = getGame();
+        const time = getScore('time','data.gametemp')
+        const time_sec = time % 60
+        const time_min = Math.floor(time/60)
+        if (!isNaN(time) && getScore('time','data.gametemp') > 0) {
+            await edScore('time','data.gametemp',1,'remove')
+            if (GAMEDATA[gameID].time.xp) {
+                await runCMD(`xp -1l @a`)
+            }
+            if (GAMEDATA[gameID].time.notify_times && GAMEDATA[gameID].time.notify_times.indexOf(time) != -1) {
+                playsound('random.click')
+                tellraw(`{"rawtext":[{"translate":"axiscube.games.time.point.s","with":["${time_min}"]}]}`)
+            }
+            if (GAMEDATA[gameID].time.actionbar_spec) {
+                if (time_min == 0) {
+                    await runCMD(`titleraw @a[tag=spec] actionbar {"rawtext":[{"translate":"axiscube.games.time.only_sec","with":["${time_sec}"]}]}`)
+                } else {
+                    await runCMD(`titleraw @a[tag=spec] actionbar {"rawtext":[{"translate":"axiscube.games.time","with":["${time_sec}","${time_min}"]}]}`)
+                }
+                
+            }
+            if (GAMEDATA[gameID].time.events && GAMEDATA[gameID].time.events[time] != undefined) {
+                await runCMDs(GAMEDATA[gameID].time.events[time])
+            }
+        } else {
+            if (gameID != 4) {
+                await stopGame(gameID,'no_time')
+            } else {
+                let winners = 0
+                for (let playerT of [...world.getPlayers()]) {
+                    if (playerT.hasTag('mnf.winner')) winners = winners + 1
+                }
+                if (winners == 0) {
+                    await stopGame(gameID,'no_time')
+                } else {
+                    await stopGame(gameID,'no_time_winners')
+                }
+            }
+        }
+    };
+    let countOps = 0
+    let countTrueOps = 0
+    for (let player of [...world.getPlayers()]) {
+        if (player.isOp() && !player.hasTag('perm.op')) {
+            runCMD('tag @s add perm.op',player)
+            rawtext('axiscube.perm.op.granted.auto',player,'tr')
+        }
+        if (isManager(player)) countOps = countOps + 1
+        if (isManager(player) && !isTempManager(player)) countTrueOps = countTrueOps + 1
+    }
+    if (countOps == 0) {
+        const newOp = [...world.getPlayers()][0]
+        runCMD('tag @s add perm.op.temp',newOp)
+        tellraw(`{"rawtext":[{"translate":"axiscube.perm.new_temp","with":["${getPlayerColor(newOp.name)}${newOp.name}"]}]}`)
+        rawtext('axiscube.perm.op.granted.temp',newOp,'tr')
+    } else if (countTrueOps < countOps && countTrueOps != 0) {
+        let tempOp = [...world.getPlayers()][0]
+        for (let player of [...world.getPlayers()]) {
+            if (isTempManager(player)) {tempOp = player}
+        }
+        runCMD('tag @s remove perm.op.temp',tempOp)
+        tellraw(`{"rawtext":[{"translate":"axiscube.perm.true_leader_comeback","with":["${getPlayerColor(tempOp.name)}${tempOp.name}"]}]}`)
+        rawtext('axiscube.perm.op.revoked.generic',tempOp,'tr')
+    }
+
+},20);
+//#endregion

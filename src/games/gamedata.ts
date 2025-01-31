@@ -1,5 +1,4 @@
-import { COPYRIGHT, SYM } from '../const';
-import { getScore, randomInt, runCMD, runCMDs } from '../modules/axisTools'
+import { runCMD } from '../modules/axisTools';
 import { boardMoney } from '../tunes/bank';
 import { GAMEDATA_BW } from './bw';
 import { GAMEDATA_HNS } from './hns';
@@ -13,10 +12,10 @@ import { GAMEDATA_FW_BRIDGES } from './flagw/bridges';
 import { GAMEDATA_FW_FRONTLINE } from './flagw/frontline';
 import { GAMEDATA_PRK } from './prk';
 import { GAMEDATA_HG } from './hg';
-import { MT_GAMES } from '../modules/MultiTasking/instances';
 
 // GLOBAL
 
+//#region GameData
 export const GAMEDATA = {
     0: {
         id: 0,
@@ -60,7 +59,4 @@ export const GAMEDATA = {
     11: GAMEDATA_PRK, //Parkour
     12: GAMEDATA_HG //Hunger Games
 }
-//GAMEDATA[1].start_commands.push(`execute as @a run scoreboard players random @s hns.block 0 ${HNS_BLOCKS.length-1}`)
-    // GAMEDATA[2].time.events = {
-
-    // }
+//#endregion

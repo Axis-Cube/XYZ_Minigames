@@ -1,11 +1,15 @@
 import { world } from "@minecraft/server";
-import { CHAT_CODES, CHAT_CODES_AV } from "../../const";
-import { playsound, rawtext } from "../axisTools";
-import { getEmojiItembyValue, getPurchasedItems, STORE_ITEMS } from "../../tunes/store";
-import { SOUNDMSG, getPlayerSoundMessage } from "../../tunes/profile";
+import { CHAT_CODES, CHAT_CODES_AV } from "#root/const";
+import { playsound, rawtext } from "#modules/axisTools";
+import { getEmojiItembyValue, getPurchasedItems, STORE_ITEMS } from "#tunes/store";
+import { SOUNDMSG, getPlayerSoundMessage } from "#tunes/profile";
 import { CCcall, COMMAND_PREFIXES } from "./CHandler";
 
+//#region Constants
 const regex = new RegExp(":" + Object.keys(CHAT_CODES).join(":|:") + ":", "g");
+//#endregion
+
+//#region Functions
 export function sendChatMessage(messageData) {
     const player = messageData.sender
     let finalMessage = messageData.message
@@ -22,11 +26,7 @@ export function sendChatMessage(messageData) {
 
         CCcall(args, player)
     }else{
-
-        
-        //End of Custom Commands
-
-        if (player.hasTag('spec')) prefix = '§8[%axiscube.games.role.spectator§8]§r '
+        if(player.hasTag('spec')) prefix = '§8[%axiscube.games.role.spectator§8]§r'
         finalMessage = finalMessage.replace(/\%/g,'%%')
 
         //Поиск эмодзи в сообщении
@@ -60,9 +60,9 @@ export function sendChatMessage(messageData) {
         }
 
         world.sendMessage(`${prefix}${player.nameTag}§r: ${finalMessage}`)
-        //'random.pop2' : ['Pop2!',[1,1.5],[1,1]],
         const sound = getPlayerSoundMessage(player.name)
         playsound(sound,player,SOUNDMSG[sound[1][0]],SOUNDMSG[sound[1][1]])
         playsound(sound,`@a[name=!"${player.name}"]`,SOUNDMSG[sound[2][0]],SOUNDMSG[sound[2][1]])
     }
 }
+//#endregion

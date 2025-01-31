@@ -1,31 +1,30 @@
-import { EnchantmentTypes, EntityComponentTypes, EntityInventoryComponent, GameMode, ItemStack, Player, system, world } from "@minecraft/server";
+import { EntityComponentTypes, EntityInventoryComponent, GameMode, ItemStack, Player, system, world } from "@minecraft/server";
 //CONSTANTS
-import { DB_A, map_id } from "./const";
+import { DB_A, map_id } from "#root/const";
 //MODULES
-import { decryptWithSalt, edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw } from "./modules/axisTools";
-import { axisHealthBar } from "./modules/axisHB";
-import { openJSON } from "./modules/easyform";
-import { axisEval } from "./modules/evalSandbox";
-import { sendChatMessage } from "./modules/Core_Chat/chat";
-import { MT_GAMES } from "./modules/MultiTasking/instances";
-import { load_log } from "./modules/Logger/logger";
-import { isMainManager } from "./modules/perm";
-import { dbGetPlayerRecord } from "./modules/cheesebase";
-import { LPN } from "./modules/Core_Plugins/index.js";
+import { decryptWithSalt, edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw } from "#modules/axisTools";
+import { axisHealthBar } from "#modules/axisHB";
+import { openJSON } from "#modules/easyform";
+import { axisEval } from "#modules/evalSandbox";
+import { sendChatMessage } from "#root/modules/core/chat/main";
+import { MT_GAMES } from "#modules/MultiTasking/instances";
+import { load_log } from "#modules/Logger/logger";
+import { isMainManager } from "#modules/perm";
+import { dbGetPlayerRecord } from "#modules/cheesebase";
+import { LPN } from "#root/modules/core/plugins/main";
 //TUNES
-import { getPlayerColor } from "./tunes/profile";
-import { boardMoney } from "./tunes/bank";
+import { getPlayerColor } from "#tunes/profile";
+import { boardMoney } from "#tunes/bank";
 //GAMES
-import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGame, startGame, stopGame } from "./games/main";
-import { formBeginGameConfirm, formCancelGameConfirm } from "./games/chooser";
-import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "./games/bw";
-import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "./games/mnf";
-import { loadChests/*, upgradeItem*/ } from "./games/hg";
-import { formTeamsel } from "./games/category_team";
-import { pvpImportForm2 } from "./games/pvp";
-import { prkCheckpointTp } from "./games/prk";
-import { chests } from "./games/hg_chests";
-import { GAMEDATA } from "./games/gamedata";
+import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGame, startGame, stopGame } from "#games/main";
+import { formBeginGameConfirm, formCancelGameConfirm } from "#games/chooser";
+import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "#games/bw";
+import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "#games/mnf";
+import { loadChests/*, upgradeItem*/ } from "#games/hg";
+import { formTeamsel } from "#games/category_team";
+import { pvpImportForm2 } from "#games/pvp";
+import { chests } from "#games/hg_chests";
+import { GAMEDATA } from "#games/gamedata";
 
 
 
@@ -126,12 +125,6 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     const player = sourceEntity as Player;
     if(player == undefined){return;}
     switch (id) {
-        case 'tools:check_back':
-            let item_stack_checkpoint = new ItemStack('minecraft:stick');
-            item_stack_checkpoint.nameTag = 'debug_checkpoints_back';
-            player.getComponent(EntityComponentTypes.Inventory)?.container?.addItem(item_stack_checkpoint);
-            player.getComponent(EntityComponentTypes.Inventory);
-            break;
         case 'tools:holo_editor':
             let item_stack_edit_holo = new ItemStack('minecraft:stick');
             item_stack_edit_holo.nameTag = 'debug_holo_editor';
@@ -288,11 +281,6 @@ world.beforeEvents.itemUse.subscribe((itemData) => {
     const itemAct = ITEMS[itemStack.typeId];
     // let isMenu = true
     // let clearItem = false
-    switch (itemStack.nameTag) {
-        case 'debug_checkpoints_back':
-            prkCheckpointTp(player);
-            break;
-    }
     system.run(() => {
         if (itemAct != undefined) {
             if (itemAct.forgame == undefined || (itemAct.forgame === '*' && getGame() > 0) || (typeof itemAct.forgame == 'number' && itemAct.forgame == getGame()) || itemAct.forgame.includes(`${getGame()}`)) {

@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
+import { ActionFormData, ModalFormData, ModalFormResponse } from "@minecraft/server-ui";
 import { MT_PLUGINS } from "modules/MultiTasking/instances";
 import { edScore, runCMD } from "modules/axisTools";
 
@@ -15,6 +15,7 @@ let FORM = new ModalFormData()
     .toggle('Enabled', true)
 
 function main(response, source){
+    if(response.canceled){return}
     let [toggle] = response.formValues;
     if(toggle){
         edScore('map_prefix','data.plugins',1)

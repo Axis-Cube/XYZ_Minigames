@@ -1,4 +1,4 @@
-import { ICONS } from "../../../../const"
+import { ICONS } from "#root/const"
 export const config_admin_panel = {
   "version": [ 0, 1, 1 ],
   "engineVersion": [ 1, 3, 0 ],

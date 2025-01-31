@@ -1,5 +1,5 @@
-import { edScore, getTargetByScore } from "./axisTools";
-import { magicIt } from "./playerNameTag";
+import { edScore, getTargetByScore } from "#modules/axisTools";
+import { magicIt } from "#modules/playerNameTag";
 
 const DATABASE = 'data.userapi'
 

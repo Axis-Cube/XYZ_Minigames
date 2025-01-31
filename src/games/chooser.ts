@@ -1,15 +1,16 @@
 import { ActionFormData, MessageFormData } from "@minecraft/server-ui"
-import { openJSON } from "../modules/easyform"
+import { openJSON } from "#modules/easyform"
 import { beginGame, getGame, getGameType, startGame, stopGame } from "./main"
 import { world } from "@minecraft/server"
 import { GAMEDATA } from "./gamedata"
 import { teamCheck } from "./category_team"
-import { edScore, rawtext, runCMDs, tellraw } from "../modules/axisTools"
-import { checkPerm } from "../modules/perm"
-import { STORE_ITEMS, addItem } from "../tunes/store"
+import { edScore, rawtext, runCMDs, tellraw } from "#modules/axisTools"
+import { checkPerm } from "#modules/perm"
+import { STORE_ITEMS, addItem } from "#tunes/store"
 import { ICONS, SCOLOR, SYM } from "../const"
-import { addMoney } from "../tunes/bank"
+import { addMoney } from "#tunes/bank"
 
+//#region Constants
 const GM_FORM = {
     1: [
         {
@@ -77,7 +78,7 @@ const GM_FORM = {
                     "type": "other",
                     "value": ["arn","data"],
                     "body": "%axiscube.form.games.diff",
-                    "keys": ["Map 1", "Map 2", "Map 3", "Map 4", "Map 5"],
+                    "keys": ["%axiscube.prk.map.1", "%axiscube.prk.map.2", "%axiscube.prk.map.3", "%axiscube.prk.map.4", "%axiscube.prk.map.5"],
                     "images": [ "textures/ui/icons/games/diff/easy", "textures/ui/icons/games/diff/normal", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hard", "textures/ui/icons/games/diff/hard"]
                 }
             ]
@@ -150,6 +151,9 @@ const GM_FORM = {
     ]
 }
 
+//#endregion
+
+//#region Functions
 export const GM_CHALLANGES = {
     0: {
         game: 4,
@@ -396,3 +400,5 @@ export async function formCancelGameConfirm(player,id=getGame()) {
         stopGame(id)
     })
 }
+//#endregion
+

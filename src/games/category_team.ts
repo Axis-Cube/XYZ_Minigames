@@ -1,7 +1,8 @@
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { edScore, hasTag, runCMD, tellraw } from "../modules/axisTools"
+import { ActionFormData } from "@minecraft/server-ui"
+import { edScore, hasTag, runCMD, tellraw } from "#modules/axisTools"
 import { world } from "@minecraft/server"
 
+//#region Constants
 export const TEAMS = [
     'red','green','blue','yellow','purple',
     'orange','pink','cyan','lime','black'
@@ -21,7 +22,9 @@ export const TEAM_COLORS = {
 }
 
 export const TEAM_NOTEAMSELECTOR = '@a[tag=!team.red,tag=!team.green,tag=!team.blue,tag=!team.yellow,tag=!team.purple,tag=!team.orange,tag=!team.pink,tag=!team.cyan,tag=!team.lime,tag=!team.black]'
+//#endregion
 
+//#region Functions
 export function teamArray() {
     let teams: string[] = []
     for (let playerT of [...world.getPlayers()]) {
@@ -101,3 +104,4 @@ export function formTeamsel(player,teamsList=TEAMS,addSpectator=true,colorNameTa
         }
     }})
 }
+//#endregion

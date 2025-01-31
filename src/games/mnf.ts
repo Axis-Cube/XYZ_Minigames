@@ -1,159 +1,15 @@
 //FIELD ENGINE v0.2.5 by (AbstractScripts aka Lndrs_) License this so so. hmmm give 1000$ to us and unlock MIT license. Default license: idk
-import { colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "../modules/axisTools";
+import { colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "#modules/axisTools";
 import { system, world } from "@minecraft/server";
 import { GAMEDATA } from "./gamedata";
-import { forceGameRestart, getGame, getGameArena, startTimer, stopGame } from "./main";
+import { getGame, getGameArena, startTimer, stopGame } from "./main";
 import { completeChallenge } from "./chooser";
 import { ModalFormData } from "@minecraft/server-ui";
 import { COPYRIGHT, DIM, SYM } from "../const";
-import { eliminatePlayerMessage } from "../tunes/profile";
-import { MT_GAMES } from "../modules/MultiTasking/instances";
+import { eliminatePlayerMessage } from "#tunes/profile";
+import { MT_GAMES } from "#modules/MultiTasking/instances";
 
-let sleep_modifier = 5
-
-export const GAMEDATA_MNF = { // Minefield
-    id: 4,
-    namespace: 'mnf',
-    min_players: 1,
-    tags: [
-        'mnf',
-        'mnf.halfdead',
-        'mnf.winner',
-        'mnf.member'
-    ],
-    loc: {
-        0: { //Ready for 1.5
-            gameplay: false,
-            spawn: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
-            newplayer: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
-            spawnpoint: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
-
-            field_from: [2502, 72, 2508],
-            field_to: [2541, 72, 2595],
-            field_block: 'heavy_weighted_pressure_plate',
-
-            startpos: 2504,
-            startpos_type: 'z',
-
-            prestart_barrier_from: '2541 72 2507',
-            prestart_barrier_to: '2502 82 2507',
-
-            winpos_from: [2541, 80, 2601],
-            winpos_to: [2502, 72, 2597]
-        },
-        //1: { //Ready for 1.5
-        //    gameplay: false,
-        //    spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-        //    newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-        //    spawnpoint: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-
-        //    field_from: [2489, 56, 2513],
-        //    field_to: [2430, 56, 2565],
-        //    field_block: 'heavy_weighted_pressure_plate',
-
-        //    startpos: 2512,
-        //    startpos_type: 'z',
-
-        //    prestart_barrier_from: '2489 56 2512',
-        //    prestart_barrier_to: '2428 66 2512',
-
-        //    winpos_from: [2489,56,2569],
-        //    winpos_to: [2429,66,2567]
-        //}
-    },
-    ends: {
-        no_time: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.mnf.no_time","with":{"rawtext":[{"selector":"@a[tag=mnf.winner]"},{"text":`+150${SYM}`}]}}]},
-            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
-        },
-        no_time_winners: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.mnf.no_time_winners","with":{"rawtext":[{"selector":"@a[tag=mnf.winner]"},{"text":`+150${SYM}`}]}}]},
-            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
-        },
-        no_players: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.mnf.no_players","with":{"rawtext":[{"selector":"@a[tag=mnf.winner]"},{"text":`+150${SYM}`}]}}]},
-            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
-        },
-        no_players_h: {
-            msg: {"rawtext":[{"translate":"axiscube.games.game_over.generic.no_players"}]},
-            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
-        }
-    },
-    joinable: {
-        can_join: true,
-        join_commands: [
-            'tag @s add mnf',
-            'tag @s add mnf.member'
-        ],
-        prebegin_commands: [],
-    },
-    time: {
-        value: 555,
-        tick_function: mnfTick,
-        xp: true,
-        actionbar_spec: true,
-        notify_times: [300, 180, 60],
-        events: {
-            't1': mnfRemoveBarrier
-        }
-    },
-    start_commands: fieldPlace,
-    begin_commands: [
-        'tag @a add mnf',
-        'tag @a add mnf.member',
-        `scoreboard players set "${COPYRIGHT}" mnf.display -9`,
-        'scoreboard players set "§1" mnf.display -8',
-        {type:'scoreset',value: 1, objective: 'mnf.display'},
-        'scoreboard players set "§2" mnf.display 999',
-        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" mnf.display 998`,
-    ],
-    death_data: {
-        death_commands: (player) => {
-            if (getScore('diff','data') == 3) {
-                eliminatePlayerMessage(player.name)
-                runCMDs([
-                    {type:'scoreset',value: -5, objective: 'mnf.display',action: 'set',target: player.name},
-                    'tag @s remove mnf.member',
-                    'tag @s add spec',
-                    'gamemode spectator'
-                ],player)
-            }
-        }
-    },
-    stop_commands: [],
-    boards: [
-        ['mnf.display', '\ue195§6 %axiscube.mnf.name', true],
-    ]
-}
-
-function getRandomNum(min, max) {return Math.random() * (max - min) + min;}
-
-function ObjRange(size, startAt = 0) {
-    return [...Array(size).keys()].map(i => i + startAt);
-}
-
-function ex_callback(){
-    console.warn('Push event catched')
-}
-
-async function sleep(n){
-    system.runTimeout(()=>{Promise.resolve(0)},n)
-}
-
-function shuffle(array) {
-    let currentIndex = array.length,  randomIndex;
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-    return array;
-  }
-
+//#region Class
 export class Field {
 
     from: number[];
@@ -271,34 +127,161 @@ export class Field {
     getStatus(){
         return [this.bombs, this.step]
     }
-
-    //    /**
-    //* @example <Field>.linkEvent(callback / function(){})
-    //* @returns {Boolean}
-    //*/
-    //linkEvent(callback=ex_callback){
-    //    this.unlinkEvent()
-    //    this.event = world.afterEvents.pressurePlatePush.subscribe(pp => {
-    //        let plate_cords = []
-    //        plate_cords.push(pp.block.x); plate_cords.push(pp.block.z)
-    //
-    //        if (this.verify_cords.indexOf(plate_cords.join('.')) < this.bombs && this.verify_cords.indexOf(plate_cords.join('.')) != -1){
-    //            callback()
-    //        }else{return false}
-    //    })
-    //}
-    //
-    ///**
-    //* @example <Field>.unlinkEvent()
-    //* @returns {null}
-    //*/
-    //unlinkEvent(){
-    //    try{
-    //        world.afterEvents.pressurePlatePush.unsubscribe(this.event)
-    //    }catch{}
-    //}
 }
+//#endregion
+
+//#region Variables
+let sleep_modifier = 5
 let field: Field = new Field([0,0,0],[0,0,0])
+let simple = [1,2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499]
+//#endregion
+
+//#region Gamedata
+export const GAMEDATA_MNF = { // Minefield
+    id: 4,
+    namespace: 'mnf',
+    min_players: 1,
+    tags: [
+        'mnf',
+        'mnf.halfdead',
+        'mnf.winner',
+        'mnf.member'
+    ],
+    loc: {
+        0: { //Ready for 1.5
+            gameplay: false,
+            spawn: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
+            newplayer: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
+            spawnpoint: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
+
+            field_from: [2502, 72, 2508],
+            field_to: [2541, 72, 2595],
+            field_block: 'heavy_weighted_pressure_plate',
+
+            startpos: 2504,
+            startpos_type: 'z',
+
+            prestart_barrier_from: '2541 72 2507',
+            prestart_barrier_to: '2502 82 2507',
+
+            winpos_from: [2541, 80, 2601],
+            winpos_to: [2502, 72, 2597]
+        },
+        //1: { //Ready for 1.5
+        //    gameplay: false,
+        //    spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+        //    newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+        //    spawnpoint: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
+
+        //    field_from: [2489, 56, 2513],
+        //    field_to: [2430, 56, 2565],
+        //    field_block: 'heavy_weighted_pressure_plate',
+
+        //    startpos: 2512,
+        //    startpos_type: 'z',
+
+        //    prestart_barrier_from: '2489 56 2512',
+        //    prestart_barrier_to: '2428 66 2512',
+
+        //    winpos_from: [2489,56,2569],
+        //    winpos_to: [2429,66,2567]
+        //}
+    },
+    ends: {
+        no_time: {
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.mnf.no_time","with":{"rawtext":[{"selector":"@a[tag=mnf.winner]"},{"text":`+150${SYM}`}]}}]},
+            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
+        },
+        no_time_winners: {
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.mnf.no_time_winners","with":{"rawtext":[{"selector":"@a[tag=mnf.winner]"},{"text":`+150${SYM}`}]}}]},
+            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
+        },
+        no_players: {
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.mnf.no_players","with":{"rawtext":[{"selector":"@a[tag=mnf.winner]"},{"text":`+150${SYM}`}]}}]},
+            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
+        },
+        no_players_h: {
+            msg: {"rawtext":[{"translate":"axiscube.games.game_over.generic.no_players"}]},
+            cmd: [{'type':'money','sum': 150, 'target': '@a[tag=mnf.winner]'}]
+        }
+    },
+    joinable: {
+        can_join: true,
+        join_commands: [
+            'tag @s add mnf',
+            'tag @s add mnf.member'
+        ],
+        prebegin_commands: [],
+    },
+    time: {
+        value: 555,
+        tick_function: mnfTick,
+        xp: true,
+        actionbar_spec: true,
+        notify_times: [300, 180, 60],
+        events: {
+            't1': mnfRemoveBarrier
+        }
+    },
+    start_commands: fieldPlace,
+    begin_commands: [
+        'tag @a add mnf',
+        'tag @a add mnf.member',
+        `scoreboard players set "${COPYRIGHT}" mnf.display -9`,
+        'scoreboard players set "§1" mnf.display -8',
+        {type:'scoreset',value: 1, objective: 'mnf.display'},
+        'scoreboard players set "§2" mnf.display 999',
+        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" mnf.display 998`,
+    ],
+    death_data: {
+        death_commands: (player) => {
+            if (getScore('diff','data') == 3) {
+                eliminatePlayerMessage(player.name)
+                runCMDs([
+                    {type:'scoreset',value: -5, objective: 'mnf.display',action: 'set',target: player.name},
+                    'tag @s remove mnf.member',
+                    'tag @s add spec',
+                    'gamemode spectator'
+                ],player)
+            }
+        }
+    },
+    stop_commands: [],
+    boards: [
+        ['mnf.display', '\ue195§6 %axiscube.mnf.name', true],
+    ]
+}
+//#endregion
+
+//#region Functions
+function getRandomNum(min, max) {return Math.random() * (max - min) + min;}
+
+function ObjRange(size, startAt = 0) {
+    return [...Array(size).keys()].map(i => i + startAt);
+}
+
+function ex_callback(){
+    console.warn('Push event catched')
+}
+
+async function sleep(n){
+    system.runTimeout(()=>{Promise.resolve(0)},n)
+}
+
+function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
+
 export async function fieldPlace() {
     field = new Field(GAMEDATA[4].loc[getGameArena()].field_from,GAMEDATA[4].loc[getGameArena()].field_to)
     runCMD(`fill ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[4].loc[getGameArena()].prestart_barrier_to} barrier`)
@@ -438,7 +421,6 @@ export async function mnDefuseUse(player,block) {
     }
 }
 
-let simple = [1,2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499]
 export function createNum(difficulty=100){
     let n1 = randomInt(1,difficulty)
     let n2 = randomInt(1,difficulty)
@@ -500,21 +482,7 @@ export function mnDefuseForm(player,block) {
     })
 }
 
-// world.beforeEvents.itemUseOn.subscribe(ev => {
-//     if(ev.itemStack.typeId == 'axiscube:mn_defuse' && ev.block.typeId == 'minecraft:heavy_weighted_pressure_plate'){
-//         try{
-//             const block = ev.block
-            
-//                 if(block.permutation.getState("redstone_signal") == 1){
-//                     runCMD(`execute as "${player.name}" at "${player.name}" run particle minecraft:electric_spark_particle ${block.x} ${block.y+1} ${block.z}`);
-//                     runCMD(`execute as "${player.name}" at "${player.name}" run playsound mob.evocation_illager.cast_spell @a[r=2] ~~~ 0.3 3`)
-//                     runCMD(`fill ${block.x} ${block.y} ${block.z} ${block.x} ${block.y} ${block.z} air replace heavy_weighted_pressure_plate`);
-//                     runCMD(`clear "${player.name}" axiscube:mn_defuse 0 1`);
-//                 }
-//         }catch(e){console.warn(e);}
-//     }
-// })
-
 async function mnfStop(){
     MT_GAMES.kill()
 }
+//#endregion

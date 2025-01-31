@@ -1,7 +1,7 @@
 import { EntityFlyingSpeedComponent, system, world } from "@minecraft/server"
-import { MT_GAMES, MT_PLUGINS } from "../../../MultiTasking/instances"
-import { getScore, isAdmin } from "../../../axisTools";
-import { TESTERS } from "../../../../tunes/testrun";
+import { MT_GAMES, MT_PLUGINS } from "#modules/MultiTasking/instances"
+import { getScore, isAdmin } from "#modules/axisTools";
+import { TESTERS } from "#tunes/testrun";
 import { config_map_prefix } from "./config";
 
 let prefixes = {

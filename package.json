@@ -1,17 +1,22 @@
 {
-  "name": "xyzprizon",
+  "name": "xyz-minigames",
   "version": "1.0.0",
-  "description": "Brison Emo",
+  "description": "XYZ-MINIGAMES",
   "main": "index.js",
   "scripts": {
+    "build": "tsc && tsc-alias",
+    "build:watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "test": "echo \"Error: no test specified\" && exit 1"
+
   },
   "author": "AbstractScripts",
   "license": "GPL-3.0",
   "dependencies": {
-    "@minecraft/server": "^1.17.0-beta.1.21.51-stable",
-    "@minecraft/server-ui": "^1.4.0-beta.1.21.51-stable",
-    "i": "^0.3.7",
-    "npm": "^10.9.2"
+    "@minecraft/server": "^1.18.0-beta.1.21.60-preview.24",
+    "@minecraft/server-ui": "^1.4.0-beta.1.21.60-preview.24"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "tsc-alias": "^1.8.10"
   }
 }

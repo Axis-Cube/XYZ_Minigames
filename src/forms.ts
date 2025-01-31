@@ -1,5 +1,5 @@
-import { ICONS } from "./const"
-import { getScore } from "./modules/axisTools";
+import { ICONS } from "#root/const"
+import { getScore } from "#modules/axisTools";
 export const FORMS: any = {
     mainmenu: {
         title: "%axiscube.form.mainmenu",

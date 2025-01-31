@@ -1,6 +1,6 @@
 import { system } from "@minecraft/server"
-import { getGame } from "../../../../games/main"
-import { getScore, runCMD } from "../../../axisTools"
+import { getGame } from "#games/main"
+import { getScore, runCMD } from "#modules/axisTools"
 import { config_map_info } from "./config"
 
 if (getScore(config_map_info.file, 'data.plugins') != 0) {

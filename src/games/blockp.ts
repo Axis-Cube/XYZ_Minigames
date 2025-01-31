@@ -1,10 +1,12 @@
-import { system, world } from "@minecraft/server";
-import { actionbar, colorPercent, edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "../modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "./main";
-import { COPYRIGHT, SYM } from "../const";
-import { eliminatePlayerMessage } from "../tunes/profile";
-import { axisEval } from "../modules/evalSandbox";
+import { world } from "@minecraft/server";
+import { actionbar, colorPercent, edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "#modules/axisTools";
+import { getGameArena, startTimer, stopGame } from "#games/main";
+import { COPYRIGHT, SYM } from "#root/const";
+import { eliminatePlayerMessage } from "#tunes/profile";
+import { axisEval } from "#modules/evalSandbox";
 
+
+//#region Constants
 export const BLOCKP_TIMES = [
     0,
     5.5, 5.5, 5.5, 5.0, 5.0, 5.0,
@@ -21,6 +23,79 @@ export const BLOCKP_TIMES = [
 
 export const BLOCKP_TIMES_SUM = Math.ceil(BLOCKP_TIMES.reduce((partialSum, a) => partialSum + a, 0)) + (6 * BLOCKP_TIMES.length)
 
+const BLOCKP_PLATFORMS = [
+    ['brown_wool', 'light_gray_wool', 'black_wool', 'white_wool', 'gray_wool'],
+    ['yellow_wool', 'red_wool', 'pink_wool'],
+    ['yellow_wool', 'orange_wool', 'pink_wool', 'light_blue_wool', 'red_wool', 'purple_wool', 'blue_wool'],
+    ['cyan_wool', 'black_wool', 'purple_wool', 'red_wool', 'yellow_wool', 'pink_wool', 'lime_wool'],
+    ['red_wool', 'pink_wool', 'purple_wool'],
+    ['light_gray_wool', 'gray_wool', 'black_wool'],
+    ['green_wool', 'white_wool', 'red_wool', 'black_wool'],
+    ['light_blue_wool', 'green_wool', 'brown_wool'],
+    ['light_blue_wool', 'red_wool', 'white_wool', 'green_wool'],
+    ['lime_wool', 'red_wool'],
+    ['lime_wool', 'red_wool', 'light_blue_wool', 'yellow_wool', 'blue_wool']
+]
+
+const BLOCKP_BLOCKS = [
+    'black_wool',
+    'blue_wool',
+    'brown_wool',
+    'cyan_wool',
+    'gray_wool',
+    'green_wool',
+    'light_blue_wool',
+    'light_gray_wool',
+    'lime_wool',
+    'magenta_wool',
+    'orange_wool',
+    'pink_wool',
+    'purple_wool',
+    'red_wool',
+    'white_wool',
+    'yellow_wool',
+]
+
+const BLOCKP_COLORS = {
+    'black_wool': 'r',
+    'blue_wool': '9',
+    'brown_wool': 'n',
+    'cyan_wool': '3',
+    'gray_wool': '8',
+    'green_wool': '2',
+    'light_blue_wool': 'b',
+    'light_gray_wool': '7',
+    'lime_wool': 'a',
+    'magenta_wool': '5',
+    'orange_wool': '6',
+    'pink_wool': 'd',
+    'purple_wool': 'u',
+    'red_wool': 'c',
+    'white_wool': '7',
+    'yellow_wool': 'e',
+}
+
+const BLOCKP_COLORNAMES = {
+    'black_wool': 'color.black',
+    'blue_wool': 'color.blue',
+    'brown_wool': 'item.fireworksCharge.brown',
+    'cyan_wool': 'item.fireworksCharge.cyan',
+    'gray_wool': 'color.gray',
+    'green_wool': 'color.green',
+    'light_blue_wool': 'item.fireworksCharge.lightBlue',
+    'light_gray_wool': 'item.fireworksCharge.silver',
+    'lime_wool': 'item.fireworksCharge.lime',
+    'magenta_wool': 'item.fireworksCharge.magenta',
+    'orange_wool': 'item.fireworksCharge.orange',
+    'pink_wool': 'item.fireworksCharge.pink',
+    'purple_wool': 'item.fireworksCharge.purple',
+    'red_wool': 'color.red',
+    'white_wool': 'color.white',
+    'yellow_wool': 'color.yellow',
+}
+//#endregion
+
+//#region Gamedata
 export const GAMEDATA_BLOCKP = { // BLOCK PARTY
     id: 2,
     namespace: 'blockp',
@@ -102,77 +177,9 @@ export const GAMEDATA_BLOCKP = { // BLOCK PARTY
         ['blockp.display', '\ue195§c %axiscube.blockp.name', true],
     ]
 }
+//#endregion
 
-const BLOCKP_PLATFORMS = [
-    ['brown_wool', 'light_gray_wool', 'black_wool', 'white_wool', 'gray_wool'],
-    ['yellow_wool', 'red_wool', 'pink_wool'],
-    ['yellow_wool', 'orange_wool', 'pink_wool', 'light_blue_wool', 'red_wool', 'purple_wool', 'blue_wool'],
-    ['cyan_wool', 'black_wool', 'purple_wool', 'red_wool', 'yellow_wool', 'pink_wool', 'lime_wool'],
-    ['red_wool', 'pink_wool', 'purple_wool'],
-    ['light_gray_wool', 'gray_wool', 'black_wool'],
-    ['green_wool', 'white_wool', 'red_wool', 'black_wool'],
-    ['light_blue_wool', 'green_wool', 'brown_wool'],
-    ['light_blue_wool', 'red_wool', 'white_wool', 'green_wool'],
-    ['lime_wool', 'red_wool'],
-    ['lime_wool', 'red_wool', 'light_blue_wool', 'yellow_wool', 'blue_wool']
-]
-
-const BLOCKP_BLOCKS = [
-    'black_wool',
-    'blue_wool',
-    'brown_wool',
-    'cyan_wool',
-    'gray_wool',
-    'green_wool',
-    'light_blue_wool',
-    'light_gray_wool',
-    'lime_wool',
-    'magenta_wool',
-    'orange_wool',
-    'pink_wool',
-    'purple_wool',
-    'red_wool',
-    'white_wool',
-    'yellow_wool',
-]
-
-const BLOCKP_COLORS = {
-    'black_wool': 'r',
-    'blue_wool': '9',
-    'brown_wool': 'n',
-    'cyan_wool': '3',
-    'gray_wool': '8',
-    'green_wool': '2',
-    'light_blue_wool': 'b',
-    'light_gray_wool': '7',
-    'lime_wool': 'a',
-    'magenta_wool': '5',
-    'orange_wool': '6',
-    'pink_wool': 'd',
-    'purple_wool': 'u',
-    'red_wool': 'c',
-    'white_wool': '7',
-    'yellow_wool': 'e',
-}
-
-const BLOCKP_COLORNAMES = {
-    'black_wool': 'color.black',
-    'blue_wool': 'color.blue',
-    'brown_wool': 'item.fireworksCharge.brown',
-    'cyan_wool': 'item.fireworksCharge.cyan',
-    'gray_wool': 'color.gray',
-    'green_wool': 'color.green',
-    'light_blue_wool': 'item.fireworksCharge.lightBlue',
-    'light_gray_wool': 'item.fireworksCharge.silver',
-    'lime_wool': 'item.fireworksCharge.lime',
-    'magenta_wool': 'item.fireworksCharge.magenta',
-    'orange_wool': 'item.fireworksCharge.orange',
-    'pink_wool': 'item.fireworksCharge.pink',
-    'purple_wool': 'item.fireworksCharge.purple',
-    'red_wool': 'color.red',
-    'white_wool': 'color.white',
-    'yellow_wool': 'color.yellow',
-}
+//#region Functions
 
 export async function placePlatform(plateID = 0) {
     runCMD(`structure load blockp_plate${plateID} ${GAMEDATA_BLOCKP.loc[0].platform}`)
@@ -243,7 +250,9 @@ export async function blockpTick() {
     runCMDs(every5Ticks)
     blockp5ticks()
 }
+//#endregion
 
+//#region Events
 // EVENTS:
 
 export async function blockp5ticks() {
@@ -309,3 +318,4 @@ export async function blockp5ticks() {
     }
     edScore('plate.time', 'data.gametemp', 5, 'remove')
 }
+//#endregion

@@ -1,5 +1,5 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { runCMD } from "../modules/axisTools";
+import { runCMD } from "#modules/axisTools";
 export function AboutManu(target) {
     let t = target;
     let name = t.name;

@@ -1,16 +1,16 @@
 import { ActionFormData, MessageFormData, } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { plugins_log } from "../Logger/logger_env.js";
-import { getScore, runCMD } from "../axisTools.js";
+import { plugins_log } from "#modules/Logger/logger_env.js";
+import { getScore, runCMD } from "#modules/axisTools.js";
 import { pluginConfig, pluginsExec } from "interfaces.js";
-import { ICONS } from "../../const.js";
+import { ICONS } from "#root/const.js";
 //Plugins
-import { config_admin_panel } from "./plugins/admin_panel/config";
-import { config_map_prefix } from "./plugins/map_prefix/config";
-import { config_map_info } from "./plugins/map_info/config";
+import { config_admin_panel } from "#modules/core/plugins/data/admin_panel/config";
+import { config_map_prefix } from "#modules/core/plugins/data/map_prefix/config";
+import { config_map_info } from "#modules/core/plugins/data/map_info/config";
 //Packed_Ui
-import { packui_admin_panel } from "./plugins/admin_panel/ui/index.js";
-import { packui_map_prefix } from "./plugins/map_prefix/ui/index.js";
-import { packui_map_info } from "./plugins/map_info/ui/index.js";
+import { packui_admin_panel } from "#modules/core/plugins/data/admin_panel/ui/index.js";
+import { packui_map_prefix } from "#modules/core/plugins/data/map_prefix/ui/index.js";
+import { packui_map_info } from "#modules/core/plugins/data/map_info/ui/index.js";
 
 /*==============================================================*/
 
@@ -24,6 +24,7 @@ export let LoadedPlugins = [];
 export let LoadedConfig: pluginConfig[] = [];
 export let LoadedUi = [];
 var callbacks = {};
+
 export class Core_Plugins {
     name: string;
 
@@ -32,7 +33,7 @@ export class Core_Plugins {
     }
     async register(id: number, config: pluginConfig, packed_ui: any = false) {
         if (getScore(this.name, 'data.plugins') != 0) {
-            await import(`../Core_Plugins/plugins/${config.file}/index`) //Import file if plugin enabled
+            await import(`./data/${config.file}/plugin`) //Import file if plugin enabled
 
             let _config = config;
             let _version = _config.version.toString().replaceAll(',', '.');
@@ -78,7 +79,8 @@ export function Exec(action: pluginsExec, param = 'Empty') {
     }
 }
 export function showWindow(source) { if (LPN.length == 0) { /*Show error message when plugins not initializated*/ error("No plugins found!\nTry to Init", source); } else { /*Show menu with all plugins*/ Plugins.show(source).then(obj => { pseudoSwitch(obj.selection, source); }); } }
-function error(message, source) { /*Error message form*/ let ErrorMessage = new MessageFormData().title("Oops...").body(message).button1("gui.ok").button2("gui.close"); ErrorMessage.show(source).then(); }
+/*Error message form*/
+function error(message, source) {let ErrorMessage = new MessageFormData().title("Oops...").body(message).button1("gui.ok").button2("gui.close"); ErrorMessage.show(source).then(); }
 
 
 //Отложено на дальнюю полку

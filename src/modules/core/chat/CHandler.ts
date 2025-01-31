@@ -1,9 +1,13 @@
-import { isAdmin, runCMD } from "../axisTools"
+import { isAdmin, runCMD } from "#modules/axisTools"
 import { CCmtkillConfig } from "./commands/mtkill"
+import { CCprodConfig } from "./commands/prod"
 import { CCstartgConfig } from "./commands/startg"
 import { CCstopgConfig } from "./commands/stopg"
 
+//#region Variables
 export let COMMAND_PREFIXES = ["`","\\"]
+let LOADED = {}
+
 export interface CInterface{
     name: string,
     description: string,
@@ -12,9 +16,9 @@ export interface CInterface{
     version: number,
     secure: boolean
 }
+//#endregion
 
-let LOADED = {}
-
+//#region Class
 export class CHandler{
     config: CInterface;
 
@@ -34,12 +38,16 @@ export class CHandler{
         }
     }
 }
+//#endregion
 
+//#region Commands Registration
 let startg = new CHandler(CCstartgConfig).register()
 let stopg = new CHandler(CCstopgConfig).register()
 let mtkill = new CHandler(CCmtkillConfig).register()
+let prod = new CHandler(CCprodConfig).register()
+//#endregion
 
-
+//#region Functions
 export async function CCcall(args, player=null){
     let command_name = args[0]
     args.shift()
@@ -88,4 +96,4 @@ async function CCexecute(command_name, args, player){
         console.warn(e)
     }
 }
-
+//#endregion

@@ -3,11 +3,15 @@
 import { system, world } from "@minecraft/server"
 import { getGameArena, startTimer, stopGame } from "./main"
 import { GAMEDATA } from "./gamedata"
-import { getScore, randomPlayerIcon, runCMD, runCMDs, setblock } from "../modules/axisTools"
+import { getScore, randomPlayerIcon, runCMDs } from "#modules/axisTools"
 import { COPYRIGHT, SYM } from "../const"
-import { games_log } from "../modules/Logger/logger_env"
+import { games_log } from "#modules/Logger/logger_env"
 
+//#region Variables
+let ex_tick = 0
+//#endregion
 
+//#region Gamedata
 export const GAMEDATA_TNT = { // Tnt_run
     id: 8,
     namespace: 'tnt',
@@ -80,7 +84,9 @@ export const GAMEDATA_TNT = { // Tnt_run
         ['tnt.display', '\ue195§6 %axiscube.tnt.name', true],
     ]
 }
+//#endregion
 
+//#region Functins
 async function generate_floors(){
     const arn_info = GAMEDATA[8].loc[getGameArena()]
     const floors_x = arn_info.floor_x
@@ -98,11 +104,6 @@ async function tnt_main(){
         startTimer(8)
     }catch(e){console.warn(e)}
 }
-
-
-
-let ex_tick = 0
-
 
 async function tntExtraTick(){
     await generate_floors()
@@ -167,6 +168,7 @@ async function tntStop(reason){
     await generate_floors()
     stopGame(8,reason)
 }
+
 async function onStop(){
     games_log.put(`[TntRun] onStop commands executed §2sucessfully§r`)
     system.clearRun(ex_tick)
@@ -175,3 +177,4 @@ async function onStop(){
     },10)
     
 }
+//#endregion

@@ -1,12 +1,11 @@
 import { Player, world, system, GameMode, Entity, Vector3 } from "@minecraft/server";
-import { axisEval } from "./evalSandbox";
-import { scoreboardTeamcolor } from "../games/category_team";
-import { GAMEDATA } from "../games/gamedata";
-import { getGame } from "../games/main";
-import { DB_A, DIM, map_id } from "../const";
-import { command_log } from "./Logger/logger_env";
-import { dbGetPlayerRecord } from "./cheesebase";
-import { MT_GAMES } from "./MultiTasking/instances";
+import { axisEval } from "#modules/evalSandbox";
+import { scoreboardTeamcolor } from "#games/category_team";
+import { GAMEDATA } from "#games/gamedata";
+import { getGame } from "#games/main";
+import { DB_A, DIM, map_id } from "#root/const";
+import { command_log } from "#modules/Logger/logger_env";
+import { dbGetPlayerRecord } from "#modules/cheesebase";
 
 /**
  * Gets the Gamemode of a player

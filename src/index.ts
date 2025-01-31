@@ -1,13 +1,12 @@
 let initStart = new Date().valueOf()
 /*    EARLY INITIALIZATION    */
-import "./games/main";
-import "./initialization"
+import "#games/main";
+import "#root/initialization"
 /*     LATE INITIALIZATION    */
-//import { TikTakToe } from './games/lobby.js' //TikTakToe()
-import { Exec } from './modules/Core_Plugins/index';
-import { runCMDs } from './modules/axisTools'
+import { Exec } from '#root/modules/core/plugins/main';
+import { runCMDs } from '#modules/axisTools'
 import { pluginsExec } from "interfaces";
-import './events';
+import '#root/events';
 
 Exec(pluginsExec.INIT);
 /* END OF LATE INITIALIZATION */
@@ -16,6 +15,4 @@ let initEnd = new Date().valueOf()
 try {runCMDs([`inputpermission set @a movement enabled`]);}catch {}
 
 console.warn(`Hello map! Load tooks ${initEnd-initStart}ms`);
-
-
 

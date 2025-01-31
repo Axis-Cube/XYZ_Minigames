@@ -1,4 +1,4 @@
-import { MT_GAMES } from "../../MultiTasking/instances"
+import { MT_GAMES } from "#modules/MultiTasking/instances"
 import { CInterface } from "../CHandler"
 
 let CCmtkillConfig: CInterface = {

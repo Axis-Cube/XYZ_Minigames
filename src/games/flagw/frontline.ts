@@ -1,15 +1,58 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType, EnchantmentTypes, ItemEnchantableComponent, ProjectileHitEntityAfterEvent, Player, EntityEquippableComponent } from "@minecraft/server"
+import { EquipmentSlot, ItemStack, system, world, EntityInventoryComponent, Player, EntityEquippableComponent } from "@minecraft/server"
 import { COPYRIGHT, DIM, SYM } from "../../const"
-import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, setblock, sleep, tellraw } from "../../modules/axisTools"
+import { edScore, hasTag, runCMD, runCMDs, sleep } from "../../modules/axisTools"
 import { GAMEDATA } from "../gamedata"
-import { forceGameRestart, getGameArena, startGame, startTimer, stopGame } from "../main"
+import { getGameArena, stopGame } from "../main"
 import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
 import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
-import { MinecraftEnchantmentTypes } from "../../bundles/vanilla_data"
 import { axisInfo } from "modules/axisInfo"
 
+//#region Variables
+let points
+let projHitBlock
+let ItemsGiveProcess = 0;
 let ArrowHurtEvent;
+//#endregion
 
+//#region Constants
+const teams_info = {
+    0:{
+        floor_y: 85,
+
+        'blue': {
+            spawn: {x:2088,y:87.5,z:2039},
+            focus: "2009 89 2040",
+            armor: {
+                head: new ItemStack('axiscube:blue_leather_helmet'),
+                chest: new ItemStack('axiscube:blue_leather_chestplate')
+            },
+            start_blue_x: 2049,
+            base: 2081,
+        },
+        'red': {
+            spawn: {x:2009,y:87.5,z:2040},
+            focus: "2088 89 2039",
+            armor: {
+                head: new ItemStack('axiscube:red_leather_helmet'),
+                chest: new ItemStack('axiscube:red_leather_chestplate')
+            },
+            base: 2016,
+            start_red_x: 2048,
+        }
+    }
+}
+const FRONTLINE_BLOCKS = [
+    'minecraft:blue_concrete',
+    'minecraft:red_concrete'
+]
+
+const FRONTLINE_TEAMSCORES = {
+    'red': 'red_command',
+    'blue': 'blue_command'
+}
+//#endregion
+
+//#region Gamedata
 export const GAMEDATA_FW_FRONTLINE = { // fw_frontline    
     id: 10,
     namespace: 'fw_frontline',
@@ -36,18 +79,12 @@ export const GAMEDATA_FW_FRONTLINE = { // fw_frontline
     },
     loc: {
         0: {
-
-            //2051.50 118.00 2039.50
             gameplay: false,
             spawn: { type: 'range', value: [ [ 2044, 2054 ], [ 118, 118 ], [ 2046, 2030 ] ] }, //2044.45 118.00 2046.50 2054.54 118.00 2030.67
             newplayer: '2051.50 118.00 2039.50',
-
-            cleardata: {
-                1: [ { x: 2083, y: 80, z:2069 }, { x: 2014, y: 80, z:2010 } ],
-            },
+            cleardata: { 1: [ { x: 2083, y: 80, z:2069 }, { x: 2014, y: 80, z:2010 } ]},
             level_low: 80,
             level_high: 117,
-            //commands
         }
     },
     ends: {
@@ -89,44 +126,9 @@ export const GAMEDATA_FW_FRONTLINE = { // fw_frontline
         ['fw_frontline.display', '\ue190§c %axiscube.fw_frontline.name', true],
     ]
 }
+//#endregion
 
-
-const teams_info = {
-    0:{
-        floor_y: 85,
-
-        'blue': {
-            spawn: {x:2088,y:87.5,z:2039},
-            focus: "2009 89 2040",
-            armor: {
-                head: new ItemStack('axiscube:blue_leather_helmet'),
-                chest: new ItemStack('axiscube:blue_leather_chestplate')
-            },
-            start_blue_x: 2049,
-            base: 2081,
-        },
-        'red': {
-            spawn: {x:2009,y:87.5,z:2040},
-            focus: "2088 89 2039",
-            armor: {
-                head: new ItemStack('axiscube:red_leather_helmet'),
-                chest: new ItemStack('axiscube:red_leather_chestplate')
-            },
-            base: 2016,
-            start_red_x: 2048,
-        }
-    }
-}
-const FRONTLINE_BLOCKS = [
-    'minecraft:blue_concrete',
-    'minecraft:red_concrete'
-]
-
-const FRONTLINE_TEAMSCORES = {
-    'red': 'red_command',
-    'blue': 'blue_command'
-}
-
+//#region Functions
 export async function frontlineClear(){
     try{
         const clearData = GAMEDATA[10].loc[getGameArena()].cleardata
@@ -155,8 +157,6 @@ export async function frontlineClear(){
     }catch(e){console.warn(e)}
 }
 
-let points //start territory - end territory x
-let projHitBlock
 async function frontlinePrepair(){
     projHitBlock = world.afterEvents.projectileHitBlock.subscribe(ev => {
         try{
@@ -254,7 +254,7 @@ async function bridgeOtherIterations(){
             }}
     }catch(e){console.warn(e)}
 }
-let ItemsGiveProcess = 0;
+
 async function frontlineBegin(){
     let arn = getGameArena()
     const red_team = teams_info[arn].red
@@ -351,3 +351,4 @@ async function frontlineStop() {
     
 
 }
+//#endregion
