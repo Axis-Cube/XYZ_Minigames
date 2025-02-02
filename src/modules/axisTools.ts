@@ -1,4 +1,4 @@
-import { Player, world, system, GameMode, Entity, Vector3 } from "@minecraft/server";
+import { Player, world, system, GameMode, Entity, Vector3, ItemStack } from "@minecraft/server";
 import { axisEval } from "#modules/evalSandbox";
 import { scoreboardTeamcolor } from "#root/modules/core/games/category_team";
 import { GAMEDATA } from "#root/modules/core/games/gamedata";
@@ -185,12 +185,17 @@ export function randomPlayerIcon() {
     return icons[randomInt(0,icons.length-1)]
 }
 
-export async function powerTP(pos:any='0 10 0',player:any='@a',target='@s', action='tp') {
+
+//PowerTP interfaces
+export type I_powerTP = I_powerTPArr | I_powerTPRange | I_powerTPByTag | string 
+interface I_powerTPArr{ type: "arr", value: string[], facing?: string }
+interface I_powerTPRange{ type: "range", value: number[][] }
+interface I_powerTPByTag{ type: "bytag", value: { [key: string]: I_powerTP } }
+
+export async function powerTP(pos:I_powerTP = '0 10 0',player:any='@a',target='@s', action='tp') {
     if (typeof pos === 'string') {
         if (action == 'pos') return pos
             await runCMD(`${action} ${target} ${pos}`,player)
-        return
-    } else if (pos === false) {
         return
     } else if (typeof pos === 'object') {
         switch (pos.type) {
@@ -210,7 +215,7 @@ export async function powerTP(pos:any='0 10 0',player:any='@a',target='@s', acti
                 if (player === '@a') {
                     const plrs2 = [...world.getPlayers()]
                     let poss = pos.value
-                    while (poss < plrs2.length) {
+                    while (poss.length < plrs2.length) {
                         poss = [...poss,...poss]
                     }
 
@@ -242,7 +247,7 @@ export async function powerTP(pos:any='0 10 0',player:any='@a',target='@s', acti
                     }
                 }
             return;
-            case 'disable':
+            default:
             return;
         }
     }
@@ -316,7 +321,7 @@ export async function runCMDs(commands, source: any = undefined, needLog = false
                 break;
                 //{type: 'colorscore', score: 3, objective: 'pvp.display'},
                 case 'colorscore':
-                    scoreboardTeamcolor(thisCommand.score,thisCommand.objective,GAMEDATA[getGame()].team_data.teams)
+                    scoreboardTeamcolor(thisCommand.score,thisCommand.objective,GAMEDATA[getGame()].team_data?.teams)
                 break;
                 case 'money':
                     runCMD(`scriptevent axiscube:eval addMoney(name,${thisCommand.sum},${thisCommand.silent})`,target)

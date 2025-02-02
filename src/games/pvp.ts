@@ -6,6 +6,7 @@ import { world } from "@minecraft/server"
 import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "#modules/core/games/category_team"
 import { checkPerm } from "#modules/perm"
 import { dbGetRecord, dbRemoveRecord, dbSetRecord } from "#modules/cheesebase"
+import { I_GameData } from "#root/modules/core/games/gamedata"
 
 //#region Constants 
 const DB_NAME = 'pvp.kitdata'
@@ -350,7 +351,7 @@ export const PVP_VOIDSET = {
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_PVP = { // PVP
+export const GAMEDATA_PVP: I_GameData = { // PVP
     id: 3,
     reset_player_color: {
         1: true
@@ -882,7 +883,7 @@ export function pvpShowKitInfo(player,t=0,infotypeind=0,obj=pvpExportKit(t)) {
         if (infotype == 'created') {
             if ( (gg.selection == 0 && !IS_SELECTED) ) {
                 if (checkPerm(player.name,'pvp_activate')) {
-                    editPVPselectedSet(t)
+                    await editPVPselectedSet(t)
                     playsound('armor.equip_iron',player)
                     pvpSettingKit(player)
                 } else {

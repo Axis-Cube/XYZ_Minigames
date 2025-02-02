@@ -8,6 +8,7 @@ import { haveVoidMessage, knockVoidMessage } from "#tunes/killMessage"
 import { editPlayerGamedata, eliminatePlayerMessage, getPlayerGamedata } from "#tunes/profile"
 import { dbGetRecord, dbSetRecord } from "#modules/cheesebase"
 import { checkPerm } from "#modules/perm"
+import { I_GameData } from "#root/modules/core/games/gamedata"
 
 //#region Constants
 const DB_NAME = 'settings'
@@ -611,7 +612,7 @@ let tickCount = 0
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_BW = { // BW
+export const GAMEDATA_BW: I_GameData = { // BW
     id: 5,
     reset_player_color: {
         0: true

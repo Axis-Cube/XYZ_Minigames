@@ -4,6 +4,7 @@ import { getGameArena, startTimer, stopGame } from "#root/modules/core/games/mai
 import { COPYRIGHT, SYM } from "#root/const";
 import { eliminatePlayerMessage } from "#tunes/profile";
 import { axisEval } from "#modules/evalSandbox";
+import { I_GameData } from "#root/modules/core/games/gamedata";
 
 
 //#region Constants
@@ -96,7 +97,7 @@ const BLOCKP_COLORNAMES = {
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_BLOCKP = { // BLOCK PARTY
+export const GAMEDATA_BLOCKP: I_GameData = { // BLOCK PARTY
     id: 2,
     namespace: 'blockp',
     min_players: 1,
@@ -106,7 +107,6 @@ export const GAMEDATA_BLOCKP = { // BLOCK PARTY
     ],
     loc: {
         0: { //Ready for 1.5
-            gameplay: false,
             spawn: { type: 'range', value: [[2510, 2520], [52, 52], [2710, 2730]] },
             newplayer: { type: 'range', value: [[2510, 2520], [52, 52], [2710, 2730]] },
             spawnpoint: '2517 56 2693',

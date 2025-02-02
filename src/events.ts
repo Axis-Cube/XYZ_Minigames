@@ -148,7 +148,6 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             openJSON(message, player);
             break;
         case 'axiscube:stopgame':
-            MT_GAMES.kill();
             stopGame(Number(message));
             break;
         case 'axiscube:startgame':
@@ -201,9 +200,7 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
                     "scoreboard objectives add data.userapi dummy data.userapi"
                 ]);
             }
-            catch (e) {
-                console.warn(e);
-            }
+            catch (e) {}
             break;
         case 'plugins:get':
             console.warn(LPN);
@@ -352,10 +349,6 @@ world.afterEvents.playerInteractWithBlock.subscribe(e => {
     let block = e.block.typeId;
     let player = e.player;
     switch (block) {
-        case 'axiscube:hg_upgrade':
-            //console.warn('1')
-            //upgradeItem(player);
-            break;
         default:
             if (block.includes('hns')) {
                 e.block.setType('minecraft:air')

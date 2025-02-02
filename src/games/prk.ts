@@ -2,7 +2,7 @@ import { EntityComponentTypes, ItemStack, system, world } from "@minecraft/serve
 import { COPYRIGHT, DIM, SYM } from "#root/const";
 import { actionbar, getScore, playsound, randomPlayerIcon, runCMD } from "#modules/axisTools";
 import { beginGame, getGameArena, startTimer, stopGame } from "#modules/core/games/main";
-import { GAMEDATA } from "#modules/core/games/gamedata";
+import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
 
 //#region Variables
 let timer = 300
@@ -10,7 +10,7 @@ let winners: {name: string, time: number}[] = []
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_PRK = { // Parkour
+export const GAMEDATA_PRK: I_GameData = { // Parkour
     id: 11,
     namespace: 'prk',
     min_players: 1,
@@ -22,41 +22,41 @@ export const GAMEDATA_PRK = { // Parkour
     ],
     loc: {
         0: { //Mansion 
-            gameplay: false,
             spawn: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] },
-            barrier: ["-37 2 -2088", "-41 4 -2088"]
+            barrier: ["-37 2 -2088", "-41 4 -2088"],
+            voidY: -10
         },
         1: {
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] },
             spawnpoint: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] },
-            barrier: ["2 -9 -2070", "-2 -7 -2070"]
+            barrier: ["2 -9 -2070", "-2 -7 -2070"],
+            voidY: -15
         },
         2: {
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 39 , 41 ], [ -8, -8 ], [ -2088, -2083 ] ] },
             spawnpoint: { type: 'range', value: [ [ 39 , 41 ], [ -8, -8 ], [ -2088, -2083 ] ] },
-            barrier: ["41 -5 -2081","35 -8 -2081"]
+            barrier: ["41 -5 -2081","35 -8 -2081"],
+            voidY: -20
         },
         3: { //Candy World
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 86 , 77 ], [ -8, -8 ], [ -2083, -2088 ] ] },
             spawnpoint: { type: 'range', value: [ [ 86 , 77 ], [ -8, -8 ], [ -2083, -2088 ] ] },
-            barrier: ["89 -8 -2080", "75 -5 -2080"]
+            barrier: ["89 -8 -2080", "75 -5 -2080"],
+            voidY: -30
         },
         4: { //Matrix
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 130 , 126 ], [ -5, -5 ], [ -2090, -2084 ] ] },
             spawnpoint: { type: 'range', value: [ [ 130 , 126 ], [ -5, -5 ], [ -2090, -2084 ] ] },
-            barrier: ["131 -5 -2081", "125 -1 -2081"]
+            barrier: ["131 -5 -2081", "125 -1 -2081"],
+            voidY: -18
         },
-        5: {
-            gameplay: false,
+        5: { // FIXME
             spawn: { type: 'range', value: [ [ 179 , 174 ], [ 0, 0 ], [ -2086, -2081 ] ] },
             spawnpoint: { type: 'range', value: [ [ 179 , 174 ], [ 0, 0 ], [ -2086, -2081 ] ] },
-            barrier: ["131 -5 -2081", "125 -1 -2081"]
+            barrier: ["131 -5 -2081", "125 -1 -2081"],
+            voidY: -30
         }
     },
     ends: {
@@ -128,7 +128,7 @@ async function setCheckpoint(player){
                 playsound('random.orb', player.name)
             }else{
                 let vel = player.getVelocity()
-                if(vel.x != 0 && vel.z != 0){
+                if(vel.x == 0 && vel.z == 0){
                     actionbar('\ue12f Checkpoint already created!', player.name)
                 }
             }
@@ -156,7 +156,6 @@ export async function prkCheckpointTp(player){
 }
 
 async function prk_main(){
-    console.warn(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} barrier`)
     runCMD(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} barrier`)
     winners = []
     for (const player of [...world.getPlayers()]) {
@@ -181,7 +180,7 @@ async function prkTick(){
 
     if (playersCount == 0 && playersWin == 0) {
         prkStop('no_players') //Winner 
-    }else if(playersCount && playersWin > 0){
+    }else if(playersCount == 0 && playersWin > 0){
         prkStop('no_players')
     }
     

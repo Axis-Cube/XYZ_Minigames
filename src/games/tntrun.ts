@@ -2,7 +2,7 @@
 //Если diff 0 значит игра одиночная
 import { system, world } from "@minecraft/server"
 import { getGameArena, startTimer, stopGame } from "#modules/core/games/main"
-import { GAMEDATA } from "#modules/core/games/gamedata"
+import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata"
 import { getScore, randomPlayerIcon, runCMDs } from "#modules/axisTools"
 import { COPYRIGHT, SYM } from "#root/const"
 import { games_log } from "#modules/Logger/logger_env"
@@ -12,7 +12,7 @@ let ex_tick = 0
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_TNT = { // Tnt_run
+export const GAMEDATA_TNT: I_GameData = { // Tnt_run
     id: 8,
     namespace: 'tnt',
     min_players: 1,
@@ -24,7 +24,6 @@ export const GAMEDATA_TNT = { // Tnt_run
     ],
     loc: {
         0: { 
-            gameplay: false,//-507.38 95.00 -991.19
             spawn: { type: 'range', value: [ [ -507 , -507 ], [ 95, 95 ], [ -991, -991  ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: { type: 'range', value: [ [ -507 , -507 ], [ 95, 95 ], [ -991, -991  ] ] },

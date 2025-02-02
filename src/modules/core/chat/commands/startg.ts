@@ -1,5 +1,4 @@
 import { startGame } from "#root/modules/core/games/main"
-import { runCMD } from "#modules/axisTools"
 import { CInterface } from "../CHandler";
 
 let CCstartgConfig: CInterface = {

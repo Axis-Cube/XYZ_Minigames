@@ -1,7 +1,7 @@
 import { COPYRIGHT, SYM } from "#root/const";
 import { GameMode, system, world } from "@minecraft/server";
 import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, enchancedRandom } from "#modules/axisTools";
-import { GAMEDATA } from "#modules/core/games/gamedata";
+import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
 import { getGameArena, startTimer, stopGame } from "#modules/core/games/main";
 import { completeChallenge } from "#modules/core/games/chooser";
 import { eliminatePlayerMessage } from "tunes/profile";
@@ -12,7 +12,7 @@ let normal_area: any[]
 //#endregion 
 
 //#region Gamedata
-export const GAMEDATA_GLS = { // Glass
+export const GAMEDATA_GLS: I_GameData = { // Glass
     id: 6,
     namespace: 'gls',
     min_players: 1,
@@ -24,7 +24,6 @@ export const GAMEDATA_GLS = { // Glass
     ],
     loc: {
         0: { //Ready for 1.5
-            gameplay: false,
             spawn: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },
             newplayer: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },
             spawnpoint: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },

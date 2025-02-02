@@ -3,7 +3,7 @@ import { COPYRIGHT } from "#root/const";
 import { Player, system, world } from "@minecraft/server";
 import { randomPlayerIcon, runCMD, runCMDs, shuffle } from "#modules/axisTools";
 import { getGameArena, startTimer, stopGame } from "#modules/core/games/main";
-import { GAMEDATA } from "#modules/core/games/gamedata";
+import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
 import { games_log } from "#modules/Logger/logger_env";
 
 //#region Variables
@@ -13,7 +13,7 @@ let players_count = 0
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_DRP = { // Dropper
+export const GAMEDATA_DRP: I_GameData = { // Dropper
     id: 7,
     namespace: 'drp',
     min_players: 1,
@@ -25,7 +25,6 @@ export const GAMEDATA_DRP = { // Dropper
     ],
     loc: {
         0: { 
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 1539 , 1545 ], [ 120, 120 ], [ 487, 498 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: { type: 'range', value: [ [ 1539 , 1545 ], [ 120, 120 ], [ 487, 498 ] ] },

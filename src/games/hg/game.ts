@@ -6,14 +6,18 @@ import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances";
 import { chests } from "./hg_chests";
 import { games_log } from "#modules/Logger/logger_env";
 import { axisInfo } from "#modules/axisInfo";
+import { I_GameData } from "#root/modules/core/games/gamedata";
 
 //#region Variables
 let zone;
 let timers;
+
+let zoneShrinkTime = 120;
+let chestsUpdateTime = 220;
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_HG = { // Hunger Games
+export const GAMEDATA_HG: I_GameData = { // Hunger Games
     id: 12,
     namespace: 'hg',
     min_players: 2,
@@ -25,7 +29,6 @@ export const GAMEDATA_HG = { // Hunger Games
     ],
     loc: {
         0: { 
-            gameplay: false,//-3115 10 -3064
             spawn: { type: 'arr', value: ['-3011 11.5 -3000', '-3010 11.5 -3004', '-3004 11.5 -3010', '-3000 11.5 -3011', '-2996 11.5 -3010', '-2990 11.5 -3004', '-2989 11.5 -3000', '-2990 11.5 -2996', '-2996 11.5 -2990', '-3000 11.5 -2989', '-3004 11.5 -2990', '-3010 11.5 -2996'], facing: '-3000 11 -3000'},
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: {type: 'arr', value: ['-3011 11.5 -3000', '-3010 11.5 -3004', '-3004 11.5 -3010', '-3000 11.5 -3011', '-2996 11.5 -3010', '-2990 11.5 -3004', '-2989 11.5 -3000', '-2990 11.5 -2996', '-2996 11.5 -2990', '-3000 11.5 -2989', '-3004 11.5 -2990', '-3010 11.5 -2996']},
@@ -133,21 +136,20 @@ async function hgTick(){
 }
 
 async function hgTime(){
-    runCMDs([
-        `inputpermission set @a movement enabled`,
-    ])
+    runCMDs([`inputpermission set @a movement enabled`])
+
     system.runTimeout(()=>{
         runCMDs([
         'gamerule pvp true',
         'title @a actionbar \ue197 Pvp Enabled',
         playsound('respawn_anchor.charge','@a',0.5, 0.7)
         ])
-    },140)//7 sec
+    },200)//10 sec
+
     try{
         edScore('safe_zone','data.gametemp',170)
-        edScore('zone_shrink', 'data.gametemp',150)
-        edScore('chests_update', 'data.gametemp',200)
-
+        edScore('zone_shrink', 'data.gametemp',zoneShrinkTime)
+        edScore('chests_update', 'data.gametemp',chestsUpdateTime)
         
         timers = system.runInterval(async ()=>{
             let zone_size = getScore('safe_zone','data.gametemp')
@@ -157,14 +159,14 @@ async function hgTime(){
             }else if(chests_time == 0){
                 edScore('chests_update', 'data.gametemp',-1)
                 await loadChests(chests)
-                edScore('chests_update', 'data.gametemp',250)
+                edScore('chests_update', 'data.gametemp',chestsUpdateTime)
             }else{}
 
             let zone_shrink = getScore('zone_shrink', 'data.gametemp')
             if(zone_shrink > 0){
                 edScore('zone_shrink', 'data.gametemp',zone_shrink-1)
             }else if(zone_shrink == 0){
-                edScore('zone_shrink', 'data.gametemp',150)
+                edScore('zone_shrink', 'data.gametemp',zoneShrinkTime)
                 if(zone_size > 10){
                     await edScore('safe_zone', 'data.gametemp', zone_size-30)
                 }else{
@@ -172,7 +174,6 @@ async function hgTime(){
                 }
             }
         },20)
-        MT_GAMES.register(timers)
 
         let tmp_id = system.runInterval(()=>{
             let chests_update = getScore('chests_update', 'data.gametemp')
@@ -181,6 +182,7 @@ async function hgTime(){
             axisInfo.replace(String(`\ue101 Chests Update: ${((chests_update == -1)?"Updating":chests_update)}\n\ue135 Zone Shrink: ${(zone_shrink == -1)?"Updating":zone_shrink}`))
         },10)
 
+        MT_GAMES.register(timers)
         MT_INFO.register(tmp_id)
 
     }catch(e){console.warn(e)}
@@ -188,7 +190,6 @@ async function hgTime(){
 
 async function onStop(){
     games_log.put(`[HG] onStop commands executed §2sucessfully§r`)
-    await MT_GAMES.kill()
     await axisInfo.erase()
     runCMDs([
         `inputpermission set @a movement enabled`,

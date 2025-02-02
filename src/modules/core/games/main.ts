@@ -1,10 +1,11 @@
 import { Player, system, world } from '@minecraft/server';
 import { edScore, getScore, playsound, powerTP, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '#modules/axisTools';
 import { checkPerm, isManager, isTempManager } from '#modules/perm';
-import { GAMEDATA } from '#modules/core/games/gamedata';
+import { GAMEDATA, I_GameData } from '#modules/core/games/gamedata';
 import { games_log } from '#modules/Logger/logger_env';
 import { killMessage } from '#tunes/killMessage';
 import { getPlayerColor } from '#tunes/profile';
+import { MT_GAMES } from '#root/modules/MultiTasking/instances';
 
 //#region Variables
 let GAMETAGS = [ 'spec', 'temp.killer', 'temp.prey', 'team.red', 'team.green', 'team.blue', 'team.yellow', 'team.purple', 'team.orange', 'team.pink', 'team.cyan', 'team.lime', 'team.black' ];
@@ -92,8 +93,19 @@ export async function startGame( id, player, arn = getGameArena() ) {
  */
 export async function startTimer(id=getGame()) {
     try{
+        const Game: I_GameData = GAMEDATA[id]
+        const voidY = Game.loc[getGameArena()].voidY
+        const players = [...world.getAllPlayers()]
         await edScore('startgame.timer','data.gametemp',5)
         const intTimer = system.runInterval(async () => {
+                if(voidY){
+                players.forEach(plr => {
+                    if (plr.location.y <= voidY){
+                        plr.kill()
+                    }
+                })
+            }
+
             const thisStage = getScore('startgame.timer','data.gametemp')
             if (thisStage == 5) {
                 await edScore('startgame.timer','data.gametemp',1,'remove')
@@ -159,6 +171,7 @@ export async function clearTags(player: Player | string='@a') {
  */
 export async function stopGame(id=getGame(),finishType='silent',finishVariables:any = undefined) {
     try{
+        await MT_GAMES.kill()
         if (getGame() == 0 && finishType != 'silent') return
         await edScore('mg','data');
         await edScore('stg','data');
@@ -210,7 +223,7 @@ export async function stopGame(id=getGame(),finishType='silent',finishVariables:
 export async function beginGame( id=getGame(), arn=getGameArena() ) {
     if (getGameStage() == 1) return
     await runCMD('clear @a');
-    await powerTP(GAMEDATA[id].loc[arn].gameplay,'@a')
+    (GAMEDATA[id].loc[arn].gameplay) ? await powerTP(GAMEDATA[id].loc[arn].gameplay,'@a') : {};
     await runCMDs(GAMEDATA[id].begin_commands);
     await edScore('stg','data',1);
 };

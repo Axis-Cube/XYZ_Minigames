@@ -1,4 +1,4 @@
-import { runCMD } from '../../axisTools';
+import { I_powerTP, runCMD } from '../../axisTools';
 import { GAMEDATA_FW_FRONTLINE } from '#games/flagw/frontline';
 import { GAMEDATA_FW_BRIDGES } from '#games/flagw/bridges';
 import { GAMEDATA_BLOCKP } from '#games/blockp';
@@ -16,6 +16,28 @@ import { GAMEDATA_HG } from '#games/hg/game';
 // GLOBAL
 
 //#region GameData
+export interface I_GameData{
+    id: number,
+    namespace: string,
+    min_players: number
+    tags: string[],
+    team_data?: { teams: string[], spectator: boolean, icons: string, color_name: boolean },
+    reset_player_color?: { [key: number]: boolean },
+    confirm_begin?: { [key: number]: { warn_message: string, check: string | boolean } },
+    joinable: { can_join: boolean, join_commands?: any[], prebegin_commands: any[], },
+    loc: { [loc: number]: { gameplay?: { type: string, value: object } | any, spawn: I_powerTP, spawnpoint?: I_powerTP, newplayer?: I_powerTP, [key: string]: any, voidY?: number} },
+    ends: { [end: string]: { msg?: any, cmd?: any } }
+    time: { value: number, tick_function: Function, xp: boolean, actionbar_spec?: boolean, notify_times?: number[], events: { [key: number | string]: any[] | Function } },
+    start_commands: any[] | Function,
+    begin_commands: any[] | Function,
+    stop_commands: any[] | Function,
+    pre_commands?: string[],
+    death_data: { disable_notify?: boolean, death_commands?: any[] | Function, killFunc?: Function, kill_reward?: number, },
+    items?: { [item_id: string]: Function, },
+    boards: any[]
+}
+
+
 export const GAMEDATA = {
     0: {
         id: 0,

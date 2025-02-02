@@ -5,7 +5,11 @@ import { TEAMS2, getPlayerTeam, teamArray } from "#root/modules/core/games/categ
 import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances"
 import { allBlocks, SYM } from "#root/const"
 import { axisInfo } from "#modules/axisInfo"
-import { GAMEDATA } from "#root/modules/core/games/gamedata"
+import { GAMEDATA, I_GameData } from "#root/modules/core/games/gamedata"
+
+//#region Variables
+let points = 7
+//#endregion
 
 //#region Constants
 const teams_info = {
@@ -59,7 +63,7 @@ const BRIDGE_TEAMSCORES = {
 //#endregion
 
 //#region GameData
-export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5    
+export const GAMEDATA_FW_BRIDGES: I_GameData = { // fw_bridges READY FOR 1.5    
     id: 9,
     namespace: 'fw_bridges',
     min_players: 2,
@@ -85,7 +89,6 @@ export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5
     },
     loc: {
         0: { //Ready for 1.5
-            gameplay: false,
             spawn: { type: 'range', value: [[3027, 3011], [57, 57], [1016, 1000]] },
             newplayer: '3018 57 1008',
 
@@ -99,7 +102,6 @@ export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5
             blue_hole: [[2984, 3, 1010], [2980, 1, 1006]]
         },
         1: { //Spaceships by MiauMiez 3004 52 630
-            gameplay: false,
             spawn: { type: 'range', value: [[3008, 3002], [54, 54], [633, 627]] },
             newplayer: '3005 54 630',
 
@@ -156,38 +158,10 @@ export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5
 //#endregion
 
 //#region Functions
-export async function bridgeClear() {
-    try {
-        const clearData = GAMEDATA[9].loc[Number(getGameArena())].cleardata
-        const levelLow = GAMEDATA[9].loc[Number(getGameArena())].level_low
-        const levelHigh = GAMEDATA[9].loc[Number(getGameArena())].level_high
 
+// SUPERCLEAN Systems v1 by Axiscube Inc. 
+export async function bridgeClear() { try { const clearData = GAMEDATA[9].loc[Number(getGameArena())].cleardata; const levelLow = GAMEDATA[9].loc[Number(getGameArena())].level_low; const levelHigh = GAMEDATA[9].loc[Number(getGameArena())].level_high; for (let d = 1; d <= Object.keys(clearData).length; d++) { if (clearData.hasOwnProperty(d)) { await runCMD(`tickingarea add ${clearData[d][0].x} ${clearData[d][0].y} ${clearData[d][0].z} ${clearData[d][1].x} ${clearData[d][1].y} ${clearData[d][1].z} flagw_bridges_${d} true`, undefined, true); }; } runCMD('kill @e[type=item]'); for (let y = levelLow - 1; y <= levelHigh; y += 2) { for (let d = 1; d <= Object.keys(clearData).length; d++) { if (clearData.hasOwnProperty(d)) { for (const block of BRIDGE_BLOCKS) { await sleep(2); runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y + 2} ${clearData[d][1].z} air replace ${block}`, undefined, true); }; }; } }; return 0; } catch (e) { console.warn(e); } }
 
-        for (let d = 1; d <= Object.keys(clearData).length; d++) {
-            if (clearData.hasOwnProperty(d)) {
-                await runCMD(`tickingarea add ${clearData[d][0].x} ${clearData[d][0].y} ${clearData[d][0].z} ${clearData[d][1].x} ${clearData[d][1].y} ${clearData[d][1].z} flagw_bridges_${d} true`, undefined, true)
-            }
-        }
-        runCMD('kill @e[type=item]')
-        // SUPERCLEAN Systems v1 by Axiscube Inc. 
-        for (let y = levelLow - 1; y <= levelHigh; y += 2) {
-            for (let d = 1; d <= Object.keys(clearData).length; d++) {
-                if (clearData.hasOwnProperty(d)) {
-                    for (const block of BRIDGE_BLOCKS) {
-                        await sleep(2)
-                        // clearData[d][0].y=y
-                        // clearData[d][1].y=y+2
-                        // DIM.fillBlocks(clearData[d][0],clearData[d][1],MinecraftBlockTypes.air,{matchingBlock:BlockPermutation.resolve(`minecraft:${block}`,{})})
-                        runCMD(`fill ${clearData[d][0].x} ${y} ${clearData[d][0].z} ${clearData[d][1].x} ${y + 2} ${clearData[d][1].z} air replace ${block}`, undefined, true)
-                    }
-                }
-            }
-        }
-        return 0
-    } catch (e) { console.warn(e) }
-}
-
-let points = 7
 async function bridgePrepair() {
     const teams = teamArray()
     for (let i in teams) {
@@ -198,11 +172,9 @@ async function bridgePrepair() {
 
     edScore('fw_br_red', 'data.gametemp', points)
     edScore('fw_br_blue', 'data.gametemp', points)
-    //startTimer(9)
 }
 
 async function bridgeEquipment() {
-    let all_blocks = []
     try {
         for (const player of [...world.getPlayers()]) {
             if (!player.hasTag('spec')) {
@@ -263,11 +235,7 @@ async function bridgeBegin() {
     runCMD(`tp @a[tag=team.blue] ${blue_spawn.x} ${blue_spawn.y} ${blue_spawn.z} facing ${blue_team.focus}`)
     runCMD(`tp @a[tag=team.red] ${red_spawn.x} ${red_spawn.y} ${red_spawn.z} facing ${red_team.focus}`)
 
-    let tmp_id = system.runInterval(() => {
-        axisInfo.replace(String("§4Red: " + "\ue125".repeat(points - getScore('fw_br_blue', 'data.gametemp')) + "\ue12e".repeat(getScore('fw_br_blue', 'data.gametemp')) + "\n" + "§9Blu: " + "\ue127".repeat(points - getScore('fw_br_red', 'data.gametemp')) + "\ue12e".repeat(getScore('fw_br_red', 'data.gametemp'))))
-    }, 10)
-
-    MT_INFO.register(tmp_id)
+    axisInfo.replace(String("§4Red: " + "\ue125".repeat(points - getScore('fw_br_blue', 'data.gametemp')) + "\ue12e".repeat(getScore('fw_br_blue', 'data.gametemp')) + "\n" + "§9Blu: " + "\ue127".repeat(points - getScore('fw_br_red', 'data.gametemp')) + "\ue12e".repeat(getScore('fw_br_red', 'data.gametemp'))))
 
     bridgeOtherIterations()
     bridgeEquipment()
@@ -289,6 +257,7 @@ async function bridgeTick() {
             if (isInBlueHole) { HoleHandlers('blue', player) }
             if (isInRedHole) { HoleHandlers('red', player) }
 
+            axisInfo.replace(String("§4Red: " + "\ue125".repeat(points - getScore('fw_br_blue', 'data.gametemp')) + "\ue12e".repeat(getScore('fw_br_blue', 'data.gametemp')) + "\n" + "§9Blu: " + "\ue127".repeat(points - getScore('fw_br_red', 'data.gametemp')) + "\ue12e".repeat(getScore('fw_br_red', 'data.gametemp'))))
             if (blue_team == 0 && red_team != 0) { await WinHandle('red') }
             else if (red_team == 0 && blue_team != 0) { await WinHandle('blue') }
         }
@@ -296,42 +265,27 @@ async function bridgeTick() {
 }
 
 async function HoleHandlers(color, player) {
-    if (hasTag(player, 'team.blue') && color == 'red') {
-        let score = getScore('fw_br_red', 'data.gametemp')
-        edScore('fw_br_red', 'data.gametemp', score - 1)
-        player.teleport(teams_info[Number(getGameArena())]['blue'].spawn)
-        //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].blue.focus}`) //Red hole
+    let scoreRed = getScore('fw_br_red', 'data.gametemp')
+    let scoreBlue = getScore('fw_br_blue', 'data.gametemp')
+
+    if(color == 'red'){
+        edScore('fw_br_red', 'data.gametemp', scoreRed - 1)
+        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].blue.focus}`)
         playsound('random.levelup', '@a[tag=team.blue]', 0.5, 0.5)
         playsound('ambient.weather.thunder', '@a[tag=team.red]', 0.5, 0.5)
-
-    } else if (hasTag(player, 'team.red') && color == 'blue') {
-        let score = getScore('fw_br_blue', 'data.gametemp')
-        edScore('fw_br_blue', 'data.gametemp', score - 1)
-        player.teleport(teams_info[Number(getGameArena())]['red'].spawn)
-        //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].red.focus}`) //Blue hole
-        playsound('random.levelup', '@a[tag=team.red]', 0.5, 0.5)
-        playsound('ambient.weather.thunder', '@a[tag=team.blue]', 0.5, 0.5)
-    }//Other
-
-    else if (hasTag(player, 'team.red') && color == 'red') {
-        let score = getScore('fw_br_red', 'data.gametemp')
-        edScore('fw_br_red', 'data.gametemp', score - 1)
-        player.teleport(teams_info[Number(getGameArena())]['red'].spawn)
-        //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].blue.focus}`) //Red hole
-        playsound('random.levelup', '@a[tag=team.blue]', 0.5, 0.5)
-        playsound('ambient.weather.thunder', '@a[tag=team.red]', 0.5, 0.5)
-    } else if (hasTag(player, 'team.blue') && color == 'blue') {
-        let score = getScore('fw_br_blue', 'data.gametemp')
-        edScore('fw_br_blue', 'data.gametemp', score - 1)
-        player.teleport(teams_info[Number(getGameArena())]['blue'].spawn)
-        //Sound
-        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].red.focus}`) //Blue hole
+    }else{
+        edScore('fw_br_blue', 'data.gametemp', scoreBlue - 1)
+        runCMD(`particle minecraft:knockback_roar_particle ${teams_info[Number(getGameArena())].red.focus}`)
         playsound('random.levelup', '@a[tag=team.red]', 0.5, 0.5)
         playsound('ambient.weather.thunder', '@a[tag=team.blue]', 0.5, 0.5)
     }
+
+    if(hasTag(player, 'team.red')){
+        player.teleport(teams_info[Number(getGameArena())]['red'].spawn)
+    }else{
+        player.teleport(teams_info[Number(getGameArena())]['blue'].spawn)
+    }
+
 }
 async function WinHandle(command) {
     stopGame(9, `team_${command}_win`)
@@ -363,7 +317,6 @@ async function bridgeDeath(player) {
 
 async function bridgeStop() {
     try {
-        MT_GAMES.kill()
         axisInfo.erase()
     } catch (e) { console.warn(e) }
 }

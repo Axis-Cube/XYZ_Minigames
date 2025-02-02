@@ -8,6 +8,7 @@ import { addMoney } from "#tunes/bank";
 import { ActionFormData } from "@minecraft/server-ui";
 import { COPYRIGHT, SCOLOR, SYM } from "#root/const";
 import { axisEval } from "#modules/evalSandbox";
+import { I_GameData } from "#root/modules/core/games/gamedata";
 
 //#region Constants
 export const HNS_BLOCKS = [ // Hide And Seek
@@ -36,26 +37,6 @@ export const HNS_BLOCKS = [ // Hide And Seek
         icon: 'textures/blocks/crafting_table_front',
         name: 'tile.crafting_table.name',
     }
-    // {
-    //     id: 'barrel',
-    //     name: 'tile.barrel.name',
-    //     icon: 'textures/blocks/barrel_side',
-    // },
-    // {
-    //     id: 'anvil',
-    //     icon: 'textures/blocks/anvil_base',
-    //     name: 'tile.anvil.name',
-    // },
-    // {
-    //     id: 'decorated_pot',
-    //     icon: 'textures/blocks/decorated_pot_side',
-    //     name: 'tile.decorated_pot.name',
-    // },
-    // {
-    //     id: 'furnace',
-    //     icon: 'textures/blocks/furnace_front_on',
-    //     name: 'tile.furnace.name',
-    // },
 ];
 
 const HNS_TAUNTS = [
@@ -161,7 +142,7 @@ const HNS_TAUNTS = [
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_HNS =  {
+export const GAMEDATA_HNS: I_GameData =  {
     id: 1,
     namespace: 'hns',
     min_players: 2,

@@ -3,7 +3,7 @@ import { TEAMS2, getPlayerTeam, teamArray } from "#modules/core/games/category_t
 import { edScore, hasTag, runCMD, runCMDs, sleep } from "#modules/axisTools"
 import { MT_GAMES, MT_INFO } from "#modules/MultiTasking/instances"
 import { getGameArena, stopGame } from "#modules/core/games/main"
-import { GAMEDATA } from "#modules/core/games/gamedata"
+import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata"
 import { COPYRIGHT, DIM, SYM } from "#root/const"
 import { axisInfo } from "modules/axisInfo"
 
@@ -54,7 +54,7 @@ const FRONTLINE_TEAMSCORES = {
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_FW_FRONTLINE = { // fw_frontline    
+export const GAMEDATA_FW_FRONTLINE: I_GameData = { // fw_frontline    
     id: 10,
     namespace: 'fw_frontline',
     min_players: 2,
@@ -80,7 +80,6 @@ export const GAMEDATA_FW_FRONTLINE = { // fw_frontline
     },
     loc: {
         0: {
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 2044, 2054 ], [ 118, 118 ], [ 2046, 2030 ] ] }, //2044.45 118.00 2046.50 2054.54 118.00 2030.67
             newplayer: '2051.50 118.00 2039.50',
             cleardata: { 1: [ { x: 2083, y: 80, z:2069 }, { x: 2014, y: 80, z:2010 } ]},
@@ -186,7 +185,6 @@ async function frontlinePrepair(){
         edScore(`§${i}`,'fw_frontline.display',(Number(i)+1)*2-1)
     }
 
-    //2010 2069 - Z OF MAP
     try{
         system.runTimeout(()=>{
             runCMD(`fill ${teams_info[arn].red.base} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].red.start_red_x} ${teams_info[arn].floor_y} 2069 red_concrete_powder replace blue_concrete_powder`,undefined,true) //red team
@@ -196,7 +194,6 @@ async function frontlinePrepair(){
     }catch(e){console.warn(e)}
 
     edScore('fw_fl_points','data.gametemp',points)
-    //startTimer(9)
 }
 
 async function bridgeEquipment(){
@@ -251,22 +248,17 @@ async function bridgeOtherIterations(){
 }
 
 async function frontlineBegin(){
+    //Getting teams settings
     const red_team = teams_info[arn].red
     const blue_team = teams_info[arn].blue
 
+    //Getting teams spawn
     const blue_spawn = blue_team.spawn
     const red_spawn = red_team.spawn
+
     runCMD(`gamemode a @a[tag=!spec]`)
     runCMD(`tp @a[tag=team.blue] ${blue_spawn.x} ${blue_spawn.y} ${blue_spawn.z} facing ${blue_team.focus}`)
     runCMD(`tp @a[tag=team.red] ${red_spawn.x} ${red_spawn.y} ${red_spawn.z} facing ${red_team.focus}`)
-
-
-    let tmp_id = system.runInterval(()=>{
-        axisInfo.replace(points)
-    },10)
-    MT_INFO.register(tmp_id)
-
-    //let system.runInterval(() => {
 
     bridgeOtherIterations()
     bridgeEquipment()
@@ -287,6 +279,7 @@ async function frontlineBegin(){
         runCMD(`give @a[tag=team.red] red_concrete 3 0 {"minecraft:can_place_on":{"blocks":["red_concrete_powder", "red_concrete"]}}`)
         runCMD(`give @a[tag=team.blue] blue_concrete 3 0 {"minecraft:can_place_on":{"blocks":["blue_concrete_powder", "blue_concrete"]}}`)
     },100)
+
     MT_GAMES.register(ItemsGiveProcess)
 }
 
@@ -301,10 +294,9 @@ async function frontlineTick(){
                 if(DIM.getBlock({x:player.location.x, y:teams_info[getGameArena()].floor_y, z:player.location.z})?.typeId=='minecraft:red_concrete_powder'){
                     player.teleport({x:teams_info[getGameArena()].blue.base-points+1, y:player.location.y, z:player.location.z})
                 }
-                
             }
             if(points <= 0){await WinHandle('red')}
-            else if(points>=64){await WinHandle('blue')}
+            else if(points >= 64){await WinHandle('blue')}
         }
     }
 }
@@ -326,6 +318,8 @@ async function expansionHandler(player, modifier=true){
         points -= expansionModifierRed
         runCMD(`fill ${teams_info[arn].blue.base-points} ${teams_info[arn].floor_y} 2010 ${teams_info[arn].blue.base-pre_points} ${teams_info[arn].floor_y} 2069 red_concrete_powder replace blue_concrete_powder`,undefined,true)
     }
+
+    axisInfo.replace(points)
 }
 
 async function WinHandle(command){
@@ -337,7 +331,6 @@ async function frontlineStop() {
         world.afterEvents.projectileHitBlock.unsubscribe(projHitBlock)
     } catch { }
     try {
-        MT_GAMES.kill()
         world.afterEvents.projectileHitEntity.unsubscribe(ArrowHurtEvent)
         axisInfo.erase()
     } catch (e) { console.warn(e) }

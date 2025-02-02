@@ -1,7 +1,7 @@
 //FIELD ENGINE v0.2.5 by (AbstractScripts aka Lndrs_) License this so so. hmmm give 1000$ to us and unlock MIT license. Default license: idk
 import { colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "#modules/axisTools";
 import { system, world } from "@minecraft/server";
-import { GAMEDATA } from "#modules/core/games/gamedata";
+import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
 import { getGame, getGameArena, startTimer, stopGame } from "#modules/core/games/main";
 import { completeChallenge } from "#modules/core/games/chooser";
 import { ModalFormData } from "@minecraft/server-ui";
@@ -23,7 +23,7 @@ export class Field {
     /**
     * @param {Object} from Начальная координата
     * @param {Object} to Конечная координата
-    * @example Field([x,y,z],[x,y,z]): Boolean
+    * @example let field = new Field([x,y,z],[x,y,z]): Field
     */
     constructor (from, to){
         this.from = from
@@ -137,7 +137,7 @@ let simple = [1,2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83
 //#endregion
 
 //#region Gamedata
-export const GAMEDATA_MNF = { // Minefield
+export const GAMEDATA_MNF: I_GameData = { // Minefield
     id: 4,
     namespace: 'mnf',
     min_players: 1,
@@ -149,7 +149,6 @@ export const GAMEDATA_MNF = { // Minefield
     ],
     loc: {
         0: { //Ready for 1.5
-            gameplay: false,
             spawn: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
             newplayer: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
             spawnpoint: { type: 'range', value: [ [ 2537, 2503 ], [ 72, 72 ], [ 2503, 2504 ] ] },
@@ -166,26 +165,7 @@ export const GAMEDATA_MNF = { // Minefield
 
             winpos_from: [2541, 80, 2601],
             winpos_to: [2502, 72, 2597]
-        },
-        //1: { //Ready for 1.5
-        //    gameplay: false,
-        //    spawn: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-        //    newplayer: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-        //    spawnpoint: { type: 'range', value: [ [ 2456, 2460 ], [ 56, 56 ], [ 2502, 2509 ] ] },
-
-        //    field_from: [2489, 56, 2513],
-        //    field_to: [2430, 56, 2565],
-        //    field_block: 'heavy_weighted_pressure_plate',
-
-        //    startpos: 2512,
-        //    startpos_type: 'z',
-
-        //    prestart_barrier_from: '2489 56 2512',
-        //    prestart_barrier_to: '2428 66 2512',
-
-        //    winpos_from: [2489,56,2569],
-        //    winpos_to: [2429,66,2567]
-        //}
+        }
     },
     ends: {
         no_time: {
@@ -260,10 +240,6 @@ function ObjRange(size, startAt = 0) {
     return [...Array(size).keys()].map(i => i + startAt);
 }
 
-function ex_callback(){
-    console.warn('Push event catched')
-}
-
 async function sleep(n){
     system.runTimeout(()=>{Promise.resolve(0)},n)
 }
@@ -298,10 +274,8 @@ export async function fieldPlace() {
         } else if (diff == 3) {
             field.generate(65)
         }
-        //field.generate(20+10*getScore('diff','data'))
         let status = system.runInterval(() => {
             let fieldStatus = field.getStatus()
-            console.warn(fieldStatus)
             if (fieldStatus[0] == fieldStatus[1] || fieldStatus[0] == fieldStatus[1]-1 || fieldStatus[0] == fieldStatus[1]+1) {
                 startTimer(4)
                 runCMD(`titleraw @a actionbar {"rawtext":[{"translate":"axiscube.mnf.field_engine.status","with":["${fieldStatus[0]}","${fieldStatus[0]}","§q100"]}]}`)
@@ -480,9 +454,5 @@ export function mnDefuseForm(player,block) {
             mnfPlateEvent(block)
         }
     })
-}
-
-async function mnfStop(){
-    MT_GAMES.kill()
 }
 //#endregion
