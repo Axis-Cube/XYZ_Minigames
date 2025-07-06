@@ -1,14 +1,156 @@
-import { COPYRIGHT, ICONS, MINECRAFT_DIFFICULTIES, MINECRAFT_DIFFICULTIES_NAME, SYM } from "#root/const"
-import { edScore, getScore, hasTag, placeError, playsound, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "#modules/axisTools"
+import { COPYRIGHT, ICONS, MINECRAFT_DIFFICULTIES, MINECRAFT_DIFFICULTIES_NAME, SYM } from "../const"
+import { edScore, getScore, getTargetByScore, hasTag, placeError, playsound, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "../modules/axisTools"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { getGameType, stopGame } from "#modules/core/games/main"
+import { getGameType, stopGame } from "./main"
 import { world } from "@minecraft/server"
-import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "#modules/core/games/category_team"
-import { checkPerm } from "#modules/perm"
-import { dbGetRecord, dbRemoveRecord, dbSetRecord } from "#modules/cheesebase"
-import { I_GameData } from "#root/modules/core/games/gamedata"
+import { TEAMS, TEAM_COLORS, TEAM_NOTEAMSELECTOR, getPlayerTeam, teamArray } from "./category_team"
+import { checkPerm } from "../modules/perm"
+import { dbGetRecord, dbRemoveRecord, dbSetRecord } from "../modules/cheesebase"
+//import { magicIt } from "../modules/playerNameTag"
 
-//#region Constants 
+export const GAMEDATA_PVP = { // PVP
+    id: 3,
+    reset_player_color: {
+        1: true
+    },
+    namespace: 'pvp',
+    min_players: 2,
+    tags: [
+        'pvp',
+        'pvp.member',
+        'pvp.winnerteam'
+    ],
+    team_data: {
+        teams: TEAMS,
+        spectator: true,
+        icons: 'heads',
+        color_name: true
+    },
+    confirm_begin: {
+        0: {
+            warn_message: '',
+            check: false
+        },
+        1: {
+            warn_message: 'axiscube.games.startgame.confirm.d_line2.team',
+            check: 'teamcheck'
+        }
+    },
+    loc: {
+        0: { //Ready for 1.5                                                                                                   
+            gameplay: { type: 'arr', value: [ '-4916 1 1080', '-4935 1 1058', '-4911 0 1047', '-4916 7 1075', '-4948 8 1073', '-4942 7 1046', '-4917 7 1074', '-4915 1 1074' ] },
+            spawn: '-4934 15 1062',
+            newplayer: '-4934 15 1062',
+            spawnpoint: '-4934 15 1062',
+        },
+        1: { //Ready for 1.5                                                                    
+            gameplay: { type: 'arr', value: [ '-5467 22 1072', '-5487 26 1079', '-5464 29 1096', '-5481 22 1037', '-5488 18 1049', '-5492 22 1014', '-5471 18 1013', '-5462 29 1032' ] },
+            spawn: '-5475 32 1069',
+            newplayer: '-5475 32 1069',
+            spawnpoint: '-5475 32 1069',
+        }
+    },
+    ends: {
+        no_time: {
+            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.member]'}]
+        },
+        one_player: {
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_player","with":{"rawtext":[{"selector":"@a[tag=pvp.member]"},{"text":"+100${SYM}"}]}}]}`,
+            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.member]'}]
+        },
+        one_duel_player: {
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.pvp.one_duel_player","with":{"rawtext":[{"selector":"@a[tag=pvp.member]"},{"text":"+100${SYM}"}]}}]}`,
+            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.member]'}]
+        },
+        one_team: {
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"$<WINNER_TEAM>"},{"text":"+100${SYM}"}]}}]}`,
+            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.winnerteam]'}]
+        }
+    },
+    joinable: {
+        can_join: false,
+        prebegin_commands: [
+            { type: 'lockslot', slot: 1, item: 'axiscube:begin_game' },
+            { type: 'lockslot', slot: 5, item: 'axiscube:pvp_settingkit' },
+            { type: 'lockslot', slot: 6, item: 'axiscube:setting_game' },
+            { type: 'lockslot', slot: 9, item: 'axiscube:cancel_game' },
+            { type: 'test', testsource: ['type','data'], value: {
+                1: [
+                    { type: 'lockslot', slot: 4, item: 'axiscube:team_selection' },
+                ]
+            }},
+        ],
+    },
+    time: {
+        value: 99999,
+        tick_function: pvpTick,
+        xp: false,
+        events: {
+            t0: [ 'gamerule pvp true' ]
+        }
+    },
+    start_commands: [
+        { type: 'lockslot', slot: 1, item: 'axiscube:begin_game' },
+        { type: 'lockslot', slot: 5, item: 'axiscube:pvp_settingkit' },
+        { type: 'lockslot', slot: 6, item: 'axiscube:setting_game' },
+        { type: 'lockslot', slot: 9, item: 'axiscube:cancel_game' },
+        { type: 'test', testsource: ['type','data'], value: {
+            1: [
+                { type: 'lockslot', slot: 4, item: 'axiscube:team_selection' },
+            ]
+        }},
+    ],
+    begin_commands: [
+        'scoreboard players set "§1" pvp.display 1',
+        'scoreboard players set "§2" pvp.display 5',
+        { type: 'test', testsource: ['type','data'], value: {
+            0: [
+                {type:'scoreset',value: 3, objective: 'pvp.display'},
+                `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" pvp.display 4`,
+            ],
+            1: [
+                `tag ${TEAM_NOTEAMSELECTOR} add spec`,
+                'gamemode spectator @a[tag=spec]',
+                {type: 'colorscore', score: 3, objective: 'pvp.display'},
+                `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" pvp.display 4`,
+            ]
+        }},
+        { type: 'test', testsource: ['pvp.nametag','settings'], value: {
+            1: [
+                'event entity @a axiscube:hide_nametag',
+            ]
+        }},
+        { type: 'test', testsource: ['pvp.falldamage','settings'], value: {
+            1: [
+                'gamerule falldamage true',
+            ]
+        }},
+        'tag @a add pvp.member',
+        () => {pvpSetkit()},
+        `scoreboard players set "${COPYRIGHT}" pvp.display 0`,
+        {type: 'eval', value:'startTimer(3)'}
+    ],
+    death_data: {
+        death_commands: [
+            //{ type: 'sound', target: '@a', sound: 'mob.skeleton.death', p: 1, v: 1 },
+            'clear @s',
+            'tag @s remove pvp.member',
+            'tag @s add spec',
+            'gamemode spectator'
+        ],
+        kill_reward: 10,
+        killFunc: pvpKiller
+    },
+    items: {
+        'axiscube:setting_game': pvpSettingGame,
+        'axiscube:pvp_settingkit': pvpSettingKit
+    },
+    stop_commands: [],
+    boards: [
+        ['pvp.display', '\ue197§b %axiscube.pvp.name', true],
+    ]
+}
+
 const DB_NAME = 'pvp.kitdata'
 
 const PVP_KITSUIT = {
@@ -348,154 +490,7 @@ export const PVP_VOIDSET = {
         }
     }
 }
-//#endregion
 
-//#region Gamedata
-export const GAMEDATA_PVP: I_GameData = { // PVP
-    id: 3,
-    reset_player_color: {
-        1: true
-    },
-    namespace: 'pvp',
-    min_players: 2,
-    tags: [
-        'pvp',
-        'pvp.member',
-        'pvp.winnerteam'
-    ],
-    team_data: {
-        teams: TEAMS,
-        spectator: true,
-        icons: 'heads',
-        color_name: true
-    },
-    confirm_begin: {
-        0: {
-            warn_message: '',
-            check: false
-        },
-        1: {
-            warn_message: 'axiscube.games.startgame.confirm.d_line2.team',
-            check: 'teamcheck'
-        }
-    },
-    loc: {
-        0: { //Ready for 1.5                                                                                                   
-            gameplay: { type: 'arr', value: [ '-4916 1 1080', '-4935 1 1058', '-4911 0 1047', '-4916 7 1075', '-4948 8 1073', '-4942 7 1046', '-4917 7 1074', '-4915 1 1074' ] },
-            spawn: '-4934 15 1062',
-            newplayer: '-4934 15 1062',
-            spawnpoint: '-4934 15 1062',
-        },
-        1: { //Ready for 1.5                                                                    
-            gameplay: { type: 'arr', value: [ '-5467 22 1072', '-5487 26 1079', '-5464 29 1096', '-5481 22 1037', '-5488 18 1049', '-5492 22 1014', '-5471 18 1013', '-5462 29 1032' ] },
-            spawn: '-5475 32 1069',
-            newplayer: '-5475 32 1069',
-            spawnpoint: '-5475 32 1069',
-        }
-    },
-    ends: {
-        no_time: {
-            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.member]'}]
-        },
-        one_player: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_player","with":{"rawtext":[{"selector":"@a[tag=pvp.member]"},{"text":"+100${SYM}"}]}}]}`,
-            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.member]'}]
-        },
-        one_duel_player: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.pvp.one_duel_player","with":{"rawtext":[{"selector":"@a[tag=pvp.member]"},{"text":"+100${SYM}"}]}}]}`,
-            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.member]'}]
-        },
-        one_team: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_team","with":{"rawtext":[{"translate":"$<WINNER_TEAM>"},{"text":"+100${SYM}"}]}}]}`,
-            cmd : [{'type':'money','sum': 100, 'target': '@a[tag=pvp.winnerteam]'}]
-        }
-    },
-    joinable: {
-        can_join: false,
-        prebegin_commands: [
-            { type: 'lockslot', slot: 1, item: 'axiscube:begin_game' },
-            { type: 'lockslot', slot: 5, item: 'axiscube:pvp_settingkit' },
-            { type: 'lockslot', slot: 6, item: 'axiscube:setting_game' },
-            { type: 'lockslot', slot: 9, item: 'axiscube:cancel_game' },
-            { type: 'test', testsource: ['type','data'], value: {
-                1: [
-                    { type: 'lockslot', slot: 4, item: 'axiscube:team_selection' },
-                ]
-            }},
-        ],
-    },
-    time: {
-        value: 99999,
-        tick_function: pvpTick,
-        xp: false,
-        events: {
-            t0: [ 'gamerule pvp true' ]
-        }
-    },
-    start_commands: [
-        { type: 'lockslot', slot: 1, item: 'axiscube:begin_game' },
-        { type: 'lockslot', slot: 5, item: 'axiscube:pvp_settingkit' },
-        { type: 'lockslot', slot: 6, item: 'axiscube:setting_game' },
-        { type: 'lockslot', slot: 9, item: 'axiscube:cancel_game' },
-        { type: 'test', testsource: ['type','data'], value: {
-            1: [
-                { type: 'lockslot', slot: 4, item: 'axiscube:team_selection' },
-            ]
-        }},
-    ],
-    begin_commands: [
-        'scoreboard players set "§1" pvp.display 1',
-        'scoreboard players set "§2" pvp.display 5',
-        { type: 'test', testsource: ['type','data'], value: {
-            0: [
-                {type:'scoreset',value: 3, objective: 'pvp.display'},
-                `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" pvp.display 4`,
-            ],
-            1: [
-                `tag ${TEAM_NOTEAMSELECTOR} add spec`,
-                'gamemode spectator @a[tag=spec]',
-                {type: 'colorscore', score: 3, objective: 'pvp.display'},
-                `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" pvp.display 4`,
-            ]
-        }},
-        { type: 'test', testsource: ['pvp.nametag','settings'], value: {
-            1: [
-                'event entity @a axiscube:hide_nametag',
-            ]
-        }},
-        { type: 'test', testsource: ['pvp.falldamage','settings'], value: {
-            1: [
-                'gamerule falldamage true',
-            ]
-        }},
-        'tag @a add pvp.member',
-        () => {pvpSetkit()},
-        `scoreboard players set "${COPYRIGHT}" pvp.display 0`,
-        {type: 'eval', value:'startTimer(3)'}
-    ],
-    death_data: {
-        death_commands: [
-            //{ type: 'sound', target: '@a', sound: 'mob.skeleton.death', p: 1, v: 1 },
-            'clear @s',
-            'tag @s remove pvp.member',
-            'tag @s add spec',
-            'gamemode spectator'
-        ],
-        kill_reward: 10,
-        killFunc: pvpKiller
-    },
-    items: {
-        'axiscube:setting_game': pvpSettingGame,
-        'axiscube:pvp_settingkit': pvpSettingKit
-    },
-    stop_commands: [],
-    boards: [
-        ['pvp.display', '\ue197§b %axiscube.pvp.name', true],
-    ]
-}
-//#endregion
-
-//#region Functions
 export function cutName(str,name) {
     if (!str) { str = `${name}'s Kit`}
     if (str.length > 30) {
@@ -594,6 +589,26 @@ async function pvpRemoveKit(t,name) {
     }
     await editPVPsetsList(newsets)
     return true
+}
+
+export async function pvpAddSet(player,obj?: any) {
+    try{
+        let name = player.name
+        if (obj) {
+            obj.author = `${obj.author}, ${name}`
+        } else {
+            obj = PVP_VOIDSET
+            obj.author = name
+            obj.name = `${name}\`s Kit`
+        }
+        let pvpsets = getPVPsetsList()
+        let newId = pvpsets.length+1
+        pvpsets.push(newId)
+        editPVPsetsList(pvpsets)
+        await pvpImportKit(obj,newId)
+        playsound('armor.equip_iron',player)
+        pvpEditKitset(player,newId,obj)
+    }catch(e){console.log(`[PVP][KITS] Error: ${e} ${e.stack}`)}
 }
 
 function pvpIconKit(obj) {
@@ -758,11 +773,11 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         bowC++
     }
     form.dropdown('%item.bow.name',bowArr,obj.suit.weapon.bow)
-    form.slider(`\n${PVP_ICONS.weapon.arrow[0]} %item.arrow.name`,0,128,1,obj.suit.weapon.arrow)
+    form.slider(`\n${PVP_ICONS.weapon.arrow[0]} %item.arrow.name`,0,128,{valueStep:1, defaultValue:obj.suit.weapon.arrow})
     
     // Lefthand
-    form.slider(`\n${PVP_ICONS.offhand.totem_of_undying[0]} %item.totem.name`,0,5,1,obj.suit.offhand.totem_of_undying)
-    form.toggle(`${PVP_ICONS.offhand.shield[0]} %item.shield.name`,Boolean(obj.suit.offhand.shield))
+    form.slider(`\n${PVP_ICONS.offhand.totem_of_undying[0]} %item.totem.name`,0,5,{valueStep:1, defaultValue:obj.suit.offhand.totem_of_undying})
+    form.toggle(`${PVP_ICONS.offhand.shield[0]} %item.shield.name`,{defaultValue:Boolean(obj.suit.offhand.shield)})
     let leftItArr: string[] = []
     let leftItC = 0
     for (let item in PVP_KITSUIT.offhand.in_slot) {
@@ -773,9 +788,9 @@ export function pvpEditKitset(player,t,obj=pvpExportKit(t)) {
         leftItC++
     }
     form.dropdown('%axiscube.pvp.kitset.edit.offhand',leftItArr,obj.suit.offhand.in_slot)
-    form.slider(`\n${PVP_ICONS.meal.golden_carrot[0]} %item.golden_carrot.name`,0,64,1,obj.suit.meal.golden_carrot)
-    form.slider(`\n${PVP_ICONS.meal.golden_apple[0]} %item.golden_apple.name`,0,32,1,obj.suit.meal.golden_apple)
-    form.slider(`\n${PVP_ICONS.meal.enchanted_golden_apple[0]} %item.appleEnchanted.name`,0,8,1,obj.suit.meal.enchanted_golden_apple)
+    form.slider(`\n${PVP_ICONS.meal.golden_carrot[0]} %item.golden_carrot.name`,0,64,{valueStep:1, defaultValue:obj.suit.meal.golden_carrot})
+    form.slider(`\n${PVP_ICONS.meal.golden_apple[0]} %item.golden_apple.name`,0,32,{valueStep:1, defaultValue:obj.suit.meal.golden_apple})
+    form.slider(`\n${PVP_ICONS.meal.enchanted_golden_apple[0]} %item.appleEnchanted.name`,0,8,{valueStep:1, defaultValue:obj.suit.meal.enchanted_golden_apple})
 
     form.show(player).then(async gg => { if (!gg.canceled) {
         if(!gg.formValues){return;}
@@ -883,7 +898,7 @@ export function pvpShowKitInfo(player,t=0,infotypeind=0,obj=pvpExportKit(t)) {
         if (infotype == 'created') {
             if ( (gg.selection == 0 && !IS_SELECTED) ) {
                 if (checkPerm(player.name,'pvp_activate')) {
-                    await editPVPselectedSet(t)
+                    editPVPselectedSet(t)
                     playsound('armor.equip_iron',player)
                     pvpSettingKit(player)
                 } else {
@@ -932,7 +947,7 @@ export async function pvpExportForm(player,t=0) {
         generated.name = gg.formValues[0]
         const form2 = new ModalFormData()
         .title('%axiscube.pvp.kitset.export')
-        form2.textField('\n%axiscube.pvp.kitset.export.kitname.suc\n\n','{}',JSON.stringify(generated))
+        form2.textField('\n%axiscube.pvp.kitset.export.kitname.suc\n\n','{}',{defaultValue:JSON.stringify(generated)})
         form2.show(player).then(gg => {})
     }})
 }
@@ -1054,9 +1069,9 @@ export async function pvpSettingGame(player) {
 
         const form = new ModalFormData()
         .title('%axiscube.settings.game')
-        .toggle('%axiscube.settings.pvp.regen',Boolean(settingsRegen))
-        .toggle('%axiscube.settings.nametag',Boolean(settingsNametag))
-        .toggle('%axiscube.settings.falldamage',Boolean(settingsFalldamage))
+        .toggle('%axiscube.settings.pvp.regen',{defaultValue:Boolean(settingsRegen)})
+        .toggle('%axiscube.settings.nametag',{defaultValue:Boolean(settingsNametag)})
+        .toggle('%axiscube.settings.falldamage',{defaultValue:Boolean(settingsFalldamage)})
         .dropdown(`%options.difficulty`,MINECRAFT_DIFFICULTIES_NAME,settingsDifficulty)
         .dropdown(`\n${PVP_ICONS.weapon.misc[1][0]} %enchantment.tridentLoyalty`,Tiers3,settingsEnchLoyalty)
         .dropdown(`\n${PVP_ICONS.weapon.bow[1][0]} %enchantment.arrowInfinite`,Tiers1,settingsEnchInfinity)
@@ -1075,24 +1090,3 @@ export async function pvpSettingGame(player) {
         }})
     }catch(e){console.warn(e, e.stack)}
 }
-
-export async function pvpAddSet(player,obj?: any) {
-    try{
-        let name = player.name
-        if (obj) {
-            obj.author = `${obj.author}, ${name}`
-        } else {
-            obj = PVP_VOIDSET
-            obj.author = name
-            obj.name = `${name}\`s Kit`
-        }
-        let pvpsets = getPVPsetsList()
-        let newId = pvpsets.length+1
-        pvpsets.push(newId)
-        editPVPsetsList(pvpsets)
-        await pvpImportKit(obj,newId)
-        playsound('armor.equip_iron',player)
-        pvpEditKitset(player,newId,obj)
-    }catch(e){console.log(`[PVP][KITS] Error: ${e} ${e.stack}`)}
-}
-//#endregion

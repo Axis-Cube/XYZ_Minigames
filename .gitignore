@@ -1,5 +1,4 @@
 .megaignore
-debug
 scripts
 node_modules
 .vscode
@@ -7,4 +6,4 @@ node_modules
 .debris
 todo.md
 misc
-.gitignore
+.idea

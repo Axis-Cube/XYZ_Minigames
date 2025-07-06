@@ -1,13 +1,10 @@
-import { world } from "@minecraft/server";
-import { actionbar, colorPercent, edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "#modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "#root/modules/core/games/main";
-import { COPYRIGHT, SYM } from "#root/const";
-import { eliminatePlayerMessage } from "#tunes/profile";
-import { axisEval } from "#modules/evalSandbox";
-import { I_GameData } from "#root/modules/core/games/gamedata";
+import { system, world } from "@minecraft/server";
+import { actionbar, colorPercent, edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout } from "../modules/axisTools";
+import { getGameArena, startTimer, stopGame } from "./main";
+import { COPYRIGHT, SYM } from "../const";
+import { eliminatePlayerMessage } from "../tunes/profile";
+import { axisEval } from "../modules/evalSandbox";
 
-
-//#region Constants
 export const BLOCKP_TIMES = [
     0,
     5.5, 5.5, 5.5, 5.0, 5.0, 5.0,
@@ -23,6 +20,88 @@ export const BLOCKP_TIMES = [
 ]
 
 export const BLOCKP_TIMES_SUM = Math.ceil(BLOCKP_TIMES.reduce((partialSum, a) => partialSum + a, 0)) + (6 * BLOCKP_TIMES.length)
+
+export const GAMEDATA_BLOCKP = { // BLOCK PARTY
+    id: 2,
+    namespace: 'blockp',
+    min_players: 1,
+    tags: [
+        'blockp',
+        'blockp.member'
+    ],
+    loc: {
+        0: { //Ready for 1.5
+            gameplay: false,
+            spawn: { type: 'range', value: [[2510, 2520], [52, 52], [2710, 2730]] },
+            newplayer: { type: 'range', value: [[2510, 2520], [52, 52], [2710, 2730]] },
+            spawnpoint: '2517 56 2693',
+            floorLevel: 50,
+            platform: `2500 50 2700`,
+            platform1: `2534 50 2734`
+        }
+    },
+    ends: {
+        no_time: {
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.no_time","with":{"rawtext":[{"selector":"@a[tag=blockp.member]"},{"text":"+150${SYM}"}]}}]}`,
+            cmd: [{ 'type': 'money', 'sum': 150, 'target': '@a[tag=blockp.member]' }]
+        },
+        no_players: {
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.no_players"}]}`
+        },
+        one_player: {
+            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_player","with":{"rawtext":[{"selector":"@a[tag=blockp.member]"},{"text":"+150${SYM}"}]}}]}`,
+            cmd: [{ 'type': 'money', 'sum': 150, 'target': '@a[tag=blockp.member]' }]
+        }
+    },
+    joinable: {
+        can_join: true,
+        join_commands: [
+            'tag @s add blockp.member',
+            (player) => { placeAirBag(player, false) },
+            'scoreboard players set @s blockp.display 3'
+        ],
+        prebegin_commands: [],
+    },
+    time: {
+        tick_function: blockpTick,
+        value: BLOCKP_TIMES_SUM,
+        xp: false,
+        events: {
+            't3': [() => { axisEval('runCMD(`structure load blockp_plate1003 ${GAMEDATA[2].loc[getGameArena()].platform}`)') }],
+            't2': [() => { axisEval('runCMD(`structure load blockp_plate1002 ${GAMEDATA[2].loc[getGameArena()].platform}`)') }],
+            't1': [() => { axisEval('runCMD(`structure load blockp_plate1001 ${GAMEDATA[2].loc[getGameArena()].platform}`)') }],
+        }
+    },
+    start_commands: function () {
+        runCMD('effect @a night_vision 30 0 true')
+        startTimer(2)
+    },
+    begin_commands: [
+        'tag @a add blockp.member',
+        'scoreboard players set "plate.time" data.gametemp 0',
+        'scoreboard players set "plate.id.prev" data.gametemp 1000',
+        'scoreboard players set "plate.id" data.gametemp 0',
+        `scoreboard players set "${COPYRIGHT}" blockp.display 0`,
+        'scoreboard players set "§1" blockp.display 1',
+        { type: 'scoreset', value: 3, objective: 'blockp.display' },
+        'scoreboard players set "§2" blockp.display 5',
+        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" blockp.display 4`,
+
+    ],
+    death_data: {
+        death_commands: []
+    },
+    items: {
+        'axiscube:blockp_totem': placeAirBag
+    },
+    stop_commands: async function () {
+        await runCMD(`structure load blockp_intro ${GAMEDATA_BLOCKP.loc[0].platform}`)
+        try { placePlatform(1000) } catch (e) { console.warn(e) }
+    },
+    boards: [
+        ['blockp.display', '\ue195§c %axiscube.blockp.name', true],
+    ]
+}
 
 const BLOCKP_PLATFORMS = [
     ['brown_wool', 'light_gray_wool', 'black_wool', 'white_wool', 'gray_wool'],
@@ -94,92 +173,6 @@ const BLOCKP_COLORNAMES = {
     'white_wool': 'color.white',
     'yellow_wool': 'color.yellow',
 }
-//#endregion
-
-//#region Gamedata
-export const GAMEDATA_BLOCKP: I_GameData = { // BLOCK PARTY
-    id: 2,
-    namespace: 'blockp',
-    min_players: 1,
-    tags: [
-        'blockp',
-        'blockp.member'
-    ],
-    loc: {
-        0: { //Ready for 1.5
-            spawn: { type: 'range', value: [[2510, 2520], [52, 52], [2710, 2730]] },
-            newplayer: { type: 'range', value: [[2510, 2520], [52, 52], [2710, 2730]] },
-            spawnpoint: '2517 56 2693',
-            floorLevel: 50,
-            platform: `2500 50 2700`,
-            platform1: `2534 50 2734`
-        }
-    },
-    ends: {
-        no_time: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.no_time","with":{"rawtext":[{"selector":"@a[tag=blockp.member]"},{"text":"+150${SYM}"}]}}]}`,
-            cmd: [{ 'type': 'money', 'sum': 150, 'target': '@a[tag=blockp.member]' }]
-        },
-        no_players: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.no_players"}]}`
-        },
-        one_player: {
-            msg: `{"rawtext":[{"translate":"axiscube.games.game_over.generic.one_player","with":{"rawtext":[{"selector":"@a[tag=blockp.member]"},{"text":"+150${SYM}"}]}}]}`,
-            cmd: [{ 'type': 'money', 'sum': 150, 'target': '@a[tag=blockp.member]' }]
-        }
-    },
-    joinable: {
-        can_join: true,
-        join_commands: [
-            'tag @s add blockp.member',
-            (player) => { placeAirBag(player, false) },
-            'scoreboard players set @s blockp.display 3'
-        ],
-        prebegin_commands: [],
-    },
-    time: {
-        tick_function: blockpTick,
-        value: BLOCKP_TIMES_SUM,
-        xp: false,
-        events: {
-            't3': [() => { axisEval('runCMD(`structure load blockp_plate1003 ${GAMEDATA[2].loc[getGameArena()].platform}`)') }],
-            't2': [() => { axisEval('runCMD(`structure load blockp_plate1002 ${GAMEDATA[2].loc[getGameArena()].platform}`)') }],
-            't1': [() => { axisEval('runCMD(`structure load blockp_plate1001 ${GAMEDATA[2].loc[getGameArena()].platform}`)') }],
-        }
-    },
-    start_commands: function () {
-        runCMD('effect @a night_vision 30 0 true')
-        startTimer(2)
-    },
-    begin_commands: [
-        'tag @a add blockp.member',
-        'scoreboard players set "plate.time" data.gametemp 0',
-        'scoreboard players set "plate.id.prev" data.gametemp 1000',
-        'scoreboard players set "plate.id" data.gametemp 0',
-        `scoreboard players set "${COPYRIGHT}" blockp.display 0`,
-        'scoreboard players set "§1" blockp.display 1',
-        { type: 'scoreset', value: 3, objective: 'blockp.display' },
-        'scoreboard players set "§2" blockp.display 5',
-        `scoreboard players set "${randomPlayerIcon()} §a%axiscube.scoreboard.players" blockp.display 4`,
-
-    ],
-    death_data: {
-        death_commands: []
-    },
-    items: {
-        'axiscube:blockp_totem': placeAirBag
-    },
-    stop_commands: async function () {
-        await runCMD(`structure load blockp_intro ${GAMEDATA_BLOCKP.loc[0].platform}`)
-        try { placePlatform(1000) } catch (e) { console.warn(e) }
-    },
-    boards: [
-        ['blockp.display', '\ue195§c %axiscube.blockp.name', true],
-    ]
-}
-//#endregion
-
-//#region Functions
 
 export async function placePlatform(plateID = 0) {
     runCMD(`structure load blockp_plate${plateID} ${GAMEDATA_BLOCKP.loc[0].platform}`)
@@ -250,9 +243,9 @@ export async function blockpTick() {
     runCMDs(every5Ticks)
     blockp5ticks()
 }
-//#endregion
 
-//#region Events
+// EVENTS:
+
 export async function blockp5ticks() {
     const plateTime = getScore('plate.time', 'data.gametemp')
     const plateID = getScore('plate.id', 'data.gametemp')
@@ -316,4 +309,3 @@ export async function blockp5ticks() {
     }
     edScore('plate.time', 'data.gametemp', 5, 'remove')
 }
-//#endregion

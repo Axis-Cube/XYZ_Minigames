@@ -1,11 +1,11 @@
-//import { getScore, getScorev2, scoreboard } from "#modules/axisTools";
+//import { getScore, getScorev2, scoreboard } from "../modules/axisTools";
 import {
     ActionFormData,
     ModalFormData,
   } from "@minecraft/server-ui";
-import { load_log } from "#modules/Logger/logger";
-import { EvalForm, axisEval } from "#modules/evalSandbox";
-import { ICONS } from "#root/const";
+import { load_log } from "../modules/Logger/logger";
+import { EvalForm, axisEval } from "../modules/evalSandbox";
+import { ICONS } from "const";
 
 //Permissions
 let scopes = {

@@ -1,14 +1,14 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { nerdMessage, playsound, rawtext, runCMD } from "#modules/axisTools"
-import { magicIt } from "#modules/playerNameTag"
-import { KILL_MESSAGES_SAMPLE_PREYNAME, playerKillmsgList } from "#tunes/killMessage"
-import { SYM, CHAT_CODES, ICONS, SCOLOR } from "#root/const"
-import { SOUNDMSG, formProfile, formSetSoundmsg, formSetcolor, playerElmsgList } from "#tunes/profile"
-import { addMoney, getMoney } from "#tunes/bank"
-import { GM_CHALLANGES, formGameChallenges } from "#root/modules/core/games/chooser"
-import { GAMEDATA } from "#root/modules/core/games/gamedata"
-import { dbGetPlayerRecord, dbSetPlayerRecord } from "#modules/cheesebase"
-import { dev_log } from "#modules/Logger/logger_env"
+import { nerdMessage, playsound, rawtext, runCMD } from "../modules/axisTools"
+import { magicIt } from "../modules/playerNameTag"
+import { KILL_MESSAGES_SAMPLE_PREYNAME, playerKillmsgList } from "./killMessage"
+import { SYM, CHAT_CODES, ICONS, SCOLOR } from "../const"
+import { SOUNDMSG, formProfile, formSetSoundmsg, formSetcolor, playerElmsgList } from "./profile"
+import { addMoney, getMoney } from "./bank"
+import { GM_CHALLANGES, formGameChallenges } from "../games/chooser"
+import { GAMEDATA } from "../games/gamedata"
+import { dbGetPlayerRecord, dbSetPlayerRecord } from "../modules/cheesebase"
+import { dev_log } from "modules/Logger/logger_env"
 
 const DB_S = '$'
 export const STORE_COLOR = '§5'
@@ -95,14 +95,14 @@ export function formItemsTransfer(player) {
                     if (gl.selection == 0) {   
                         const form3 = new ModalFormData()
                         .title('%axiscube.store.transfer.export')
-                        .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'x.y.z@abcd',String(generatePowerTransferCode(player.name)))
+                        .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'x.y.z@abcd',{defaultValue:String(generatePowerTransferCode(player.name))})
                         .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
                     } else {
                         if(!gl.selection){return;}
                         let selected: number = purchased[Number(gl.selection-1)]
                         const form3 = new ModalFormData()
                         .title('%axiscube.store.transfer.export')
-                        .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'z@xxxxxx',`${selected.toString(36)}@${generateTransferCode(selected,player.name)}`)
+                        .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'z@xxxxxx',{defaultValue:`${selected.toString(36)}@${generateTransferCode(selected,player.name)}`})
                         .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
                     }
             }})
@@ -115,7 +115,7 @@ export function formItemsTransfer(player) {
 function formImportItem(player, comment='', tcode='') {
     const form = new ModalFormData()
     .title('%axiscube.store.transfer.import')
-    .textField(`${comment}%axiscube.store.transfer.import`,'y@xxxxxx OR x.y.z@abcd',tcode)
+    .textField(`${comment}%axiscube.store.transfer.import`,'y@xxxxxx OR x.y.z@abcd',{defaultValue: tcode})
     .show(player).then(gg => { if (!gg.canceled) {
         if(!gg.formValues){return;}
 
@@ -327,7 +327,7 @@ export function formItemInfo(itemId,player) {
                     let selected = itemId
                     const form3 = new ModalFormData()
                     .title('%axiscube.store.transfer.export')
-                    .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'z@xxxxxx',`${selected.toString(36)}@${generateTransferCode(selected,player.name)}`)
+                    .textField({rawtext:[{translate:'axiscube.store.transfer.export.code',with:[`${STORE_COLOR_LIGHT}${player.nameTag}§r`]}]},'z@xxxxxx',{defaultValue:`${selected.toString(36)}@${generateTransferCode(selected,player.name)}`})
                     .show(player).then(ggwp => { if (!ggwp.canceled) {formItemsTransfer(player)}} )
                     return
                 }

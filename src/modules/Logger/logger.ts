@@ -1,6 +1,8 @@
-import { getScore, runCMD, sleep } from "#modules/axisTools";
-import { ActionFormData } from "@minecraft/server-ui";
-import * as log_env from './logger_env';
+import { getScore, runCMD, sleep } from "../axisTools"
+import { ActionFormData } from "@minecraft/server-ui"
+
+import * as log_env from './logger_env'
+import { Player } from "@minecraft/server";
 
 function reverseArr(input) {
     var ret = new Array;

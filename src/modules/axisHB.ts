@@ -4,11 +4,11 @@ Description: Hp showing lib
 ©️ AbstractScripts 2022
 https://github.com/AbstractScripts/
 */
-import { runCMD, playsound, setTickTimeout, hasTag } from '#modules/axisTools';
-import { GAMEDATA } from '#root/modules/core/games/gamedata';
-import { getGame } from '#root/modules/core/games/main';
-import { addMoney } from '#tunes/bank';
-import { SCOLOR, SYM } from '#root/const';
+import { runCMD, playsound, setTickTimeout, hasTag } from './axisTools';
+import { GAMEDATA } from '../games/gamedata';
+import { getGame } from '../games/main';
+import { addMoney } from '../tunes/bank';
+import { SCOLOR, SYM } from '../const';
 
 const hp_full = '\ue120';
 const hp_half = '\ue121';

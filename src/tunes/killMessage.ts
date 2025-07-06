@@ -1,9 +1,12 @@
 import { ActionFormData } from "@minecraft/server-ui"
-import { randomInt, shuffle, tellraw } from "#modules/axisTools"
-import { STORE_COLOR, formShowOffersByCategory, getPurchasedItemsByCategory } from "#tunes/store"
-import { editPlayerSettings, formCustomize, getPlayerSettings } from "#tunes/profile"
-import { ICONS } from "#root/const"
+import { randomInt, shuffle, tellraw } from "../modules/axisTools"
+import { STORE_COLOR, formShowOffersByCategory, getPurchasedItemsByCategory } from "./store"
+import { editPlayerSettings, formCustomize, getPlayerSettings } from "./profile"
+import { ICONS } from "../const"
 
+// export const KILL_MESSAGES = [
+//     0, 1, 2
+// ]
 
 export const FILE_TYPES = ['txt','png','jpg','js','jpeg','exe','exe','exe','exe','bat','bin','ts','mcplayer','plr','lnk','zip','rar']
 

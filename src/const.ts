@@ -1,15 +1,16 @@
-import { world } from "@minecraft/server";
-import { getScore } from "#modules/axisTools";
+import {Dimension, system, world} from "@minecraft/server";
+import { getScore } from "modules/axisTools";
 export const DB_A = '%';
 export const map_id = getScore('map_id', 'settings');
 export const SYM = '\ue131';
+export let DIM = world.getDimension('overworld');
 export const SCOLOR = '§u';
 export const COPYRIGHT = '§bwww.mcxyz.ru';
 export const MAP_NAME = '§l§cA§qxi§9s §4M§ci§6n§gi §eG§aa§bm§9e§us§r';
 export const MINECRAFT_PICKAXES = ['wooden_pickaxe', 'stone_pickaxe', 'iron_pickaxe', 'diamond_pickaxe', 'netherite_pickaxe'];
 export const MINECRAFT_DIFFICULTIES = ['peaceful', 'easy', 'normal', 'hard'];
 export const MINECRAFT_DIFFICULTIES_NAME = ['%options.difficulty.peaceful', '%options.difficulty.easy', '%options.difficulty.normal', '%options.difficulty.hard'];
-export const DIM = world.getDimension('overworld');
+
 export const CHAT_CODES = {
     cat: '\ue1e0',
     pepe: '\ue1e1',

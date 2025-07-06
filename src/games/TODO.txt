@@ -1,0 +1,21 @@
+Добавить арены в Minefield
+Добавить иконку игре Minefield
+
+Переименовать челлендж в игре GLASS
+
+Добавить иконку DRP
+
+Перевод для TNTRUN HUNGERGAMES FLAGW
+
+Добавить минимальное кол-во игроков для старта игр
+
+Пофиксить кастомный компонент
+
+Bedwars Иконка и перевод для категории
+
+
+axiscube.fw_bridges.name
+axiscube.fw_frontline.name
+axiscube.scoreboard.stages
+%axiscube.hns.taunt.name.brewer
+%axiscube.hns.taunt.name.growl

@@ -1,10 +1,32 @@
+import {world} from "@minecraft/server";
+
+let initStart = new Date().valueOf()
+
 /*    EARLY INITIALIZATION    */
-import "#root/modules/core/games/main";
-import "#root/initialization"
+import "./initialization"
+
 /*     LATE INITIALIZATION    */
-import { Exec } from '#root/modules/core/plugins/main';
-import { runCMDs } from '#modules/axisTools'
-import { pluginsExec } from "interfaces";
-import '#root/events';
-try {runCMDs([`inputpermission set @a movement enabled`]);}catch {}
-Exec(pluginsExec.INIT);
+world.afterEvents.worldLoad.subscribe(world => {
+    import("./games/main");
+    //import { TikTakToe } from './games/lobby.js' //TikTakToe()
+    import('./modules/Core_Plugins/index').then(({Exec}) => {
+        import("./interfaces").then(({pluginsExec})=>{
+            Exec(pluginsExec.INIT);
+        })
+
+    });
+
+    import('./modules/axisTools').then(({runCMDs})=>{
+        try {runCMDs([`inputpermission set @a movement enabled`]);}catch {}
+    })
+
+    import('./events');
+
+    let initEnd = new Date().valueOf()
+    console.warn(`Hello map! Load tooks ${initEnd-initStart}ms`);
+})
+/* END OF LATE INITIALIZATION */
+
+
+
+

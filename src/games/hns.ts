@@ -1,17 +1,18 @@
 import { world } from "@minecraft/server";
-import { actionbar, edScore, getScore, hasTag, onItemInteraction, playsound, randomInt, runCMD, runCMDs, shuffle, tellraw } from "#modules/axisTools";
-import isMoving from "#modules/playerMove";
-import { stopGame } from "#modules/core/games/main";
-import { openJSON } from "#modules/easyform";
-import { getPlayerColor } from "#tunes/profile";
-import { addMoney } from "#tunes/bank";
+import { actionbar, edScore, getScore, hasTag, onItemInteraction, playsound, randomInt, runCMD, runCMDs, shuffle, tellraw } from "../modules/axisTools";
+import isMoving from "../modules/playerMove";
+import { getGameArena, stopGame } from "./main";
+import { openJSON } from "../modules/easyform";
+import { getPlayerColor } from "../tunes/profile";
+import { addMoney } from "../tunes/bank";
 import { ActionFormData } from "@minecraft/server-ui";
-import { COPYRIGHT, SCOLOR, SYM } from "#root/const";
-import { axisEval } from "#modules/evalSandbox";
-import { I_GameData } from "#root/modules/core/games/gamedata";
+import { COPYRIGHT, SCOLOR, SYM } from "../const";
+import { axisEval } from "../modules/evalSandbox";
+import { GAMEDATA } from "./gamedata";
 
-//#region Constants
-export const HNS_BLOCKS = [ // Hide And Seek
+// Hide And Seek
+
+export const HNS_BLOCKS = [
     {
         id: 'cobblestone',
         name: 'tile.cobblestone.name',
@@ -37,112 +38,29 @@ export const HNS_BLOCKS = [ // Hide And Seek
         icon: 'textures/blocks/crafting_table_front',
         name: 'tile.crafting_table.name',
     }
+    // {
+    //     id: 'barrel',
+    //     name: 'tile.barrel.name',
+    //     icon: 'textures/blocks/barrel_side',
+    // },
+    // {
+    //     id: 'anvil',
+    //     icon: 'textures/blocks/anvil_base',
+    //     name: 'tile.anvil.name',
+    // },
+    // {
+    //     id: 'decorated_pot',
+    //     icon: 'textures/blocks/decorated_pot_side',
+    //     name: 'tile.decorated_pot.name',
+    // },
+    // {
+    //     id: 'furnace',
+    //     icon: 'textures/blocks/furnace_front_on',
+    //     name: 'tile.furnace.name',
+    // },
 ];
 
-const HNS_TAUNTS = [
-    {
-        name: `%axiscube.hns.taunt.name.techy_oink`,
-        icons: `textures/ui/icons/games/hns/taunt_techy`,
-        eval: (player) => {
-            let sounds = ['mob.piglin.jealous','mob.piglin.ambient','mob.piglin.retreat','mob.piglin.celebrate','mob.piglin.angry','mob.piglin.admiring_item','mob.pig.say']
-            runCMD(`playsound ${shuffle(sounds)[0]} @a ~~~`,player)
-            runCMD(`particle minecraft:soul_particle`,player)
-        },
-        cooldown: 5,
-        reward: 1
-    },
-    {
-        name: `%axiscube.hns.taunt.name.flame`,
-        icons: '',
-        eval: (player) => {
-            runCMD(`playsound mob.blaze.death @a ~~~`,player)
-            runCMD(`particle minecraft:mobflame_single ~~1~`,player)
-        },
-        cooldown: 5,
-        reward: 1
-    },
-    {
-        name: `%entity.evocation_fang.name`,
-        icons: `textures/ui/icons/games/hns/taunt_fangs`,
-        eval: (player) => {
-            runCMDs([
-                `summon evocation_fang ~1 ~-1 ~1`,
-                `summon evocation_fang ~1 ~-1 ~-1`,
-                `summon evocation_fang ~-1 ~-1 ~-1`,
-                `summon evocation_fang ~-1 ~-1 ~1`
-            ],player)
-        },
-        cooldown: 10,
-        reward: 5
-    },
-    {
-        name: `%item.totem.name`,
-        icons: `textures/items/totem`,
-        eval: (player) => {
-            runCMDs([
-                `playsound random.totem @a ~~~`,
-                `particle minecraft:totem_particle`,
-                `particle minecraft:totem_particle`,
-                `particle minecraft:totem_particle ~~-1~`,
-                `particle minecraft:totem_particle ~~-1~`
-            ],player)
-        },
-        cooldown: 13,
-        reward: 7
-    },
-    {
-        name: `%axiscube.hns.taunt.name.boom`,
-        icons: 'textures/blocks/tnt_side',
-        eval: (player) => {
-            runCMDs([
-                `playsound random.explode @a ~~~`,
-                'particle minecraft:huge_explosion_emitter'
-            ],player)
-        },
-        cooldown: 34,
-        reward: 17
-    },
-    {
-        name: `%entity.lightning_bolt.name`,
-        icons: '',
-        eval: (player) => {
-            runCMDs([
-                `summon lightning_bolt ~ ~-10 ~`
-            ],player)
-        },
-        cooldown: 35,
-        reward: 25,
-    },
-    {
-        name: '%axiscube.hns.taunt.name.growl',
-        icons: '',
-        eval: (player) => {
-            runCMDs([
-                'particle minecraft:trial_spawner_detection_ominous ~~-1~',
-                'playsound mob.enderdragon.growl @a ~~~',
-                ],player)
-                },
-                cooldown: 15,
-                reward: 15,
-    },
-    {
-        name: '%axiscube.hns.taunt.name.brewer',
-            icons: '',
-            eval: (player) => {
-            let sounds = ['random.potion.brewed']
-            runCMDs([
-                'playsound random.potion.brewed @a ~~~',
-                'particle minecraft:splash_spell_emitter ~~-1~'
-            ],player)
-        },
-        cooldown: 5,
-        reward: 1
-    }
-]
-//#endregion
-
-//#region Gamedata
-export const GAMEDATA_HNS: I_GameData =  {
+export const GAMEDATA_HNS =  {
     id: 1,
     namespace: 'hns',
     min_players: 2,
@@ -258,9 +176,7 @@ export const GAMEDATA_HNS: I_GameData =  {
         ['hns.taunt'],
     ]
 }
-//#endregion
 
-//#region Functions
 export function hnsBlockListUI(player) {
     const EasyFormObj: any = {
         'x': {
@@ -300,6 +216,107 @@ export function hnsBlockListUI(player) {
     }
     openJSON('x',player,EasyFormObj)
 }
+
+const HNS_TAUNTS = [
+    {
+        name: `%axiscube.hns.taunt.name.techy_oink`,
+        icons: `textures/ui/icons/games/hns/taunt_techy`,
+        eval: (player) => {
+            let sounds = ['mob.piglin.jealous','mob.piglin.ambient','mob.piglin.retreat','mob.piglin.celebrate','mob.piglin.angry','mob.piglin.admiring_item','mob.pig.say']
+            runCMD(`playsound ${shuffle(sounds)[0]} @a ~~~`,player)
+            runCMD(`particle minecraft:soul_particle`,player)
+        },
+        cooldown: 5,
+        reward: 1
+    },
+    {
+        name: `%axiscube.hns.taunt.name.flame`,
+        icons: '',
+        eval: (player) => {
+            runCMD(`playsound mob.blaze.death @a ~~~`,player)
+            runCMD(`particle minecraft:mobflame_single ~~1~`,player)
+        },
+        cooldown: 5,
+        reward: 1
+    },
+    {
+        name: `%entity.evocation_fang.name`,
+        icons: `textures/ui/icons/games/hns/taunt_fangs`,
+        eval: (player) => {
+            runCMDs([
+                `summon evocation_fang ~1 ~-1 ~1`,
+                `summon evocation_fang ~1 ~-1 ~-1`,
+                `summon evocation_fang ~-1 ~-1 ~-1`,
+                `summon evocation_fang ~-1 ~-1 ~1`
+            ],player)
+        },
+        cooldown: 10,
+        reward: 5
+    },
+    {
+        name: `%item.totem.name`,
+        icons: `textures/items/totem`,
+        eval: (player) => {
+            runCMDs([
+                `playsound random.totem @a ~~~`,
+                `particle minecraft:totem_particle`,
+                `particle minecraft:totem_particle`,
+                `particle minecraft:totem_particle ~~-1~`,
+                `particle minecraft:totem_particle ~~-1~`
+            ],player)
+        },
+        cooldown: 13,
+        reward: 7
+    },
+    {
+        name: `%axiscube.hns.taunt.name.boom`,
+        icons: 'textures/blocks/tnt_side',
+        eval: (player) => {
+            runCMDs([
+                `playsound random.explode @a ~~~`,
+                'particle minecraft:huge_explosion_emitter'
+            ],player)
+        },
+        cooldown: 34,
+        reward: 17
+    },
+    {
+        name: `%entity.lightning_bolt.name`,
+        icons: '',
+        eval: (player) => {
+            runCMDs([
+                `summon lightning_bolt ~ ~-10 ~`
+            ],player)
+        },
+        cooldown: 35,
+        reward: 25,
+    },
+    {
+        name: '%axiscube.hns.taunt.name.growl',
+        icons: '',
+        eval: (player) => {
+            runCMDs([
+                'particle minecraft:trial_spawner_detection_ominous ~~-1~',
+                'playsound mob.enderdragon.growl @a ~~~',
+                ],player)
+                },
+                cooldown: 15,
+                reward: 15,
+    },
+    {
+        name: '%axiscube.hns.taunt.name.brewer',
+            icons: '',
+            eval: (player) => {
+            let sounds = ['random.potion.brewed']
+            runCMDs([
+                'playsound random.potion.brewed @a ~~~',
+                'particle minecraft:splash_spell_emitter ~~-1~'
+            ],player)
+        },
+        cooldown: 5,
+        reward: 1
+    }
+]
 
 export function hnsFormTaunts(player) {
     const coldownTime = getScore(player,'hns.taunt')
@@ -520,4 +537,3 @@ async function onBegin(){
         }
     }
 }
-//#endregion

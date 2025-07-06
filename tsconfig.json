@@ -11,13 +11,7 @@
     "strictNullChecks": true,
     "types": [
       "@minecraft/server"
-    ],
-    "paths": {
-      "#root/*": ["*"],
-      "#modules/*": ["modules/*"],
-      "#tunes/*": ["tunes/*"],
-      "#games/*": ["games/*"]
-    }
+    ]
   },
   "exclude": ["node_modules"],
   "include": ["src/**/*"]

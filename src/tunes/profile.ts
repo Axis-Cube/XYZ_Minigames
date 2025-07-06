@@ -1,11 +1,11 @@
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { ICONS, REGION_CODES, REGION_NAMES, SCOLOR, SYM } from "#root/const";
-import { playsound, randomInt,  shuffle,  tellraw } from "#modules/axisTools";
-import { playerKillmsgList } from "#tunes/killMessage";
-import { STORE_COLOR, formShowCategories, formShowOffersByCategory, getPurchasedItemsByCategory } from "#tunes/store";
-import { getMoney } from "#tunes/bank";
-import { openJSON } from "#modules/easyform";
-import { dbGetPlayerRecord, dbSetPlayerRecord } from "#modules/cheesebase";
+import { ICONS, REGION_CODES, REGION_NAMES, SCOLOR, SYM } from "../const";
+import { playsound, randomInt,  shuffle,  tellraw } from "../modules/axisTools";
+import { playerKillmsgList } from "./killMessage";
+import { STORE_COLOR, formShowCategories, formShowOffersByCategory, getPurchasedItemsByCategory } from "./store";
+import { getMoney } from "./bank";
+import { openJSON } from "../modules/easyform";
+import { dbGetPlayerRecord, dbSetPlayerRecord } from "../modules/cheesebase";
 
 const DB_DEFAULT = {
     region: 0,

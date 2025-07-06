@@ -1,10 +1,10 @@
-import { nameToPlayer, rawtext, runCMD, tellraw } from "#modules/axisTools"
+import { nameToPlayer, rawtext, runCMD, tellraw } from "./axisTools"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { formPermLocalSettings, formPermSettings } from "#tunes/mapSettings"
-import { DATABASE_IDS, ICONS } from "#root/const"
-import { getPlayerColor } from "#tunes/profile"
+import { formPermLocalSettings, formPermSettings } from "../tunes/mapSettings"
+import { DATABASE_IDS, ICONS } from "../const"
+import { getPlayerColor } from "../tunes/profile"
 import { world } from "@minecraft/server"
-import { dbGetPlayerRecord, dbGetRecord, dbSetPlayerRecord, dbSetRecord } from "#modules/cheesebase"
+import { dbGetPlayerRecord, dbGetRecord, dbSetPlayerRecord, dbSetRecord } from "./cheesebase"
 import { rawtextMessage } from "interfaces"
 
 const PERM_DEF = ['\ue126 %axiscube.settings.perms.global.everyone','\ue12f %axiscube.settings.perms.global.mapmanager']
@@ -96,7 +96,7 @@ export function formGlobalPerms(player) {
 
     for (let i in perms) {
         setable.push(i)
-        form.dropdown(`%axiscube.perm.lz.${i}`,PERM_DEF,perms[i] ? 0 : 1)
+        form.dropdown(`%axiscube.perm.lz.${i}`,PERM_DEF,{defaultValueIndex:perms[i] ? 0 : 1})
     }
     form.show(player).then(async gg => { if (!gg.canceled) {
         if(!gg.formValues){return;}
@@ -169,11 +169,11 @@ export function formPermSettingPlayer(player,name) {
             formPermLocalSettings(player)
         } else if (isMapManager) {
             if (!isMapMainManager && !isMapTempManager) {
-                if (gg.selection == 1 && isMainManager(player) && !nameToPlayer(name)?.isOp()) {
+                if (gg.selection == 1 && isMainManager(player) /* FIXME && !nameToPlayer(name).isOp()*/) {
                     runCMD('tag @s remove perm.op',name)
                     tellraw({rawtext:[{translate:'axiscube.perm.op.revoked.by_leader.public',with:[`${getPlayerColor(name)}${name}`,`${getPlayerColor(player.name)}${player.name}`]}]})
                     tellraw({rawtext:[{translate:'axiscube.perm.op.revoked.generic',with:[`${getPlayerColor(player.name)}${player.name}`]}]},name)
-                } else if (gg.selection == 1 && isMainManager(player) && nameToPlayer(name)?.isOp()) {
+                } else if (gg.selection == 1 && isMainManager(player)/* FIXME  && nameToPlayer(name)?.isOp()*/) {
                     let disName = name
                     if (disName.includes(' ')) { disName = `"${name}"` }
                     const form = new ActionFormData()

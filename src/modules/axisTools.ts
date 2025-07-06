@@ -1,11 +1,12 @@
-import { Player, world, system, GameMode, Entity, Vector3, ItemStack } from "@minecraft/server";
-import { axisEval } from "#modules/evalSandbox";
-import { scoreboardTeamcolor } from "#root/modules/core/games/category_team";
-import { GAMEDATA } from "#root/modules/core/games/gamedata";
-import { getGame } from "#root/modules/core/games/main";
-import { DB_A, DIM, map_id } from "#root/const";
-import { command_log } from "#modules/Logger/logger_env";
-import { dbGetPlayerRecord } from "#modules/cheesebase";
+import { Player, world, system, GameMode, Entity, Vector3 } from "@minecraft/server";
+import { axisEval } from "./evalSandbox";
+import { scoreboardTeamcolor } from "../games/category_team";
+import { GAMEDATA } from "../games/gamedata";
+import { getGame } from "../games/main";
+import { DB_A, DIM, map_id } from "../const";
+import { command_log } from "./Logger/logger_env";
+import { dbGetPlayerRecord } from "./cheesebase";
+import { MT_GAMES } from "./MultiTasking/instances";
 
 /**
  * Gets the Gamemode of a player
@@ -161,15 +162,15 @@ export async function runCMD(command, source: any = undefined, needLog = false){
     else if (command.startsWith('/')) command = command.slice(1)
     try {
         if (source == undefined) {
-            await DIM.runCommandAsync(command)
+            DIM.runCommand(command)
         } else if (typeof source == 'object') {
-            await source.runCommandAsync(command)
+            await source.runCommand(command)
             return
         } else if (typeof source == 'string' && source.startsWith('@')) {
-            await DIM.runCommandAsync(`execute as ${source} at @s run execute positioned as @s run ${command}`)
+            DIM.runCommand(`execute as ${source} at @s run execute positioned as @s run ${command}`)
             return
         } else if (typeof source == 'string' && !source.startsWith('@')) {
-            await DIM.runCommandAsync(`execute as "${source}" at @s run execute positioned as @s run ${command}`)
+            DIM.runCommand(`execute as "${source}" at @s run execute positioned as @s run ${command}`)
             return
         }
     } catch(error) {
@@ -185,17 +186,12 @@ export function randomPlayerIcon() {
     return icons[randomInt(0,icons.length-1)]
 }
 
-
-//PowerTP interfaces
-export type I_powerTP = I_powerTPArr | I_powerTPRange | I_powerTPByTag | string 
-interface I_powerTPArr{ type: "arr", value: string[], facing?: string }
-interface I_powerTPRange{ type: "range", value: number[][] }
-interface I_powerTPByTag{ type: "bytag", value: { [key: string]: I_powerTP } }
-
-export async function powerTP(pos:I_powerTP = '0 10 0',player:any='@a',target='@s', action='tp') {
+export async function powerTP(pos:any='0 10 0',player:any='@a',target='@s', action='tp') {
     if (typeof pos === 'string') {
         if (action == 'pos') return pos
             await runCMD(`${action} ${target} ${pos}`,player)
+        return
+    } else if (pos === false) {
         return
     } else if (typeof pos === 'object') {
         switch (pos.type) {
@@ -215,7 +211,7 @@ export async function powerTP(pos:I_powerTP = '0 10 0',player:any='@a',target='@
                 if (player === '@a') {
                     const plrs2 = [...world.getPlayers()]
                     let poss = pos.value
-                    while (poss.length < plrs2.length) {
+                    while (poss < plrs2.length) {
                         poss = [...poss,...poss]
                     }
 
@@ -247,7 +243,7 @@ export async function powerTP(pos:I_powerTP = '0 10 0',player:any='@a',target='@
                     }
                 }
             return;
-            default:
+            case 'disable':
             return;
         }
     }
@@ -321,7 +317,7 @@ export async function runCMDs(commands, source: any = undefined, needLog = false
                 break;
                 //{type: 'colorscore', score: 3, objective: 'pvp.display'},
                 case 'colorscore':
-                    scoreboardTeamcolor(thisCommand.score,thisCommand.objective,GAMEDATA[getGame()].team_data?.teams)
+                    scoreboardTeamcolor(thisCommand.score,thisCommand.objective,GAMEDATA[getGame()].team_data.teams)
                 break;
                 case 'money':
                     runCMD(`scriptevent axiscube:eval addMoney(name,${thisCommand.sum},${thisCommand.silent})`,target)
@@ -466,7 +462,7 @@ export async function safeZone(loc3: Vector3, radius: number = 100, numPoints: n
 */
 export function safeZoneDamage(loc3, radius) {
     let ploc;
-    for (const player of [...world.getPlayers({excludeGameModes: [GameMode.spectator, GameMode.creative]})]) {
+    for (const player of [...world.getPlayers({excludeGameModes: [GameMode.Spectator, GameMode.Creative]})]) {
         ploc = player.location
         let r = radius
         var dist_points = (ploc.x - loc3.x) * (ploc.x - loc3.x) + (ploc.z - loc3.z) * (ploc.z - loc3.z); // a=p b=p x=c y=c r=r
@@ -474,11 +470,11 @@ export function safeZoneDamage(loc3, radius) {
         if (dist_points < r) {
             //console.warn('true');
             try{
-                DIM.runCommandAsync(`fog ${player?.name} remove zone_fog`)
+                DIM.runCommand(`fog ${player?.name} remove zone_fog`)
             }catch{}
         } else {
             try{
-                DIM.runCommandAsync(`fog ${player?.name} push minecraft:fog_crimson_forest zone_fog`)
+                DIM.runCommand(`fog ${player?.name} push minecraft:fog_crimson_forest zone_fog`)
             }catch{}
             if(player?.getDynamicProperty('last_zone_damage') && (Date.now().valueOf() - Number(player?.getDynamicProperty('last_zone_damage')) >= 5000)){
                 player?.setDynamicProperty('last_zone_damage', Date.now())
@@ -491,8 +487,8 @@ export function safeZoneDamage(loc3, radius) {
 }
 
 
-export const cryptWithSalt = (salt, text) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return text.split("").map(textToChars).map(applySaltToChar).map(byteHex).join(""); };
-export const decryptWithSalt = (salt, encoded) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return encoded.match(/.{1,2}/g).map((hex) => parseInt(hex, 16)).map(applySaltToChar).map((charCode) => String.fromCharCode(charCode)).join(""); };
+export const cryptWithSalt = (salt, text) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return text .split("") .map(textToChars) .map(applySaltToChar) .map(byteHex) .join(""); };
+export const decryptWithSalt = (salt, encoded) => { const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0)); const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code); return encoded .match(/.{1,2}/g) .map((hex) => parseInt(hex, 16)) .map(applySaltToChar) .map((charCode) => String.fromCharCode(charCode)) .join(""); };
 
 /**
 * Update MapID

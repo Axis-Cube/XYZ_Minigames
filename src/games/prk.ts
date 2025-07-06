@@ -1,16 +1,13 @@
-import { EntityComponentTypes, ItemStack, system, world } from "@minecraft/server";
-import { COPYRIGHT, DIM, SYM } from "#root/const";
-import { actionbar, getScore, playsound, randomPlayerIcon, runCMD } from "#modules/axisTools";
-import { beginGame, getGameArena, startTimer, stopGame } from "#modules/core/games/main";
-import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
+import { system, world } from "@minecraft/server";
+import { COPYRIGHT, DIM, SYM } from "../const";
+import { actionbar, getScore, playsound, randomPlayerIcon, runCMD } from "../modules/axisTools";
+import { getGameArena, startTimer, stopGame } from "./main";
+import { MT_GAMES } from "../modules/MultiTasking/instances";
+import { GAMEDATA } from "./gamedata";
 
-//#region Variables
 let timer = 300
-let winners: {name: string, time: number}[] = []
-//#endregion
 
-//#region Gamedata
-export const GAMEDATA_PRK: I_GameData = { // Parkour
+export const GAMEDATA_PRK = { // Parkour
     id: 11,
     namespace: 'prk',
     min_players: 1,
@@ -21,42 +18,42 @@ export const GAMEDATA_PRK: I_GameData = { // Parkour
         'prk.member'
     ],
     loc: {
-        0: { //Mansion 
+        0: { 
+            gameplay: false,
             spawn: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: { type: 'range', value: [ [ -37 , -41 ], [ 2, 2 ], [ -2092, -2089 ] ] },
-            barrier: ["-37 2 -2088", "-41 4 -2088"],
-            voidY: -10
+            barrier: ["-37 2 -2088", "-41 4 -2088"]
         },
         1: {
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] },
             spawnpoint: { type: 'range', value: [ [ 3 , -3 ], [ -9, -9 ], [ -2083, -2078 ] ] },
-            barrier: ["2 -9 -2070", "-2 -7 -2070"],
-            voidY: -15
+            barrier: ["2 -9 -2070", "-2 -7 -2070"]
         },
         2: {
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 39 , 41 ], [ -8, -8 ], [ -2088, -2083 ] ] },
             spawnpoint: { type: 'range', value: [ [ 39 , 41 ], [ -8, -8 ], [ -2088, -2083 ] ] },
-            barrier: ["41 -5 -2081","35 -8 -2081"],
-            voidY: -20
+            barrier: ["41 -5 -2081","35 -8 -2081"]
         },
-        3: { //Candy World
+        3: {
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 86 , 77 ], [ -8, -8 ], [ -2083, -2088 ] ] },
             spawnpoint: { type: 'range', value: [ [ 86 , 77 ], [ -8, -8 ], [ -2083, -2088 ] ] },
-            barrier: ["89 -8 -2080", "75 -5 -2080"],
-            voidY: -30
+            barrier: ["89 -8 -2080", "75 -5 -2080"]
         },
-        4: { //Matrix
+        4: {
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 130 , 126 ], [ -5, -5 ], [ -2090, -2084 ] ] },
             spawnpoint: { type: 'range', value: [ [ 130 , 126 ], [ -5, -5 ], [ -2090, -2084 ] ] },
-            barrier: ["131 -5 -2081", "125 -1 -2081"],
-            voidY: -18
+            barrier: ["131 -5 -2081", "125 -1 -2081"]
         },
-        5: { // FIXME
+        5: {
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 179 , 174 ], [ 0, 0 ], [ -2086, -2081 ] ] },
             spawnpoint: { type: 'range', value: [ [ 179 , 174 ], [ 0, 0 ], [ -2086, -2081 ] ] },
-            barrier: ["131 -5 -2081", "125 -1 -2081"],
-            voidY: -30
+            barrier: ["131 -5 -2081", "125 -1 -2081"]
         }
     },
     ends: {
@@ -84,15 +81,7 @@ export const GAMEDATA_PRK: I_GameData = { // Parkour
         actionbar_spec: true,
         notify_times: [300, 180, 60],
         events: {
-            't1': prkTime,
-            't0': async function (){
-                await beginGame(11)
-
-                let item = new ItemStack('axiscube:back_to_checkpoint');
-                for (const player of [...world.getPlayers()]) {
-                    player.getComponent(EntityComponentTypes.Inventory)?.container?.setItem(8 ,item);
-                }
-            }
+            't1': prkTime
         }
     },
     start_commands: prk_main,
@@ -111,9 +100,8 @@ export const GAMEDATA_PRK: I_GameData = { // Parkour
         ['prk.display', '\ue195§6 %axiscube.prk.name', true],
     ]
 }
-//#endregion
+let winners: {name: string, time: number}[] = []
 
-//#region Functions
 async function setCheckpoint(player){
     try{
         let p_loc = player.location
@@ -128,7 +116,7 @@ async function setCheckpoint(player){
                 playsound('random.orb', player.name)
             }else{
                 let vel = player.getVelocity()
-                if(vel.x == 0 && vel.z == 0){
+                if(vel.x != 0 && vel.z != 0){
                     actionbar('\ue12f Checkpoint already created!', player.name)
                 }
             }
@@ -156,6 +144,7 @@ export async function prkCheckpointTp(player){
 }
 
 async function prk_main(){
+    console.warn(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} barrier`)
     runCMD(`fill ${GAMEDATA[11].loc[getGameArena()].barrier[0]} ${GAMEDATA[11].loc[getGameArena()].barrier[1]} barrier`)
     winners = []
     for (const player of [...world.getPlayers()]) {
@@ -163,14 +152,13 @@ async function prk_main(){
     }
     startTimer(11)
 }
-
 async function prkTick(){
     let playersCount = 0
     let playersWin = 0
+    
 
     for (const player of [...world.getPlayers()]) {
         if (!player.hasTag('spec') && player.hasTag('prk.member')) {
-            if(player.location.y <= -30){ player.kill() }
             setCheckpoint(player)
             WinHandler(player)
             playersCount++
@@ -180,7 +168,7 @@ async function prkTick(){
 
     if (playersCount == 0 && playersWin == 0) {
         prkStop('no_players') //Winner 
-    }else if(playersCount == 0 && playersWin > 0){
+    }else if(playersCount && playersWin > 0){
         prkStop('no_players')
     }
     
@@ -205,4 +193,3 @@ async function prkOnStop(){
     await system.runTimeout(()=>{}, 60)
     runCMD(`title @a title ud0""`)
 }
-//#endregion

@@ -1,19 +1,11 @@
 //Ready for Release
-import { COPYRIGHT } from "#root/const";
+import { COPYRIGHT, DIM, SYM } from "../const";
 import { Player, system, world } from "@minecraft/server";
-import { randomPlayerIcon, runCMD, runCMDs, shuffle } from "#modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "#modules/core/games/main";
-import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
-import { games_log } from "#modules/Logger/logger_env";
-
-//#region Variables
-let random_stages: number[] = []
-let winner_list: {name: string, target:Player}[] = []
-let players_count = 0
-//#endregion
-
-//#region Gamedata
-export const GAMEDATA_DRP: I_GameData = { // Dropper
+import {randomPlayerIcon, runCMD, runCMDs, shuffle, vector3ToArray3} from "../modules/axisTools";
+import { getGameArena, startTimer, stopGame } from "./main";
+import { GAMEDATA } from "./gamedata";
+import { games_log } from "../modules/Logger/logger_env";
+export const GAMEDATA_DRP = { // Dropper
     id: 7,
     namespace: 'drp',
     min_players: 1,
@@ -25,6 +17,7 @@ export const GAMEDATA_DRP: I_GameData = { // Dropper
     ],
     loc: {
         0: { 
+            gameplay: false,
             spawn: { type: 'range', value: [ [ 1539 , 1545 ], [ 120, 120 ], [ 487, 498 ] ] },
             //newplayer: { type: 'range', value: [ [ 1472 , 1478 ], [ 110, 110 ], [ 476, 478 ] ] },
             spawnpoint: { type: 'range', value: [ [ 1539 , 1545 ], [ 120, 120 ], [ 487, 498 ] ] },
@@ -126,9 +119,9 @@ export const GAMEDATA_DRP: I_GameData = { // Dropper
         ['drp.display', '\ue195§6 %axiscube.drp.name', true],
     ]
 }
-//#endregion
 
-//#region Functions
+let random_stages: number[] = []
+let winner_list: {name: string, target:Player}[] = []
 async function drp_main(max_stages = 3){
     random_stages = shuffle(Object.keys(GAMEDATA[7].loc[getGameArena()].stages).sort().map(Number))
     random_stages = random_stages.slice(0,max_stages)
@@ -141,6 +134,7 @@ async function drp_main(max_stages = 3){
     startTimer(7)
 }
 
+let players_count = 0
 async function drpTick(){
     let temp_players = 0
     for (const player of [...world.getPlayers()]) {
@@ -212,4 +206,3 @@ async function giveAwards(){
     }
     await system.runTimeout(()=>{}, 60)
 }
-//#endregion

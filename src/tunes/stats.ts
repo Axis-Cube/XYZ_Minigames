@@ -1,4 +1,4 @@
-import { edScore, getScore } from "#modules/axisTools"
+import { edScore, getScore } from "../modules/axisTools"
 
 const DB_NAME = 'data.stats'
 const STATS_IDS = [ ]

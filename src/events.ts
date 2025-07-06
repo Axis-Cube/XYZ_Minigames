@@ -1,30 +1,31 @@
-import { EntityComponentTypes, EntityInventoryComponent, GameMode, ItemStack, Player, system, world } from "@minecraft/server";
+import { EnchantmentTypes, EntityComponentTypes, EntityInventoryComponent, GameMode, ItemStack, Player, system, world } from "@minecraft/server";
 //CONSTANTS
-import { DB_A, map_id } from "#root/const";
+import { DB_A, map_id } from "./const";
 //MODULES
-import { decryptWithSalt, edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw } from "#modules/axisTools";
-import { axisHealthBar } from "#modules/axisHB";
-import { openJSON } from "#modules/easyform";
-import { axisEval } from "#modules/evalSandbox";
-import { sendChatMessage } from "#root/modules/core/chat/main";
-import { MT_GAMES } from "#modules/MultiTasking/instances";
-import { load_log } from "#modules/Logger/logger";
-import { isMainManager } from "#modules/perm";
-import { dbGetPlayerRecord } from "#modules/cheesebase";
-import { LPN } from "#root/modules/core/plugins/main";
+import { decryptWithSalt, edScore, onItemInteraction, placeError, playsound, rawtext, runCMD, runCMDs, shortNick, tellraw } from "./modules/axisTools";
+import { axisHealthBar } from "./modules/axisHB";
+import { openJSON } from "./modules/easyform";
+import { axisEval } from "./modules/evalSandbox";
+import { sendChatMessage } from "./modules/Core_Chat/chat";
+import { MT_GAMES } from "./modules/MultiTasking/instances";
+import { load_log } from "./modules/Logger/logger";
+import { isMainManager } from "./modules/perm";
+import { dbGetPlayerRecord } from "./modules/cheesebase";
+import { LPN } from "./modules/Core_Plugins/index.js";
 //TUNES
-import { getPlayerColor } from "#tunes/profile";
-import { boardMoney } from "#tunes/bank";
+import { getPlayerColor } from "./tunes/profile";
+import { boardMoney } from "./tunes/bank";
 //GAMES
-import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGame, startGame, stopGame } from "#root/modules/core/games/main";
-import { formBeginGameConfirm, formCancelGameConfirm } from "#root/modules/core/games/chooser";
-import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "#games/bw";
-import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "#games/mnf";
-import { loadChests/*, upgradeItem*/ } from "#games/hg/game";
-import { formTeamsel } from "#root/modules/core/games/category_team";
-import { pvpImportForm2 } from "#games/pvp";
-import { chests } from "#games/hg/hg_chests";
-import { GAMEDATA } from "#root/modules/core/games/gamedata";
+import { beginGame, clearTags, getGame, killerCommands, knockToGame, onDeathInGame, startGame, stopGame } from "./games/main";
+import { formBeginGameConfirm, formCancelGameConfirm } from "./games/chooser";
+import { bwBlockBreak, bwBlockPlace, bwHit, onItemUse } from "./games/bw";
+import { mnDefuseUse, mnfCheckPoint, mnfPlateEvent } from "./games/mnf";
+import { loadChests/*, upgradeItem*/ } from "./games/hg";
+import { formTeamsel } from "./games/category_team";
+import { pvpImportForm2 } from "./games/pvp";
+import { prkCheckpointTp } from "./games/prk";
+import { chests } from "./games/hg_chests";
+import { GAMEDATA } from "./games/gamedata";
 
 
 
@@ -84,7 +85,7 @@ world.afterEvents.pressurePlatePush.subscribe(({ block, source }) => {
     if (getGame() == 4 && source.typeId === 'minecraft:player') {
         mnfCheckPoint(block, source);
     } else if (getGame() == 0 && source.typeId === 'minecraft:player') {
-        source.applyKnockback(source.getViewDirection().x,source.getViewDirection().z,5,3)
+        source.applyKnockback({x: source.getViewDirection().x, z:source.getViewDirection().z},5/* FIXME ,3*/)
     }
 });
 world.afterEvents.pressurePlatePop.subscribe(({ block }) => {
@@ -125,6 +126,12 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
     const player = sourceEntity as Player;
     if(player == undefined){return;}
     switch (id) {
+        case 'tools:check_back':
+            let item_stack_checkpoint = new ItemStack('minecraft:stick');
+            item_stack_checkpoint.nameTag = 'debug_checkpoints_back';
+            player.getComponent(EntityComponentTypes.Inventory)?.container?.addItem(item_stack_checkpoint);
+            player.getComponent(EntityComponentTypes.Inventory);
+            break;
         case 'tools:holo_editor':
             let item_stack_edit_holo = new ItemStack('minecraft:stick');
             item_stack_edit_holo.nameTag = 'debug_holo_editor';
@@ -148,6 +155,7 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
             openJSON(message, player);
             break;
         case 'axiscube:stopgame':
+            MT_GAMES.kill();
             stopGame(Number(message));
             break;
         case 'axiscube:startgame':
@@ -200,7 +208,9 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
                     "scoreboard objectives add data.userapi dummy data.userapi"
                 ]);
             }
-            catch (e) {}
+            catch (e) {
+                console.warn(e);
+            }
             break;
         case 'plugins:get':
             console.warn(LPN);
@@ -222,8 +232,7 @@ system.afterEvents.scriptEventReceive.subscribe(async (event) => {
 });
 system.runInterval(() => {
     runCMD('effect @e[type=axiscube:dummy] invisibility 99999 0 true');
-},200000);
-
+});
 export const ITEMS: any = {
     'axiscube:menu': {
         on_click: (player) => { openJSON('mainmenu', player); },
@@ -279,6 +288,11 @@ world.beforeEvents.itemUse.subscribe((itemData) => {
     const itemAct = ITEMS[itemStack.typeId];
     // let isMenu = true
     // let clearItem = false
+    switch (itemStack.nameTag) {
+        case 'debug_checkpoints_back':
+            prkCheckpointTp(player);
+            break;
+    }
     system.run(() => {
         if (itemAct != undefined) {
             if (itemAct.forgame == undefined || (itemAct.forgame === '*' && getGame() > 0) || (typeof itemAct.forgame == 'number' && itemAct.forgame == getGame()) || itemAct.forgame.includes(`${getGame()}`)) {
@@ -323,32 +337,29 @@ export const clickTest = (data) => {
     data[Symbol.for('dateStamp')] = dateStamp;
     return dateStamp - (stamp ?? 0);
 };
-world.beforeEvents.itemUseOn.subscribe(({ source, block, blockFace, itemStack }) => {
-    const player = source;
-    if (clickTest(player) < 100)
-        return;
-    system.run(() => {
-        switch (itemStack.typeId) {
-            case 'axiscube:mn_defuse':
-                mnDefuseUse(player, block);
-                break;
-        }
-    });
-});
+
 world.afterEvents.entityHitBlock.subscribe((data) => {
     if (getGame() == 5) {
         let damagingEntity = data.damagingEntity as Player;
         onItemUse(damagingEntity, data.hitBlock);
     }
 });
+
+/*FIXME NEWCHATSYS
 world.beforeEvents.chatSend.subscribe((messageData) => {
     messageData.cancel = true;
     sendChatMessage(messageData);
 });
+*/
+
 world.afterEvents.playerInteractWithBlock.subscribe(e => {
     let block = e.block.typeId;
     let player = e.player;
     switch (block) {
+        case 'axiscube:hg_upgrade':
+            //console.warn('1')
+            //upgradeItem(player);
+            break;
         default:
             if (block.includes('hns')) {
                 e.block.setType('minecraft:air')
@@ -356,15 +367,33 @@ world.afterEvents.playerInteractWithBlock.subscribe(e => {
         break;
     }
 });
-
-world.afterEvents.playerGameModeChange.subscribe(async (e) => {
-    if(e.toGameMode == GameMode.creative){
-        let short_nick = await shortNick(e.player.name)
+system.runInterval(async () => {
+    //updateMapID()
+    for (const player of [...world.getPlayers({ gameMode: GameMode.Creative })]) {
+        let short_nick = await shortNick(player.name);
+        //await dbSetPlayerRecord(short_nick,DB_A,{'0':cryptWithSalt(map_id.toString(), short_nick)})
         let flag = dbGetPlayerRecord(short_nick, DB_A)[0];
         if (flag != undefined && decryptWithSalt(map_id.toString(), flag) == short_nick) { }
         else {
-            runCMD(`gamemode a`, e.player);
+            runCMD(`gamemode a`);
             console.warn('Not Admin');
         }
     }
-})
+    //runCMD(`say ${cryptWithSalt(map_id.toString(),'TMnrE')}`)
+}, 10);
+let last_item_in_hand = system.runInterval(() => {
+    for (const player of [...world.getPlayers()]) {
+        let inv = player.getComponent(EntityInventoryComponent.componentId);
+        let container = inv?.container;
+        let slot = player.selectedSlotIndex;
+        try {
+            //console.log(container.getItem(0), slot)
+            let item = container?.getItem(slot)?.typeId;
+            if (item != undefined) {
+                player.setDynamicProperty('hg:lst', item);
+            }
+        }
+        catch { }
+    }
+}, 5);
+MT_GAMES.register(last_item_in_hand);

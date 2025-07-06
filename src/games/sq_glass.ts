@@ -1,18 +1,12 @@
-import { COPYRIGHT, SYM } from "#root/const";
-import { GameMode, system, world } from "@minecraft/server";
-import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, enchancedRandom } from "#modules/axisTools";
-import { GAMEDATA, I_GameData } from "#modules/core/games/gamedata";
-import { getGameArena, startTimer, stopGame } from "#modules/core/games/main";
-import { completeChallenge } from "#modules/core/games/chooser";
+import { COPYRIGHT, DIM, SYM } from "../const";
+import { GameMode, PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
+import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt, enchancedRandom} from "../modules/axisTools";
+import { GAMEDATA } from "./gamedata";
+import { forceGameRestart, getGameArena, startTimer, stopGame } from "./main";
+import { completeChallenge } from "./chooser";
 import { eliminatePlayerMessage } from "tunes/profile";
 
-//#region Variables
-let loose_area: any[] = []
-let normal_area: any[]
-//#endregion 
-
-//#region Gamedata
-export const GAMEDATA_GLS: I_GameData = { // Glass
+export const GAMEDATA_GLS = { // Glass
     id: 6,
     namespace: 'gls',
     min_players: 1,
@@ -24,6 +18,7 @@ export const GAMEDATA_GLS: I_GameData = { // Glass
     ],
     loc: {
         0: { //Ready for 1.5
+            gameplay: false,
             spawn: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },
             newplayer: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },
             spawnpoint: { type: 'range', value: [ [ -499 , -506 ], [ 37, 37 ], [ -552, -556 ] ] },
@@ -132,12 +127,9 @@ export const GAMEDATA_GLS: I_GameData = { // Glass
         ['gls.display', '\ue1a6§6 %axiscube.gls.name', true],
     ]
 }
-//#endregion
 
-//#region Functions
-/**
- * Generates the glass platforms for the game.
- */
+
+
 async function gls_generate(){
     const f_block = GAMEDATA[6].loc[getGameArena()].field_block
     const platform_y = GAMEDATA[6].loc[getGameArena()].platforms_y
@@ -149,9 +141,6 @@ async function gls_generate(){
     }
 }
 
-/**
- * Main function to initialize the game.
- */
 async function gls_main(){
     let game_lives = 3
     switch(getScore('diff','data')){
@@ -194,22 +183,20 @@ async function gls_main(){
     startTimer(6)
 }
 
-/**
- * Handles the time-based events for the game.
- */
 function glsTime(){
     runCMD(`fill ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_from} ${GAMEDATA[6].loc[getGameArena()].prestart_barrier_to} air replace barrier`)
     //Add Barriers
 }
-/**
- * Tick function to handle game logic on each tick.
- */
+
+let loose_area: any[] = []
+let normal_area: any[] = []
+
 function glsTick(){
     let countNoWins = 0
     let countWins = 0
     let diff = getScore('diff','data')
     let countMembers = 0
-    for (const player of [...world.getPlayers({excludeGameModes:[GameMode.spectator]})]) {
+    for (const player of [...world.getPlayers({excludeGameModes:[GameMode.Spectator]})]) {
         if (!player.hasTag('spec')) {
             const lives = Number(player.getDynamicProperty('gls_lives'))
             const isInWinnerArea = isPlayerinArea(GAMEDATA[6].loc[getGameArena()].winpos_from,GAMEDATA[6].loc[getGameArena()].winpos_to,player)
@@ -290,5 +277,3 @@ function glsTick(){
         }
     }
 }
-
-//#endregion
