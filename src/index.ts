@@ -1,9 +1,8 @@
 import {world} from "@minecraft/server";
-
-let initStart = new Date().valueOf()
-
 /*    EARLY INITIALIZATION    */
 import "./initialization"
+
+let initStart = new Date().valueOf()
 
 /*     LATE INITIALIZATION    */
 world.afterEvents.worldLoad.subscribe(world => {

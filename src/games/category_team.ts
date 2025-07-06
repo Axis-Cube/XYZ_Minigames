@@ -1,6 +1,6 @@
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { edScore, hasTag, runCMD, tellraw } from "../modules/axisTools"
-import { world } from "@minecraft/server"
+import {ActionFormData} from "@minecraft/server-ui"
+import {edScore, hasTag, runCMD, tellraw} from "../modules/axisTools"
+import {world} from "@minecraft/server"
 
 export const TEAMS = [
     'red','green','blue','yellow','purple',

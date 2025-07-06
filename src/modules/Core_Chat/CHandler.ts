@@ -1,7 +1,7 @@
-import { isAdmin, runCMD } from "../axisTools"
-import { CCmtkillConfig } from "./commands/mtkill"
-import { CCstartgConfig } from "./commands/startg"
-import { CCstopgConfig } from "./commands/stopg"
+import {isAdmin} from "../axisTools"
+import {CCmtkillConfig} from "./commands/mtkill"
+import {CCstartgConfig} from "./commands/startg"
+import {CCstopgConfig} from "./commands/stopg"
 
 export let COMMAND_PREFIXES = ["`","\\"]
 export interface CInterface{

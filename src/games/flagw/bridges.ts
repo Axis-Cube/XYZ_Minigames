@@ -1,11 +1,11 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension } from "@minecraft/server"
-import { allBlocks, COPYRIGHT, SYM } from "../../const"
-import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, sleep, tellraw } from "../../modules/axisTools"
-import { GAMEDATA } from "../gamedata"
-import { getGameArena, startGame, startTimer, stopGame } from "../main"
-import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
-import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
-import { axisInfo } from "modules/axisInfo"
+import {EquipmentSlot, ItemStack, system, world} from "@minecraft/server"
+import {allBlocks, SYM} from "../../const"
+import {edScore, getScore, hasTag, isPlayerinArea, playsound, runCMD, runCMDs, sleep} from "../../modules/axisTools"
+import {GAMEDATA} from "../gamedata"
+import {getGameArena, stopGame} from "../main"
+import {getPlayerTeam, teamArray, TEAMS2} from "../category_team"
+import {MT_GAMES, MT_INFO} from "../../modules/MultiTasking/instances"
+import {axisInfo} from "modules/axisInfo"
 
 export const GAMEDATA_FW_BRIDGES = { // fw_bridges READY FOR 1.5    
     id: 9,

@@ -1,9 +1,8 @@
-import { system, world } from "@minecraft/server";
-import { COPYRIGHT, DIM, SYM } from "../const";
-import { actionbar, getScore, playsound, randomPlayerIcon, runCMD } from "../modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "./main";
-import { MT_GAMES } from "../modules/MultiTasking/instances";
-import { GAMEDATA } from "./gamedata";
+import {system, world} from "@minecraft/server";
+import {COPYRIGHT, DIM, SYM} from "../const";
+import {actionbar, getScore, playsound, randomPlayerIcon, runCMD} from "../modules/axisTools";
+import {getGameArena, startTimer, stopGame} from "./main";
+import {GAMEDATA} from "./gamedata";
 
 let timer = 300
 

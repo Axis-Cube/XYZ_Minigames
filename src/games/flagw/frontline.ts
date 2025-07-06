@@ -1,12 +1,19 @@
-import { EquipmentSlot, ItemStack, system, world, EntityComponentTypes, Dimension, Block, EntityInventoryComponent, ItemComponentTypes, EnchantmentType, EnchantmentTypes, ItemEnchantableComponent, ProjectileHitEntityAfterEvent, Player, EntityEquippableComponent } from "@minecraft/server"
-import { COPYRIGHT, DIM, SYM } from "../../const"
-import { edScore, getScore, hasTag, isPlayerinArea, playsound, powerTP, runCMD, runCMDs, setblock, sleep, tellraw } from "../../modules/axisTools"
-import { GAMEDATA } from "../gamedata"
-import { forceGameRestart, getGameArena, startGame, startTimer, stopGame } from "../main"
-import { TEAMS2, getPlayerTeam, teamArray } from "../category_team"
-import { MT_GAMES, MT_INFO } from "../../modules/MultiTasking/instances"
-import { MinecraftEnchantmentTypes } from "../../bundles/vanilla_data"
-import { axisInfo } from "modules/axisInfo"
+import {
+    EntityEquippableComponent,
+    EntityInventoryComponent,
+    EquipmentSlot,
+    ItemStack,
+    Player,
+    system,
+    world
+} from "@minecraft/server"
+import {COPYRIGHT, DIM, SYM} from "../../const"
+import {edScore, hasTag, runCMD, runCMDs, sleep} from "../../modules/axisTools"
+import {GAMEDATA} from "../gamedata"
+import {getGameArena, stopGame} from "../main"
+import {getPlayerTeam, teamArray, TEAMS2} from "../category_team"
+import {MT_GAMES, MT_INFO} from "../../modules/MultiTasking/instances"
+import {axisInfo} from "modules/axisInfo"
 
 let ArrowHurtEvent;
 

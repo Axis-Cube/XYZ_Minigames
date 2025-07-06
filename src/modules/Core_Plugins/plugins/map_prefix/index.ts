@@ -1,8 +1,8 @@
-import { EntityFlyingSpeedComponent, system, world } from "@minecraft/server"
-import { MT_GAMES, MT_PLUGINS } from "../../../MultiTasking/instances"
-import { getScore, isAdmin } from "../../../axisTools";
-import { TESTERS } from "../../../../tunes/testrun";
-import { config_map_prefix } from "./config";
+import {system, world} from "@minecraft/server"
+import {MT_PLUGINS} from "../../../MultiTasking/instances"
+import {isAdmin} from "../../../axisTools";
+import {TESTERS} from "../../../../tunes/testrun";
+import {config_map_prefix} from "./config";
 
 let prefixes = {
     admin: "04",

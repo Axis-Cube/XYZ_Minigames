@@ -3,7 +3,6 @@ import {
     actionbar,
     array3ToVector3,
     edScore,
-    getGamemode,
     getItemAmounts,
     getScore,
     hasTag,

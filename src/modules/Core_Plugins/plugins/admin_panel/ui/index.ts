@@ -1,10 +1,7 @@
-import {
-    ActionFormData,
-    ModalFormData
-} from "@minecraft/server-ui"; // Непосредственно создание форм
-import { cryptWithSalt, edScore, getScore, runCMD, shortNick } from "../../../../axisTools.js";
-import { dbSetPlayerRecord } from "../../../../cheesebase.js";
-import { DB_A, map_id } from "../../../../../const.js";
+import {ActionFormData, ModalFormData} from "@minecraft/server-ui"; // Непосредственно создание форм
+import {shortNick} from "../../../../axisTools.js";
+import {dbSetPlayerRecord} from "../../../../cheesebase.js";
+import {DB_A} from "../../../../../const.js";
 
 let FORM = new ActionFormData()
     .title('Admin Panel')

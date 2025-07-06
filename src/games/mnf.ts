@@ -1,13 +1,22 @@
 //FIELD ENGINE v0.2.5 by (AbstractScripts aka Lndrs_) License this so so. hmmm give 1000$ to us and unlock MIT license. Default license: idk
-import { colorPercent, getScore, isPlayerinArea, playsound, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs } from "../modules/axisTools";
-import { system, world } from "@minecraft/server";
-import { GAMEDATA } from "./gamedata";
-import { forceGameRestart, getGame, getGameArena, startTimer, stopGame } from "./main";
-import { completeChallenge } from "./chooser";
-import { ModalFormData } from "@minecraft/server-ui";
-import { COPYRIGHT, DIM, SYM } from "../const";
-import { eliminatePlayerMessage } from "../tunes/profile";
-import { MT_GAMES } from "../modules/MultiTasking/instances";
+import {
+    colorPercent,
+    getScore,
+    isPlayerinArea,
+    playsound,
+    randomInt,
+    randomPlayerIcon,
+    rawtext,
+    runCMD,
+    runCMDs
+} from "../modules/axisTools";
+import {system, world} from "@minecraft/server";
+import {GAMEDATA} from "./gamedata";
+import {getGame, getGameArena, startTimer, stopGame} from "./main";
+import {completeChallenge} from "./chooser";
+import {COPYRIGHT, DIM, SYM} from "../const";
+import {eliminatePlayerMessage} from "../tunes/profile";
+import {MT_GAMES} from "../modules/MultiTasking/instances";
 
 let sleep_modifier = 5
 

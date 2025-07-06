@@ -1,16 +1,16 @@
-import { ActionFormData, MessageFormData, } from "@minecraft/server-ui"; // Непосредственно создание форм
-import { plugins_log } from "../Logger/logger_env.js";
-import { getScore, runCMD } from "../axisTools.js";
-import { pluginConfig, pluginsExec } from "interfaces.js";
-import { ICONS } from "../../const.js";
+import {ActionFormData, MessageFormData,} from "@minecraft/server-ui"; // Непосредственно создание форм
+import {plugins_log} from "../Logger/logger_env.js";
+import {getScore, runCMD} from "../axisTools.js";
+import {pluginConfig, pluginsExec} from "interfaces.js";
+import {ICONS} from "../../const.js";
 //Plugins
-import { config_admin_panel } from "./plugins/admin_panel/config";
-import { config_map_prefix } from "./plugins/map_prefix/config";
-import { config_map_info } from "./plugins/map_info/config";
+import {config_admin_panel} from "./plugins/admin_panel/config";
+import {config_map_prefix} from "./plugins/map_prefix/config";
+import {config_map_info} from "./plugins/map_info/config";
 //Packed_Ui
-import { packui_admin_panel } from "./plugins/admin_panel/ui/index.js";
-import { packui_map_prefix } from "./plugins/map_prefix/ui/index.js";
-import { packui_map_info } from "./plugins/map_info/ui/index.js";
+import {packui_admin_panel} from "./plugins/admin_panel/ui/index.js";
+import {packui_map_prefix} from "./plugins/map_prefix/ui/index.js";
+import {packui_map_info} from "./plugins/map_info/ui/index.js";
 
 /*==============================================================*/
 

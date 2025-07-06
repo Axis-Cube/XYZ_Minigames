@@ -1,7 +1,7 @@
-import { world } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { MT_PLUGINS } from "modules/MultiTasking/instances";
-import { edScore, runCMD } from "modules/axisTools";
+import {world} from "@minecraft/server";
+import {ModalFormData} from "@minecraft/server-ui";
+import {MT_PLUGINS} from "modules/MultiTasking/instances";
+import {edScore} from "modules/axisTools";
 
 function containsUnicode(str) {
     for (var i = 0, n = str.length; i < n; i++) {

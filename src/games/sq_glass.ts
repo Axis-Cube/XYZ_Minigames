@@ -1,10 +1,10 @@
-import { COPYRIGHT, DIM, SYM } from "../const";
-import { GameMode, PlayerBreakBlockAfterEvent, system, world } from "@minecraft/server";
-import { getScore, randomPlayerIcon, runCMD, runCMDs, isPlayerinArea, randomInt, enchancedRandom} from "../modules/axisTools";
-import { GAMEDATA } from "./gamedata";
-import { forceGameRestart, getGameArena, startTimer, stopGame } from "./main";
-import { completeChallenge } from "./chooser";
-import { eliminatePlayerMessage } from "tunes/profile";
+import {COPYRIGHT, SYM} from "../const";
+import {GameMode, system, world} from "@minecraft/server";
+import {enchancedRandom, getScore, isPlayerinArea, randomPlayerIcon, runCMD, runCMDs} from "../modules/axisTools";
+import {GAMEDATA} from "./gamedata";
+import {getGameArena, startTimer, stopGame} from "./main";
+import {completeChallenge} from "./chooser";
+import {eliminatePlayerMessage} from "tunes/profile";
 
 export const GAMEDATA_GLS = { // Glass
     id: 6,

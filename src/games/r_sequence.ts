@@ -1,5 +1,5 @@
-import { world } from "@minecraft/server";
-import { playsound, setTickTimeout, setblock } from "../modules/axisTools";
+import {world} from "@minecraft/server";
+import {playsound} from "../modules/axisTools";
 
 let buttons = { //Buttons coordinates (like 3.25.-9 x.y.z)
     1: '3.25.-9', 2: '2.25.-9', 3: '1.25.-9',

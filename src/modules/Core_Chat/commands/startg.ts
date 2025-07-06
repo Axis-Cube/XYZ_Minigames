@@ -1,6 +1,5 @@
-import { startGame } from "../../../games/main"
-import { runCMD } from "../../axisTools"
-import { CInterface } from "../CHandler";
+import {startGame} from "../../../games/main"
+import {CInterface} from "../CHandler";
 
 let CCstartgConfig: CInterface = {
     name: "startg",

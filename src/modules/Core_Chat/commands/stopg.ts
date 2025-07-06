@@ -1,6 +1,5 @@
-import { stopGame } from "../../../games/main"
-import { runCMD } from "../../axisTools"
-import { CInterface } from "../CHandler"
+import {stopGame} from "../../../games/main"
+import {CInterface} from "../CHandler"
 
 let CCstopgConfig: CInterface = {
     name: "stopg",

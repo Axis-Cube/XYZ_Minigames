@@ -1,14 +1,25 @@
-import { world } from "@minecraft/server";
-import { actionbar, edScore, getScore, hasTag, onItemInteraction, playsound, randomInt, runCMD, runCMDs, shuffle, tellraw } from "../modules/axisTools";
+import {world} from "@minecraft/server";
+import {
+    actionbar,
+    edScore,
+    getScore,
+    hasTag,
+    onItemInteraction,
+    playsound,
+    randomInt,
+    runCMD,
+    runCMDs,
+    shuffle,
+    tellraw
+} from "../modules/axisTools";
 import isMoving from "../modules/playerMove";
-import { getGameArena, stopGame } from "./main";
-import { openJSON } from "../modules/easyform";
-import { getPlayerColor } from "../tunes/profile";
-import { addMoney } from "../tunes/bank";
-import { ActionFormData } from "@minecraft/server-ui";
-import { COPYRIGHT, SCOLOR, SYM } from "../const";
-import { axisEval } from "../modules/evalSandbox";
-import { GAMEDATA } from "./gamedata";
+import {stopGame} from "./main";
+import {openJSON} from "../modules/easyform";
+import {getPlayerColor} from "../tunes/profile";
+import {addMoney} from "../tunes/bank";
+import {ActionFormData} from "@minecraft/server-ui";
+import {COPYRIGHT, SCOLOR, SYM} from "../const";
+import {axisEval} from "../modules/evalSandbox";
 
 // Hide And Seek
 

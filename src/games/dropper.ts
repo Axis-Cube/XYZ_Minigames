@@ -1,10 +1,11 @@
 //Ready for Release
-import { COPYRIGHT, DIM, SYM } from "../const";
-import { Player, system, world } from "@minecraft/server";
-import {randomPlayerIcon, runCMD, runCMDs, shuffle, vector3ToArray3} from "../modules/axisTools";
-import { getGameArena, startTimer, stopGame } from "./main";
-import { GAMEDATA } from "./gamedata";
-import { games_log } from "../modules/Logger/logger_env";
+import {COPYRIGHT} from "../const";
+import {Player, system, world} from "@minecraft/server";
+import {randomPlayerIcon, runCMD, runCMDs, shuffle} from "../modules/axisTools";
+import {getGameArena, startTimer, stopGame} from "./main";
+import {GAMEDATA} from "./gamedata";
+import {games_log} from "../modules/Logger/logger_env";
+
 export const GAMEDATA_DRP = { // Dropper
     id: 7,
     namespace: 'drp',

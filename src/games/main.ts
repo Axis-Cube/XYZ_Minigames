@@ -1,11 +1,21 @@
-import { Player, system, world } from '@minecraft/server';
-import { edScore, getScore, hasTag, playsound, powerTP, randomInt, randomPlayerIcon, rawtext, runCMD, runCMDs, setTickTimeout, tellraw } from '../modules/axisTools'
-import { GAMEDATA } from './gamedata';
-import { killMessage } from '../tunes/killMessage';
+import {Player, system, world} from '@minecraft/server';
+import {
+    edScore,
+    getScore,
+    playsound,
+    powerTP,
+    rawtext,
+    runCMD,
+    runCMDs,
+    setTickTimeout,
+    tellraw
+} from '../modules/axisTools'
+import {GAMEDATA} from './gamedata';
+import {killMessage} from '../tunes/killMessage';
 //import { formTeamsel } from './category_team';
-import { getPlayerColor } from '../tunes/profile';
-import { checkPerm, isManager, isTempManager } from '../modules/perm';
-import { games_log } from '../modules/Logger/logger_env';
+import {getPlayerColor} from '../tunes/profile';
+import {checkPerm, isManager, isTempManager} from '../modules/perm';
+import {games_log} from '../modules/Logger/logger_env';
 
 /**
 * @returns {Number}

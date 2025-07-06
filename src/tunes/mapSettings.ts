@@ -1,11 +1,19 @@
-import { world } from "@minecraft/server"
-import { ActionFormData } from "@minecraft/server-ui"
-import { checkPerm, formGlobalPerms, formMainOpNeeded, formPermSettingPlayer, isMainManager, isManager, isTempManager } from "../modules/perm.js"
-import { nameToPlayer, rawtext } from "../modules/axisTools.js"
-import { ICONS } from "../const.js"
-import { openJSON } from "../modules/easyform.js"
-import { getPlayerAvatar, getPlayerColor } from "./profile.js"
-import { showWindow } from "../modules/Core_Plugins/index.js"
+import {world} from "@minecraft/server"
+import {ActionFormData} from "@minecraft/server-ui"
+import {
+    checkPerm,
+    formGlobalPerms,
+    formMainOpNeeded,
+    formPermSettingPlayer,
+    isMainManager,
+    isManager,
+    isTempManager
+} from "../modules/perm.js"
+import {nameToPlayer, rawtext} from "../modules/axisTools.js"
+import {ICONS} from "../const.js"
+import {openJSON} from "../modules/easyform.js"
+import {getPlayerAvatar, getPlayerColor} from "./profile.js"
+import {showWindow} from "../modules/Core_Plugins/index.js"
 
 /**
  * @param {import("@minecraft/server").Player} player
