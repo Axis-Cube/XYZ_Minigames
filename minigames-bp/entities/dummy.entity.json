@@ -1,0 +1,39 @@
+{
+	"format_version": "1.20.20",
+	"minecraft:entity": {
+		"description": {
+			"identifier": "axiscube:dummy",
+			"is_summonable": true,
+			"is_spawnable": true,
+			"is_experimental": false
+		},
+		"components": {
+			"minecraft:nameable": {
+				"allow_name_tag_renaming": true,
+				"always_show": true
+			},
+			"minecraft:custom_hit_test": {
+				"hitboxes": [
+					{
+						"pivot": [0, 100, 0],
+						"width": 0,
+						"height": 0
+					}
+				]
+			},
+			"minecraft:damage_sensor": {
+				"triggers": {
+					"deals_damage": false
+				}
+			},
+			"minecraft:pushable": {
+				"is_pushable": false,
+				"is_pushable_by_piston": false
+			},
+			"minecraft:collision_box": {
+				"width": 0.0001,
+				"height": 0.0001
+			}
+		}
+	}
+}

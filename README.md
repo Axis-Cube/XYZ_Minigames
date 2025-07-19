@@ -1,6 +1,4 @@
-LICENSE:MIT
----TODO---
-
+## TODO
 - [ ] Add icons to games
 - [ ] Add translation
 - [ ] Evil Chicken

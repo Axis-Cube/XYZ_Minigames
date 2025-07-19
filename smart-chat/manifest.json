@@ -1,0 +1,39 @@
+{
+	"format_version": 2,
+	"header": {
+		"description": "Created by AbstractScripts",
+		"name": "§a§lSmartChat§7 (BP) [0.1.0]§r",
+		"uuid": "52b28ae2-2de2-4e62-8134-34b92f1eef27",
+		"version": [ 0, 1, 0 ],
+		"min_engine_version": [ 1, 21, 90 ]
+	},
+	"capabilities": ["script_eval"],
+	"modules": [
+		{
+			"description": "(c) AxisCube",
+			"type": "data",
+			"uuid": "58bd1a3a-b121-46ed-93b1-454927bbdf4a",
+			"version": [ 1, 0, 0 ]
+		},
+		{
+			"uuid": "e00f2363-26cb-41a0-9fc6-5f7230a34daf",
+			"version": [ 1, 0, 0 ],
+			"type": "script",
+			"language": "javascript",
+			"entry": "scripts/index.js"
+		}
+	],
+	"dependencies": [
+		{
+			"module_name": "@minecraft/server",
+			"version": "2.1.0-beta"
+		}
+	],
+	"metadata": {
+		"authors": [
+			"AbstractScripts"
+		],
+		"license": "MIT",
+		"url": "https://github.com/AbstractScripts"
+	}
+}

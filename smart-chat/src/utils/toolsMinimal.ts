@@ -1,0 +1,6 @@
+import { Entity, Player, system, world } from "@minecraft/server";
+export function runCMD(source: string | Player, command: string){if(typeof source == 'object'){source = source.name};system.run(()=>{world.getDimension('overworld').runCommand(`execute as "${source}" at @s run execute positioned as @s run ${command}`)})}
+export async function playsound(sound: string, player: Player | string='@a',volume=1,pitch=1) { runCMD(player, `playsound ${sound} @s ~~~ ${volume} ${pitch}`) }
+export async function rawtext(text: string, name: string | Player ='@a',type='text',color='r') { if (type == 'tr') {type = 'translate';} text = text.replace(/\"/g, '\u005c\"'); await tellraw(`{"rawtext":[{"text":"§${color}"},{"${type}":"${text}"}]}`,name) }
+export async function tellraw(rawtext: string, name: string | Player ='@a',type: any = undefined) { if (typeof rawtext == 'object') {rawtext = JSON.stringify(rawtext);} if (type == undefined)  { runCMD(name, `tellraw @s ${rawtext}`);} else if (type == 'actionbar' || type == 'act')  { runCMD(name, `titleraw @s actionbar${rawtext}`);} }
+export function randomInt(min=1, max=2) { return Math.floor(Math.random() * (max - min + 1) + min) }

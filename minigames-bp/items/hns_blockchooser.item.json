@@ -1,0 +1,16 @@
+{
+	"format_version": "1.20.20",
+	"minecraft:item": {
+		"description": { "identifier": "axiscube:hns_blockchooser" },
+		"components": {
+			"minecraft:hand_equipped": false,
+			"minecraft:glint": false,
+			"minecraft:max_stack_size": 64,
+            "minecraft:icon": "hns_blockchooser",
+            "minecraft:cooldown": {
+                "category": "hns_blockchooser",
+                "duration": 3
+            }
+		}
+	}
+}

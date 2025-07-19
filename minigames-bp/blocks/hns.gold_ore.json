@@ -1,0 +1,11 @@
+{
+	"format_version": "1.20.20",
+	"minecraft:block": {
+		"description": {
+			"identifier": "axiscube:hns_gold_ore"
+		},
+		"components": {
+			"minecraft:destructible_by_mining": false
+		}
+	}
+}
